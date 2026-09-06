@@ -100,6 +100,14 @@ export function createDashboardServer(botClient) {
     }
   };
 
+  app.get('/terms', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'terms.html'));
+  });
+
+  app.get('/privacy', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
+  });
+
   app.use('/auth', authRouter);
   app.use('/api/guilds', createGuildsRouter(botClient));
   app.use('/api', createApiRouter(botClient, broadcastToGuild));

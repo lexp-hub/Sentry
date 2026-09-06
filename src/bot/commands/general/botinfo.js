@@ -1,4 +1,11 @@
-import { SlashCommandBuilder, EmbedBuilder, version as djsVersion } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  version as djsVersion
+} from 'discord.js';
 import { CONFIG } from '../../../config.js';
 import os from 'os';
 
@@ -34,11 +41,30 @@ export default {
         { name: '📚 Discord.js', value: `\`v${djsVersion}\``, inline: true },
         { name: '💻 Piattaforma', value: `\`${os.type()} ${os.arch()}\``, inline: true },
         { name: '🧠 RAM Bot', value: `\`${(process.memoryUsage().rss / 1024 / 1024).toFixed(1)} MB\``, inline: true },
-        { name: '🔗 Dashboard', value: `[Visita la Dashboard](${CONFIG.DASHBOARD_URL})`, inline: true }
+        { name: '🔗 Dashboard', value: `[Visita la Dashboard](${CONFIG.DASHBOARD_URL || 'https://sentry.wispbyte.app'})`, inline: true }
       )
       .setFooter({ text: 'Sentry • Sicurezza & Gestione Server', iconURL: client.user.displayAvatarURL() })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    const baseUrl = (CONFIG.DASHBOARD_URL && !CONFIG.DASHBOARD_URL.includes('localhost') && !CONFIG.DASHBOARD_URL.includes('127.0.0.1'))
+      ? CONFIG.DASHBOARD_URL
+      : 'https://sentry.wispbyte.app';
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel('🌐 Dashboard')
+        .setStyle(ButtonStyle.Link)
+        .setURL(baseUrl),
+      new ButtonBuilder()
+        .setLabel('🔒 Privacy Policy')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`${baseUrl}/privacy`),
+      new ButtonBuilder()
+        .setLabel('📜 Termini di Servizio')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`${baseUrl}/terms`)
+    );
+
+    await interaction.reply({ embeds: [embed], components: [row] });
   }
 };

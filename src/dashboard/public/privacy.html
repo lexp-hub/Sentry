@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informativa sulla Privacy (Privacy Policy) | Sentry</title>
+  <link rel="icon" href="/logo.svg?v=25" type="image/svg+xml">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css?v=120">
+</head>
+<body class="relative min-h-screen text-slate-100 flex flex-col justify-between overflow-x-hidden bg-slate-950">
+
+  <!-- Header / Navigation -->
+  <header class="glass-nav sticky top-0 z-50 w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 group">
+      <img src="/logo.svg?v=110" alt="Sentry" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-sm border border-slate-700 group-hover:border-red-500 transition-colors">
+      <div>
+        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2 font-medieval">
+          Sentry <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-sans font-bold">Legal</span>
+        </h1>
+        <p class="text-[11px] sm:text-xs text-slate-400">Informativa sulla Privacy &amp; GDPR</p>
+      </div>
+    </a>
+
+    <div class="flex items-center gap-3 text-xs sm:text-sm font-semibold">
+      <a href="/terms" class="text-slate-300 hover:text-red-400 transition-colors">Termini di Servizio</a>
+      <a href="/dashboard.html" class="btn-knight text-xs px-3 py-1.5 flex items-center gap-1.5">
+        <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-slate-200">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-700 text-slate-300 text-xs font-semibold mb-6">
+      <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-500"></i>
+      <span>Conforme al Regolamento Generale sulla Protezione dei Dati (GDPR) • Ultimo aggiornamento: Settembre 2026</span>
+    </div>
+
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-medieval">
+      Informativa sulla Privacy <span class="text-red-500">(Privacy Policy)</span>
+    </h1>
+    <p class="text-sm sm:text-base text-slate-400 mb-8 leading-relaxed">
+      La presente Informativa sulla Privacy descrive in maniera trasparente come <strong>Sentry</strong> ("noi", "il Bot", "l'Applicazione") raccoglie, utilizza, archivia e protegge le informazioni degli utenti e delle community Discord, in conformità con il Regolamento UE 2016/679 (GDPR) e con la Discord Developer Policy.
+    </p>
+
+    <div class="space-y-8 text-sm sm:text-base leading-relaxed text-slate-300">
+
+      <!-- Section 1 -->
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <span class="w-7 h-7 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-mono">1</span>
+          Principio di Minimizzazione dei Dati (Data Minimization)
+        </h2>
+        <p class="mb-3">
+          Sentry opera secondo il principio fondamentale di <strong>raccolta minima dei dati</strong>: conserviamo esclusivamente gli identificatori tecnici strettamente necessari all'esecuzione delle funzionalità operative richieste dai server e dagli utenti.
+        </p>
+        <p class="text-xs sm:text-sm text-slate-400">
+          Non raccogliamo mai dati sensibili, credenziali bancarie, indirizzi fisici, numeri di telefono o e-mail personali.
+        </p>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <span class="w-7 h-7 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-mono">2</span>
+          Quali Dati Raccogliamo (Data We Collect)
+        </h2>
+        <div class="space-y-4 text-xs sm:text-sm">
+          <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+            <span class="font-bold text-white block mb-1">🆔 Identificatori Discord Pubblici:</span>
+            <p class="text-slate-400">
+              ID Utente Discord (Snowflake), ID Server (Guild ID), ID Canali e ID Ruoli. Questi dati numerici identificano in modo univoco le entità per associare configurazioni, permessi e statistiche.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+            <span class="font-bold text-white block mb-1">⚙️ Dati di Configurazione Server:</span>
+            <p class="text-slate-400">
+              Canali di benvenuto (welcomer), log, ruoli assegnati con reaction roles, prefissi, contatori numerici di partnership e canali vocali temporanei creati dai moderatori tramite Dashboard.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+            <span class="font-bold text-white block mb-1">💤 Dati di Stato Utente (Modulo AFK):</span>
+            <p class="text-slate-400">
+              Quando un utente esegue <code>/afk [motivo]</code>, registriamo temporaneamente l'ID utente, il motivo testuale fornito e il timestamp di inizio. Questo record viene <strong>immediatamente eliminato</strong> non appena l'utente torna attivo e invia un nuovo messaggio.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+            <span class="font-bold text-white block mb-1">🎮 Dati di Intrattenimento &amp; Livelli:</span>
+            <p class="text-slate-400">
+              Punti esperienza (XP), livelli community, monete virtuali e punteggi di gioco interni (Blackjack, Pesca, Dadi). Tali dati non hanno alcun valore monetario reale.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <span class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center text-xs font-mono">3</span>
+          Gestione del Contenuto dei Messaggi (Message Content &amp; Ephemeral Processing)
+        </h2>
+        <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm mb-3">
+          <strong>Nessuna archiviazione dei messaggi:</strong> Sentry <u>NON</u> salva, <u>NON</u> registra e <u>NON</u> memorizza il testo delle chat degli utenti in alcun database permanente.
+        </div>
+        <p class="text-xs sm:text-sm text-slate-300 mb-2">
+          L'intento con privilegi <strong>Message Content</strong> viene impiegato unicamente per elaborazioni in tempo reale (in-memory) che vengono istantaneamente scartate:
+        </p>
+        <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-400">
+          <li><strong>Rilevamento AFK</strong>: Verifica se un utente ha risposto o menzionato un membro attualmente assente per avvisarlo.</li>
+          <li><strong>Assistente AI</strong>: Analisi immediata della domanda quando il bot viene menzionato o interrogato con <code>/ai chiedi</code>.</li>
+          <li><strong>Partnership</strong>: Validazione della presenza del link di invito Discord nel canale partnership.</li>
+        </ul>
+      </div>
+
+      <!-- Section 4 -->
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <span class="w-7 h-7 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-mono">4</span>
+          Conservazione e Sicurezza dei Dati (Storage &amp; Security)
+        </h2>
+        <p class="mb-3 text-xs sm:text-sm">
+          Tutti i dati archiviati risiedono in database protetti (SQLite / MySQL) collocati su server dedicati e protetti da firewall, crittografia TLS/HTTPS nei transiti di rete e accesso riservato esclusivamente all'amministratore di sistema.
+        </p>
+        <p class="text-xs sm:text-sm text-slate-400">
+          I dati rimangono memorizzati finché Sentry è presente nel server o fino a quando non viene presentata esplicita richiesta di cancellazione. Se il bot viene rimosso definitivamente da un server, le configurazioni relative possono essere eliminate su richiesta.
+        </p>
+      </div>
+
+      <!-- Section 5 -->
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <span class="w-7 h-7 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-mono">5</span>
+          Condivisione con Terze Parti (Third-Party Services)
+        </h2>
+        <p class="mb-3 text-xs sm:text-sm">
+          I tuoi dati <strong>non vengono mai venduti, noleggiati o ceduti a fini pubblicitari o commerciali</strong>. Le uniche comunicazioni con servizi terzi avvengono per l'erogazione del servizio:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-300">
+          <li><strong>Discord API</strong>: Per la sincronizzazione di messaggi, ruoli e comandi in accordo con le API ufficiali.</li>
+          <li><strong>Cloudflare Workers AI</strong>: Quando un utente interagisce con il modulo AI, il testo del prompt viene inviato all'endpoint API sicuro di Cloudflare per elaborare la risposta. I dati non vengono utilizzati per addestrare modelli pubblici.</li>
+        </ul>
+      </div>
+
+      <!-- Section 6 -->
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <span class="w-7 h-7 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center text-xs font-mono">6</span>
+          I Tuoi Diritti GDPR: Accesso e Cancellazione (Your Rights)
+        </h2>
+        <p class="mb-3 text-xs sm:text-sm">
+          Ai sensi degli articoli 15-22 del Regolamento UE 2016/679 (GDPR), ogni utente e amministratore ha diritto a:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-300 mb-4">
+          <li><strong>Diritto di Accesso</strong>: Conoscere quali dati associati al proprio ID utente o server sono registrati.</li>
+          <li><strong>Diritto alla Cancellazione (Oblio)</strong>: Richiedere l'eliminazione istantanea e definitiva di ogni dato associato (livelli, economia, registri, configurazioni server).</li>
+          <li><strong>Diritto di Rettifica</strong>: Modificare o correggere le configurazioni tramite comandi o Dashboard.</li>
+        </ul>
+        <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs sm:text-sm">
+          <span class="font-bold text-white block mb-1">📬 Come richiedere la cancellazione dei dati:</span>
+          <p class="text-slate-400">
+            Per esercitare i tuoi diritti o richiedere la cancellazione totale dei dati, puoi contattare lo sviluppatore aprendo un ticket nel server di supporto o inviando un messaggio diretto su Discord al creatore verificato dell'applicazione. Tutte le richieste vengono evase entro 48 ore lavorative.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 7 -->
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-lg">
+        <h2 class="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <span class="w-7 h-7 rounded-lg bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-mono">7</span>
+          Modifiche a questa Informativa (Updates)
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400">
+          Ci riserviamo il diritto di aggiornare periodicamente la presente Informativa sulla Privacy per riflettere evoluzioni tecniche o normative. In caso di modifiche sostanziali, verrà data adeguata visibilità sulla Dashboard e tramite annunci nei server supportati.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-950/80 py-8 px-4 text-center text-xs text-slate-500">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <img src="/logo.svg?v=110" alt="Sentry" class="w-5 h-5 rounded-full">
+        <span class="font-medieval text-slate-400">Sentry &copy; 2026. Tutti i diritti riservati.</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/terms" class="text-slate-400 hover:text-white transition-colors underline">Termini di Servizio</a>
+        <span>•</span>
+        <a href="/privacy" class="text-slate-400 hover:text-white transition-colors underline">Informativa Privacy</a>
+        <span>•</span>
+        <a href="/" class="text-slate-400 hover:text-white transition-colors">Home</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>
+

@@ -60,9 +60,17 @@ export default {
     const selectRow = new ActionRowBuilder().addComponents(selectMenu);
     const linkRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setLabel('🌐 Accedi alla Dashboard')
+        .setLabel('🌐 Dashboard Web')
         .setStyle(ButtonStyle.Link)
-        .setURL(dashboardUrl)
+        .setURL(dashboardUrl),
+      new ButtonBuilder()
+        .setLabel('🔒 Privacy Policy')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`${dashboardUrl}/privacy`),
+      new ButtonBuilder()
+        .setLabel('📜 Termini di Servizio')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`${dashboardUrl}/terms`)
     );
 
     const reply = await interaction.reply({
