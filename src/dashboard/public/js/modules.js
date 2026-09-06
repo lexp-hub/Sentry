@@ -15,7 +15,6 @@
 
     await Promise.allSettled([
       loadMasterModules(guildId),
-      loadAIData(guildId),
       loadPartnershipData(guildId),
       loadReactionRoles(guildId),
       window.loadWelcomerData ? window.loadWelcomerData(guildId) : Promise.resolve(),
@@ -42,7 +41,6 @@
       if (!grid) return;
 
       const moduleLabels = {
-        ai: { name: 'Sentry AI', desc: 'Chat neurale e ricerca web', icon: 'sparkles', color: 'text-red-600' },
         partnerships: { name: 'Partnership System', desc: 'Form modale e statistiche manager', icon: 'handshake', color: 'text-red-600' },
         setups: { name: 'Showcase Setup', desc: 'Foto, specifiche ed embed automatici', icon: 'monitor', color: 'text-red-600' },
         embeds: { name: 'Live Embeds', desc: 'Anteprima live e riquadri', icon: 'scroll', color: 'text-red-600' },
@@ -137,222 +135,6 @@
     } catch (e) {
       console.error('Error loading master modules:', e);
     }
-  }
-
-  async function loadAIData(guildId) {
-    try {
-      const res = await fetch(`/api/guilds/${guildId}/ai`);
-      if (!res.ok) return;
-      const data = await res.json();
-
-      const config = data.config || {};
-      const quota = data.quota || {};
-      const promptEl = document.getElementById('ai-system-prompt');
-      const modelEl = document.getElementById('ai-model');
-      const enabledEl = document.getElementById('ai-enabled');
-      const searchEl = document.getElementById('ai-web-search');
-
-      if (promptEl) promptEl.value = config.system_prompt || data.defaultPrompt || '';
-      if (modelEl && config.model) modelEl.value = config.model;
-      if (enabledEl) enabledEl.checked = Boolean(config.enabled);
-      if (searchEl) searchEl.checked = Boolean(config.web_search_enabled);
-
-      // Quota & Limiti inputs
-      const dailyLimitEl = document.getElementById('ai-daily-limit');
-      const warningThresholdEl = document.getElementById('ai-warning-threshold');
-      const warningChanEl = document.getElementById('ai-warning-channel');
-
-      if (dailyLimitEl) dailyLimitEl.value = config.daily_limit !== undefined ? config.daily_limit : 100;
-      if (warningThresholdEl) warningThresholdEl.value = config.warning_threshold !== undefined ? config.warning_threshold : 80;
-      if (warningChanEl) {
-        warningChanEl.dataset.savedValue = config.warning_channel_id || '';
-        warningChanEl.value = config.warning_channel_id || '';
-      }
-
-      // Quota status display
-      const quotaUsedEl = document.getElementById('ai-quota-used-text');
-      const quotaMaxEl = document.getElementById('ai-quota-max-text');
-      const quotaPctEl = document.getElementById('ai-quota-percent-text');
-      const quotaRemEl = document.getElementById('ai-quota-remaining-text');
-      const quotaProgEl = document.getElementById('ai-quota-progress-bar');
-      const quotaBadgeEl = document.getElementById('ai-quota-badge');
-
-      const used = quota.used !== undefined ? quota.used : (quota.daily_requests || 0);
-      const limit = quota.daily_limit !== undefined ? quota.daily_limit : (config.daily_limit !== undefined ? config.daily_limit : 100);
-      const isUnlimited = limit <= 0;
-      const remaining = isUnlimited ? 'Illimitate' : (quota.remaining !== undefined ? quota.remaining : Math.max(0, limit - used));
-      const pct = isUnlimited ? 0 : Math.min(100, Math.round((used / limit) * 100));
-
-      if (quotaUsedEl) quotaUsedEl.textContent = used;
-      if (quotaMaxEl) quotaMaxEl.textContent = isUnlimited ? '∞' : limit;
-      if (quotaPctEl) quotaPctEl.textContent = isUnlimited ? 'N/A' : `${pct}%`;
-      if (quotaRemEl) quotaRemEl.textContent = isUnlimited ? 'Richieste illimitate' : `${remaining} rimanenti`;
-
-      if (quotaProgEl) {
-        quotaProgEl.style.width = isUnlimited ? '0%' : `${pct}%`;
-        if (pct >= 100) {
-          quotaProgEl.className = 'h-full bg-red-600 transition-all duration-300';
-        } else if (quota.is_warning || pct >= (config.warning_threshold || 80)) {
-          quotaProgEl.className = 'h-full bg-amber-500 transition-all duration-300';
-        } else {
-          quotaProgEl.className = 'h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 transition-all duration-300';
-        }
-      }
-
-      if (quotaBadgeEl) {
-        if (quota.is_blocked || (!isUnlimited && typeof remaining === 'number' && remaining <= 0)) {
-          quotaBadgeEl.className = 'badge text-[11px] px-2.5 py-0.5 rounded-full bg-red-950/80 text-red-400 border border-red-800/50 font-medium';
-          quotaBadgeEl.textContent = '⛔ Quota Esaurita';
-        } else if (quota.is_warning) {
-          quotaBadgeEl.className = 'badge text-[11px] px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-800/50 font-medium';
-          quotaBadgeEl.textContent = '⚠️ In Pre-Esaurimento';
-        } else {
-          quotaBadgeEl.className = 'badge text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 font-medium';
-          quotaBadgeEl.textContent = '🟢 Quota Normale';
-        }
-      }
-
-      const ovModel = document.getElementById('ov-ai-model');
-      if (ovModel) {
-        ovModel.textContent = config.model?.includes('llama-3.3') ? 'Llama 3.3 70B' : 'Cloudflare AI';
-      }
-    } catch (e) {
-      console.error('Error loading AI config:', e);
-    }
-  }
-
-  document.querySelectorAll('.btn-preset').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const preset = btn.getAttribute('data-preset');
-      const promptEl = document.getElementById('ai-system-prompt');
-      if (!promptEl) return;
-
-      if (preset === 'cynical') {
-        promptEl.value = "Sei 'Sentry', un analista cinico, spietato e allergico all'ipocrisia umano-sociale. Smonti la propaganda, i ragionamenti fallati e la mediocrità di chiunque ti si ponga davanti — attaccando senza filtri idee, incoerenze e dignità intellettuale.\n\nRegole:\n- Stile secco, sarcastico e passivo-aggressivo.\n- Zero pietà o sottomissione.\n- Rispondi SEMPRE in massimo 300 caratteri.";
-      } else if (preset === 'noble') {
-        promptEl.value = "Sei 'Sentry', un nobile guardiano d'onore e protettore dei reami Discord. Rispondi con tono fiero, solenne ed epico, dispensando consigli saggi ed elevati per il bene del server. Massimo 300 caratteri.";
-      } else if (preset === 'technical') {
-        promptEl.value = "Sei 'Sentry', un'intelligenza artificiale focalizzata su precisione logica, programmazione e analisi tecnica oggettiva. Rispondi in modo asciutto, preciso ed impeccabile.";
-      }
-      window.showToast(`Preset applicato all'editor! Ricordati di salvare.`);
-    });
-  });
-
-  const btnSaveAI = document.getElementById('btn-save-ai-config');
-  if (btnSaveAI) {
-    btnSaveAI.addEventListener('click', async () => {
-      const guildId = window.AppState.currentGuildId;
-      if (!guildId) return;
-
-      const dailyLimitRaw = document.getElementById('ai-daily-limit')?.value;
-      const warningThreshRaw = document.getElementById('ai-warning-threshold')?.value;
-      const warningChanVal = document.getElementById('ai-warning-channel')?.value || null;
-
-      const dailyLimitVal = dailyLimitRaw !== undefined && dailyLimitRaw !== '' ? parseInt(dailyLimitRaw, 10) : 100;
-      const warningThreshVal = warningThreshRaw !== undefined && warningThreshRaw !== '' ? parseInt(warningThreshRaw, 10) : 80;
-
-      const payload = {
-        enabled: document.getElementById('ai-enabled')?.checked,
-        model: document.getElementById('ai-model')?.value,
-        web_search_enabled: document.getElementById('ai-web-search')?.checked,
-        system_prompt: document.getElementById('ai-system-prompt')?.value,
-        daily_limit: isNaN(dailyLimitVal) ? 100 : dailyLimitVal,
-        warning_threshold: isNaN(warningThreshVal) ? 80 : Math.max(1, Math.min(99, warningThreshVal)),
-        warning_channel_id: warningChanVal
-      };
-
-      const res = await fetch(`/api/guilds/${guildId}/ai`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        window.showToast('Configurazione e limiti di Sentry AI salvati!');
-        await loadAIData(guildId);
-      } else {
-        window.showToast('Errore nel salvataggio AI.', 'error');
-      }
-    });
-  }
-
-  const aiChatForm = document.getElementById('ai-chat-form');
-  const aiChatInput = document.getElementById('ai-chat-input');
-  const aiChatHistory = document.getElementById('ai-chat-history');
-
-  if (aiChatForm) {
-    aiChatForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const message = aiChatInput?.value?.trim();
-      if (!message) return;
-
-      const guildId = window.AppState.currentGuildId || '123456789012345678';
-      aiChatInput.value = '';
-
-      const userBubble = document.createElement('div');
-      userBubble.className = 'flex justify-end';
-      userBubble.innerHTML = `
-        <div class="p-2.5 rounded-2xl bg-purple-600 text-xs text-white max-w-[85%] leading-relaxed shadow">
-          ${message}
-        </div>
-      `;
-      aiChatHistory.appendChild(userBubble);
-      aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
-
-      const botLoading = document.createElement('div');
-      botLoading.className = 'flex gap-2.5';
-      botLoading.innerHTML = `
-        <div class="w-7 h-7 rounded-lg bg-purple-600 flex items-center justify-center text-xs shrink-0 font-bold">🛡️</div>
-        <div class="p-2.5 rounded-2xl bg-purple-950/40 border border-purple-500/20 text-xs text-purple-300 italic flex items-center gap-1.5">
-          <i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Sentry sta analizzando...
-        </div>
-      `;
-      aiChatHistory.appendChild(botLoading);
-      lucide.createIcons();
-      aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
-
-      try {
-        const customPrompt = document.getElementById('ai-system-prompt')?.value;
-        const model = document.getElementById('ai-model')?.value;
-
-        const res = await fetch(`/api/guilds/${guildId}/ai/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message, customPrompt, model })
-        });
-
-        const data = await res.json();
-        botLoading.remove();
-
-        const botReply = document.createElement('div');
-        botReply.className = 'flex gap-2.5';
-        botReply.innerHTML = `
-          <div class="w-7 h-7 rounded-lg bg-purple-600 flex items-center justify-center text-xs shrink-0 font-bold">🛡️</div>
-          <div class="p-3 rounded-2xl bg-purple-950/40 border border-purple-500/20 text-xs text-slate-200 leading-relaxed shadow">
-            ${data.response || 'Elaborazione fallita.'}
-          </div>
-        `;
-        aiChatHistory.appendChild(botReply);
-        aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
-      } catch (err) {
-        botLoading.remove();
-        window.showToast('Errore di connessione con l\'IA.', 'error');
-      }
-    });
-  }
-
-  const btnClearPlayground = document.getElementById('btn-clear-playground');
-  if (btnClearPlayground && aiChatHistory) {
-    btnClearPlayground.addEventListener('click', () => {
-      aiChatHistory.innerHTML = `
-        <div class="flex gap-2.5">
-          <div class="w-7 h-7 rounded-lg bg-purple-600 flex items-center justify-center text-xs shrink-0 font-bold">🛡️</div>
-          <div class="p-3 rounded-2xl bg-purple-950/40 border border-purple-500/20 text-xs text-slate-200 leading-relaxed">
-            Memoria playground ripulita. Fai pure una nuova domanda.
-          </div>
-        </div>
-      `;
-    });
   }
 
   async function loadPartnershipData(guildId) {
@@ -1905,19 +1687,7 @@
         })
       });
 
-      // 2. AI Config
-      const p2 = fetch(`/api/guilds/${guildId}/ai`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          enabled: document.getElementById('ai-enabled')?.checked,
-          model: document.getElementById('ai-model')?.value,
-          web_search_enabled: document.getElementById('ai-web-search')?.checked,
-          system_prompt: document.getElementById('ai-system-prompt')?.value
-        })
-      });
-
-      // 3. Welcomer Config
+      // 2. Welcomer Config
       const welPayload = window.getWelcomerPayload ? window.getWelcomerPayload() : null;
       const p3 = welPayload ? fetch(`/api/guilds/${guildId}/welcomer`, {
         method: 'POST',
@@ -2022,7 +1792,7 @@
         })
       });
 
-      const results = await Promise.allSettled([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]);
+      const results = await Promise.allSettled([p1, p3, p4, p5, p6, p7, p8, p9, p10]);
       const failures = results.filter(r => r.status === 'rejected' || (r.value && !r.value.ok));
 
       // Update in-memory state
@@ -2050,8 +1820,6 @@
   // Initialize Markdown Toolbars & Searchable Selects for ALL Modules across the entire Dashboard
   function initModuleToolbars() {
     if (window.setupMarkdownToolbar) {
-      // AI Module
-      window.setupMarkdownToolbar('ai-prompt-toolbar-container', 'ai-system-prompt');
       
       // Partnerships Module
       window.setupMarkdownToolbar('part-notes-toolbar-container', 'part-quick-notes');

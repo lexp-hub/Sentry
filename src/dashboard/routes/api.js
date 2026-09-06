@@ -11,7 +11,6 @@ import { BlackjackManager } from '../../bot/modules/blackjackManager.js';
 import { WelcomerManager } from '../../bot/modules/welcomerManager.js';
 import { BoostManager } from '../../bot/modules/boostManager.js';
 import { GiveawayManager } from '../../bot/modules/giveawayManager.js';
-import { AIManager } from '../../bot/modules/aiManager.js';
 import { TempChannelManager } from '../../bot/modules/tempChannelManager.js';
 import { MusicManager } from '../../bot/modules/musicManager.js';
 import { exportChannelsToCSV } from '../../bot/modules/channelExporter.js';
@@ -167,44 +166,17 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}) {
     }
   });
 
+  // Modulo AI disabilitato da Dashboard Web per motivi di sicurezza (impedisce modifiche a prompt/modello e abusi di quota)
   router.get('/guilds/:guildId/ai', requireModAuth, (req, res) => {
-    const config = DatabaseHelper.getAIConfig(req.params.guildId);
-    const defaultPrompt = AIManager.loadPrompt();
-    const quota = DatabaseHelper.getAIQuotaStatus(req.params.guildId);
-    res.json({ config, defaultPrompt, quota });
+    res.status(403).json({ error: 'La visualizzazione della configurazione AI dalla Dashboard Web è disabilitata per motivi di sicurezza.' });
   });
 
   router.post('/guilds/:guildId/ai', requireModAuth, (req, res) => {
-    const updated = DatabaseHelper.updateAIConfig(req.params.guildId, req.body);
-    notifySync(req.params.guildId, 'ai', req);
-    res.json({ success: true, config: updated });
+    res.status(403).json({ error: 'La modifica dell\'AI dalla Dashboard Web è disabilitata per motivi di sicurezza.' });
   });
 
-  router.post('/guilds/:guildId/ai/chat', requireModAuth, async (req, res) => {
-    const { message, customPrompt, model } = req.body;
-    if (!message) return res.status(400).json({ error: 'Messaggio vuoto' });
-
-    const guildId = req.params.guildId;
-    const config = DatabaseHelper.getAIConfig(guildId);
-    const systemPrompt = customPrompt || config.system_prompt || AIManager.loadPrompt();
-
-    try {
-      const messages = [{ role: 'user', content: `[Moderatore]: ${message}` }];
-      let reply = await AIManager.getAIResponse(messages, systemPrompt, model || config.model);
-
-      const searchMatch = reply.match(/\[CERCA:\s*(.*?)\]/i);
-      if (searchMatch) {
-        const query = searchMatch[1].trim();
-        const searchResults = await AIManager.performWebSearch(query);
-        const finalPrompt = `${systemPrompt}\n\nRisultati web trovati per "${query}":\n${searchResults}\n\nRispondi in modo sintetico e cinico basandoti sui dati.`;
-        reply = await AIManager.getAIResponse(messages, finalPrompt, model || config.model);
-        reply = reply.replace(/\[CERCA:\s*.*?\]/gi, '').trim();
-      }
-
-      res.json({ success: true, response: reply });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
+  router.post('/guilds/:guildId/ai/chat', requireModAuth, (req, res) => {
+    res.status(403).json({ error: 'Il playground AI dalla Dashboard Web è disabilitato per motivi di sicurezza.' });
   });
 
   router.get('/guilds/:guildId/partnerships', requireModAuth, (req, res) => {

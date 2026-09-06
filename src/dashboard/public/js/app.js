@@ -550,7 +550,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     'wel-channel', 'wel-leave-channel', 'ar-chan-select', 'tk-channel', 'tk-log-channel',
     'ga-channel', 'lvl-channel', 'cnt-channel', 'pres-channel', 'setup-channel',
     'fish-channel', 'mg-general-channel', 'mg-bj-channel', 'mg-slot-channel',
-    'tc-panel-channel', 'ai-warning-channel', 'boost-channel'
+    'tc-panel-channel', 'boost-channel'
   ];
 
   channelSelectIds.forEach(id => {
@@ -558,9 +558,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     if (!select) return;
 
     const currentVal = select.value || select.dataset.savedValue || (id === 'gen-log-channel' ? window.AppState?.settings?.log_channel_id : null);
-    select.innerHTML = id === 'ai-warning-channel'
-      ? '<option value="">Nessuno (solo avviso in chat)</option>'
-      : '<option value="">-- Seleziona un Canale --</option>';
+    select.innerHTML = '<option value="">-- Seleziona un Canale --</option>';
 
     textChannels.forEach(c => {
       const opt = document.createElement('option');
