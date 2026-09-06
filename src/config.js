@@ -25,6 +25,7 @@ export const CONFIG = {
   SESSION_SECRET: process.env.SESSION_SECRET || 'il_cavaliere_secret_key_change_me_123456789',
   DASHBOARD_URL: process.env.DASHBOARD_URL || 'https://sentry.wispbyte.app',
   OAUTH2_CALLBACK_URL: process.env.OAUTH2_CALLBACK_URL || 'https://sentry.wispbyte.app/auth/discord/callback',
+  SUPPORT_SERVER_URL: process.env.DISCORD_SUPPORT_SERVER || 'https://discord.gg/d7NnXhGE2u',
   
   DEFAULT_PREFIX: '!',
   BOT_NAME: 'Sentry',

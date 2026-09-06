@@ -166,6 +166,8 @@ try { db.exec("ALTER TABLE ticket_panels ADD COLUMN image TEXT;"); } catch (e) {
 try { db.exec("ALTER TABLE ticket_panels ADD COLUMN footer TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE ticket_panels ADD COLUMN button_style TEXT DEFAULT 'Primary';"); } catch (e) {}
 try { db.exec("ALTER TABLE ticket_panels ADD COLUMN log_channel_id TEXT;"); } catch (e) {}
+try { db.exec("ALTER TABLE ticket_panels ADD COLUMN welcome_message TEXT DEFAULT 'Benvenuto {user.mention}! Lo staff ti risponderà a breve.';"); } catch (e) {}
+try { db.exec("ALTER TABLE ticket_panels ADD COLUMN naming_scheme TEXT DEFAULT 'ticket-{user}';"); } catch (e) {}
 try { db.exec("ALTER TABLE level_configs ADD COLUMN coins_per_level INTEGER DEFAULT 100;"); } catch (e) {}
 try { db.exec("ALTER TABLE counting_configs ADD COLUMN allow_consecutive INTEGER DEFAULT 1;"); } catch (e) {}
 try { db.exec("ALTER TABLE counting_configs ADD COLUMN zen_mode INTEGER DEFAULT 1;"); } catch (e) {}
