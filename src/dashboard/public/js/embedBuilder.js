@@ -616,7 +616,17 @@
     saveDraftToLocalStorage();
   }
 
-  window.updateEmbedPreview = updatePreview;
+  let renderPending = false;
+  function scheduleUpdatePreview() {
+    if (renderPending) return;
+    renderPending = true;
+    requestAnimationFrame(() => {
+      renderPending = false;
+      updatePreview();
+    });
+  }
+
+  window.updateEmbedPreview = scheduleUpdatePreview;
 
   // Bind Input Event Listeners
   const allInputs = [
@@ -627,11 +637,11 @@
 
   allInputs.forEach(input => {
     if (input) {
-      ['input', 'change', 'keyup', 'paste'].forEach(evt => {
+      ['input', 'change', 'paste'].forEach(evt => {
         input.addEventListener(evt, () => {
           if (input === colorInput && colorHexInput) colorHexInput.value = colorInput.value.toUpperCase();
           if (input === colorHexInput && colorInput && colorHexInput.value.startsWith('#')) colorInput.value = colorHexInput.value;
-          updatePreview();
+          scheduleUpdatePreview();
         });
       });
     }

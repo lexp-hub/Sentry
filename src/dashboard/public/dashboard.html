@@ -147,32 +147,32 @@
       </nav>
     </div>
 
-    <div class="p-3 border-t border-slate-800/80 bg-[#0a101b]">
+    <div class="p-3 border-t border-[#242735] bg-[#101218]">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-          <img id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-8 h-8 rounded-full border border-slate-700 shadow-sm" alt="Avatar">
+          <img id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-7 h-7 rounded border border-[#242735]" alt="Avatar">
           <div class="overflow-hidden">
-            <p id="user-name" class="text-xs font-semibold text-white truncate font-medieval">Moderatore</p>
+            <p id="user-name" class="text-xs font-semibold text-white truncate">Moderatore</p>
             <div class="flex items-center gap-1 text-[11px] font-bold text-amber-400 font-mono">
-              <span class="text-xs">🪙</span>
+              <span>Saldo:</span>
               <span id="user-sidebar-coins">100</span>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-1.5">
-          <a href="/" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors shadow-sm" title="Torna alla Home">
-            <i data-lucide="home" class="w-4 h-4"></i>
+          <a href="/" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-[#81889c] hover:text-white transition-colors border border-[#242735]" title="Torna alla Home">
+            <i data-lucide="home" class="w-3.5 h-3.5"></i>
           </a>
-          <a href="/auth/logout" onclick="localStorage.removeItem('cavaliere_auth_token');" class="p-2 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 transition-colors shadow-sm" title="Disconnetti">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
+          <a href="/auth/logout" onclick="localStorage.removeItem('cavaliere_auth_token');" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-rose-400 hover:text-rose-300 transition-colors border border-[#242735]" title="Disconnetti">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
           </a>
         </div>
       </div>
     </div>
-    <div class="px-4 py-2 border-t border-slate-800/50 bg-[#070b13] flex items-center justify-between text-[10px] text-slate-500">
-      <a href="/terms" target="_blank" class="hover:text-slate-300 transition-colors underline">Termini</a>
+    <div class="px-3.5 py-1.5 border-t border-[#242735] bg-[#0c0d12] flex items-center justify-between text-[10px] text-[#81889c]">
+      <a href="/terms" target="_blank" class="hover:text-slate-300 transition-colors">Termini</a>
       <span>•</span>
-      <a href="/privacy" target="_blank" class="hover:text-slate-300 transition-colors underline">Privacy</a>
+      <a href="/privacy" target="_blank" class="hover:text-slate-300 transition-colors">Privacy</a>
       <span>•</span>
       <span>v2.0</span>
     </div>
@@ -191,7 +191,7 @@
         <div id="user-coins-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#181a24] border border-[#242735] text-amber-300 font-semibold text-xs">
           <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
           <span>Saldo:</span>
-          <span id="user-header-coins" class="text-amber-300 font-bold">100 🪙</span>
+          <span id="user-header-coins" class="text-amber-300 font-bold">100</span>
         </div>
         <div class="badge-online">
           <div class="pulse-dot"></div>
