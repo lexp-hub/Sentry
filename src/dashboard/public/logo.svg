@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <!-- Dark Gunmetal / Titanium Base Gradient -->
+    <!-- Site Minimal Dark Gray Background Gradient (Peel / Skew dark surface) -->
     <linearGradient id="logoDarkBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b" />
-      <stop offset="50%" stop-color="#151e2e" />
-      <stop offset="100%" stop-color="#0b111e" />
+      <stop offset="0%" stop-color="#181a24" />
+      <stop offset="50%" stop-color="#13151c" />
+      <stop offset="100%" stop-color="#0c0d12" />
     </linearGradient>
 
-    <!-- Radiant Cyber Ruby / Crimson Gradient -->
+    <!-- Radiant Emerald Accent Gradient (Peel / Skew #10b981) -->
     <linearGradient id="crusaderCrossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ff4d79" />
-      <stop offset="45%" stop-color="#ef4444" />
-      <stop offset="100%" stop-color="#b91c1c" />
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="45%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
     </linearGradient>
 
     <!-- Pure Seamless Knights Templar Cross Path -->
@@ -32,16 +32,16 @@
     </g>
   </defs>
 
-  <!-- Circular Base: Dark Titanium Plate -->
+  <!-- Circular Base: Site Minimal Dark Gray Plate -->
   <circle cx="256" cy="256" r="256" fill="url(#logoDarkBg)" />
 
   <!-- Subtle Inner Hairline Borders -->
-  <circle cx="256" cy="256" r="254" fill="none" stroke="#334155" stroke-width="1.5" stroke-opacity="0.8" />
-  <circle cx="256" cy="256" r="248" fill="none" stroke="#475569" stroke-width="1" stroke-opacity="0.4" />
-  <circle cx="256" cy="256" r="236" fill="none" stroke="#1e293b" stroke-width="2" />
-  <circle cx="256" cy="256" r="222" fill="none" stroke="#ef4444" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6 8" />
+  <circle cx="256" cy="256" r="254" fill="none" stroke="#242735" stroke-width="1.5" stroke-opacity="0.8" />
+  <circle cx="256" cy="256" r="248" fill="none" stroke="#3b3f54" stroke-width="1" stroke-opacity="0.4" />
+  <circle cx="256" cy="256" r="236" fill="none" stroke="#181a24" stroke-width="2" />
+  <circle cx="256" cy="256" r="222" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6 8" />
 
-  <!-- Center Hero: Templar Cross (Radiant Crimson on Dark Plate) -->
+  <!-- Center Hero: Templar Cross (Radiant Emerald on Dark Gray Plate) -->
   <g transform="translate(256, 256) scale(0.95)" fill="url(#crusaderCrossGrad)">
     <use href="#templarCrossSingle" />
   </g>

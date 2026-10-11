@@ -27,85 +27,85 @@
 
     <!-- Radiant Cyber Ruby / Crimson Gradient -->
     <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ff4d79" />
-      <stop offset="45%" stop-color="#ef4444" />
-      <stop offset="100%" stop-color="#b91c1c" />
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="45%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
     </linearGradient>
   </defs>
 
   <!-- 1. Deep Dark Charcoal / Discord Profile Slate Canvas -->
-  <rect width="600" height="240" fill="#0c121e" />
+  <rect width="600" height="240" fill="#0c0d12" />
 
   <!-- 2. Ambient Geometric Polygonal Grid Background (Opacity 0.16) -->
   <g opacity="0.16">
     <!-- Left Section: Tessellated Geometric Triangles & Facets -->
-    <polygon points="0,0 90,0 45,65" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="90,0 170,0 125,55" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="170,0 245,0 195,45" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="0,0 45,65 0,95" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="45,65 125,55 85,120" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="125,55 195,45 155,110" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="195,45 260,30 215,95" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <polygon points="0,0 90,0 45,65" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="90,0 170,0 125,55" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="170,0 245,0 195,45" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="0,0 45,65 0,95" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="45,65 125,55 85,120" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="125,55 195,45 155,110" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="195,45 260,30 215,95" fill="#181a24" stroke="#242735" stroke-width="1" />
     
-    <polygon points="0,95 45,65 35,145" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="45,65 85,120 35,145" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="85,120 155,110 105,175" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="155,110 215,95 170,160" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="0,95 35,145 0,180" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="35,145 105,175 60,240" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="105,175 170,160 140,240" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="0,180 35,145 60,240" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="0,180 60,240 0,240" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="60,240 140,240 100,200" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="140,240 220,240 175,190" fill="#0f172a" stroke="#334155" stroke-width="1" />
+    <polygon points="0,95 45,65 35,145" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="45,65 85,120 35,145" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="85,120 155,110 105,175" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="155,110 215,95 170,160" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="0,95 35,145 0,180" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="35,145 105,175 60,240" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="105,175 170,160 140,240" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="0,180 35,145 60,240" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="0,180 60,240 0,240" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="60,240 140,240 100,200" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="140,240 220,240 175,190" fill="#13151c" stroke="#242735" stroke-width="1" />
 
     <!-- Right Section: Tessellated Geometric Triangles & Facets -->
-    <polygon points="600,0 510,0 555,65" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="510,0 430,0 475,55" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="430,0 355,0 405,45" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="600,0 555,65 600,95" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="555,65 475,55 515,120" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="475,55 405,45 445,110" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="405,45 340,30 385,95" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <polygon points="600,0 510,0 555,65" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="510,0 430,0 475,55" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="430,0 355,0 405,45" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="600,0 555,65 600,95" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="555,65 475,55 515,120" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="475,55 405,45 445,110" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="405,45 340,30 385,95" fill="#181a24" stroke="#242735" stroke-width="1" />
 
-    <polygon points="600,95 555,65 565,145" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="555,65 515,120 565,145" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="515,120 445,110 495,175" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="445,110 385,95 430,160" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="600,95 565,145 600,180" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="565,145 495,175 540,240" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="495,175 430,160 460,240" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="600,180 565,145 540,240" fill="#334155" stroke="#475569" stroke-width="1" />
-    <polygon points="600,180 540,240 600,240" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="540,240 460,240 500,200" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="460,240 380,240 425,190" fill="#0f172a" stroke="#334155" stroke-width="1" />
+    <polygon points="600,95 555,65 565,145" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="555,65 515,120 565,145" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="515,120 445,110 495,175" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="445,110 385,95 430,160" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="600,95 565,145 600,180" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="565,145 495,175 540,240" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="495,175 430,160 460,240" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="600,180 565,145 540,240" fill="#242735" stroke="#3b3f54" stroke-width="1" />
+    <polygon points="600,180 540,240 600,240" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="540,240 460,240 500,200" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="460,240 380,240 425,190" fill="#13151c" stroke="#242735" stroke-width="1" />
 
     <!-- Center Top & Bottom Tessellations -->
-    <polygon points="245,0 300,0 270,35" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="300,0 355,0 330,35" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="270,35 330,35 300,60" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <polygon points="245,0 300,0 270,35" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="300,0 355,0 330,35" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="270,35 330,35 300,60" fill="#181a24" stroke="#242735" stroke-width="1" />
 
-    <polygon points="220,240 300,240 260,200" fill="#0f172a" stroke="#334155" stroke-width="1" />
-    <polygon points="300,240 380,240 340,200" fill="#1e293b" stroke="#334155" stroke-width="1" />
-    <polygon points="260,200 340,200 300,175" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <polygon points="220,240 300,240 260,200" fill="#13151c" stroke="#242735" stroke-width="1" />
+    <polygon points="300,240 380,240 340,200" fill="#181a24" stroke="#242735" stroke-width="1" />
+    <polygon points="260,200 340,200 300,175" fill="#181a24" stroke="#242735" stroke-width="1" />
 
     <!-- Subtle Accent Diamonds -->
-    <polygon points="42,28 54,16 66,28 54,40" fill="#ef4444" opacity="0.4" />
-    <polygon points="142,82 152,72 162,82 152,92" fill="#ef4444" opacity="0.5" />
-    <polygon points="558,28 546,16 534,28 546,40" fill="#ef4444" opacity="0.4" />
-    <polygon points="458,82 448,72 438,82 448,92" fill="#ef4444" opacity="0.5" />
+    <polygon points="42,28 54,16 66,28 54,40" fill="#10b981" opacity="0.4" />
+    <polygon points="142,82 152,72 162,82 152,92" fill="#10b981" opacity="0.5" />
+    <polygon points="558,28 546,16 534,28 546,40" fill="#10b981" opacity="0.4" />
+    <polygon points="458,82 448,72 438,82 448,92" fill="#10b981" opacity="0.5" />
 
     <!-- Grid Lines -->
-    <line x1="0" y1="35" x2="220" y2="35" stroke="#334155" stroke-width="1" stroke-dasharray="4 4" />
-    <line x1="380" y1="35" x2="600" y2="35" stroke="#334155" stroke-width="1" stroke-dasharray="4 4" />
-    <line x1="65" y1="0" x2="0" y2="130" stroke="#ef4444" stroke-width="1.5" opacity="0.4" />
-    <line x1="535" y1="0" x2="600" y2="130" stroke="#ef4444" stroke-width="1.5" opacity="0.4" />
+    <line x1="0" y1="35" x2="220" y2="35" stroke="#242735" stroke-width="1" stroke-dasharray="4 4" />
+    <line x1="380" y1="35" x2="600" y2="35" stroke="#242735" stroke-width="1" stroke-dasharray="4 4" />
+    <line x1="65" y1="0" x2="0" y2="130" stroke="#10b981" stroke-width="1.5" opacity="0.4" />
+    <line x1="535" y1="0" x2="600" y2="130" stroke="#10b981" stroke-width="1.5" opacity="0.4" />
   </g>
 
   <!-- 3. Discord Safe Zone Layout (Content centered at x=360) -->
   
   <!-- Subtitle Tagline in Clean Muted Slate (#94a3b8) -->
-  <text x="360" y="50" text-anchor="middle" fill="#94a3b8" font-size="11" class="font-sub">
+  <text x="360" y="50" text-anchor="middle" fill="#81889c" font-size="11" class="font-sub">
     Private Dedicated Sentinel
   </text>
 
@@ -124,18 +124,18 @@
 
   <!-- 4. Command / URL Pill Badge: Sleek Discord Capsule Card -->
   <g transform="translate(230, 154)">
-    <rect width="260" height="40" rx="20" fill="#151c2c" stroke="#26354d" stroke-width="1.5" />
+    <rect width="260" height="40" rx="20" fill="#181a24" stroke="#242735" stroke-width="1.5" />
     
     <!-- Slash command icon + text -->
     <text x="130" y="25" text-anchor="middle" class="font-pill" font-size="13.5">
-      <tspan fill="#f87171" font-weight="800">/</tspan><tspan fill="#ffffff" font-weight="700">help</tspan>
-      <tspan fill="#475569">  |  </tspan>
-      <tspan fill="#94a3b8">sentry.wispbyte.app</tspan>
+      <tspan fill="#10b981" font-weight="800">/</tspan><tspan fill="#ffffff" font-weight="700">help</tspan>
+      <tspan fill="#5a6275">  |  </tspan>
+      <tspan fill="#81889c">sentry.wispbyte.app</tspan>
     </text>
   </g>
 
   <!-- 5. Top Right 3-Dots Menu (Decorativo in stile profilo Discord) -->
-  <g fill="#334155" opacity="0.8">
+  <g fill="#242735" opacity="0.8">
     <circle cx="552" cy="34" r="3.5" />
     <circle cx="563" cy="34" r="3.5" />
     <circle cx="574" cy="34" r="3.5" />
