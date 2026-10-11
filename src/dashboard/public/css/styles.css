@@ -1,0 +1,782 @@
+/* SENTRY DASHBOARD — MINIMALIST MONOSPACE DESIGN SYSTEM (PEEL & SKEW THEME) */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #0c0d12;
+  --surface: #13151c;
+  --card: #181a24;
+  --card-subtle: #141620;
+  --border: #242735;
+  --border-hover: #3b3f54;
+  
+  --accent: #10b981;
+  --accent-hover: #059669;
+  --accent-glow: rgba(16, 185, 129, 0.15);
+  
+  --text: #f1f3f9;
+  --text-main: #f1f3f9;
+  --text-silver: #cbd5e1;
+  --muted: #81889c;
+  --text-muted: #81889c;
+  --text-dim: #5a6275;
+  
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --warning: #f59e0b;
+  --cyan: #06b6d4;
+
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Legacy variable mappings to maintain script/component compatibility */
+  --bg-primary: var(--bg);
+  --bg-secondary: var(--surface);
+  --bg-tertiary: var(--card);
+  --card-bg: var(--card);
+  --card-border: var(--border);
+  --card-border-hover: var(--accent);
+  --crimson-primary: var(--accent);
+  --crimson-bright: #34d399;
+  --crimson-dark: var(--accent-hover);
+  --crimson-glow: var(--accent-glow);
+  --silver-primary: var(--card);
+  --silver-bright: var(--text-silver);
+  --silver-dark: var(--border);
+
+  /* Discord native preview palette */
+  --discord-dark: #313338;
+  --discord-embed: #2b2d31;
+  --discord-text: #dbdee1;
+  --discord-link: #00a8fc;
+  --discord-btn-primary: #5865f2;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--mono) !important;
+}
+
+html, body {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+  font-family: var(--mono) !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-image: none !important;
+}
+
+::selection {
+  background: var(--accent) !important;
+  color: #000000 !important;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6, .font-medieval, .font-montserrat {
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+  color: var(--text) !important;
+}
+
+/* Hide glow orb and unnecessary radial decorations */
+.bg-glow-orb {
+  display: none !important;
+}
+
+/* Glass card / Studio card */
+.glass-card {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  box-shadow: none !important;
+}
+.glass-card:hover {
+  border-color: var(--border-hover) !important;
+  box-shadow: none !important;
+}
+
+/* Contrast in cards */
+.glass-card h1, .glass-card h2, .glass-card h3, .glass-card h4, .glass-card h5, .glass-card h6 {
+  color: var(--text) !important;
+}
+.glass-card .text-slate-900,
+.glass-card .text-slate-800,
+.glass-card .text-slate-700 {
+  color: var(--text) !important;
+}
+.glass-card p {
+  color: var(--muted) !important;
+}
+.glass-card label {
+  color: var(--text-silver) !important;
+}
+.glass-card .text-slate-600,
+.glass-card .text-slate-500,
+.glass-card .text-slate-400,
+.glass-card .text-slate-300 {
+  color: var(--muted) !important;
+}
+
+.glass-card .border-slate-300,
+.glass-card .border-slate-200,
+.glass-card .border-white\/5,
+.glass-card .border-white\/10,
+.glass-card .border-white\/20,
+.glass-card .border-slate-800,
+.glass-card .border-slate-700 {
+  border-color: var(--border) !important;
+}
+.glass-card .divide-white\/5 > * + *,
+.glass-card .divide-white\/10 > * + *,
+.glass-card .divide-slate-200 > * + * {
+  border-color: var(--border) !important;
+}
+
+/* Tables */
+.glass-card table thead th {
+  color: var(--muted) !important;
+  border-color: var(--border) !important;
+  background: var(--surface) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.glass-card table tbody td {
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+  font-size: 12px;
+}
+.glass-card table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Global Form Inputs */
+.form-input, .form-select, .form-textarea,
+input[type="text"], input[type="number"], input[type="url"], input[type="password"], select, textarea {
+  width: 100%;
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 3px !important;
+  padding: 0.5rem 0.75rem !important;
+  color: var(--text) !important;
+  font-size: 12px !important;
+  font-weight: 500;
+  font-family: var(--mono) !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus,
+input[type="text"]:focus, input[type="number"]:focus, input[type="url"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
+  border-color: var(--accent) !important;
+  box-shadow: none !important;
+  background-color: #151822 !important;
+}
+.form-input::placeholder, .form-textarea::placeholder, input::placeholder, textarea::placeholder {
+  color: var(--text-dim) !important;
+}
+select option {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+/* Primary Action Buttons (Skew / Peel brand style: Emerald accent + black text) */
+.btn-cyber, .btn-knight {
+  background: var(--accent) !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.5px;
+  border-radius: 3px !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: none !important;
+  transition: all 0.12s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  text-transform: none;
+}
+.btn-cyber:hover, .btn-knight:hover {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: #000000 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.btn-cyber svg, .btn-knight svg,
+.btn-cyber i, .btn-knight i {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Secondary Action Buttons (Card bg + border) */
+.btn-secondary, button.btn-secondary,
+#btn-send-fishing-panel, #btn-send-bj-panel, #btn-send-minigames-hub, #btn-convert-setup-msgs, #btn-fetch-live-embed, button[id^="btn-send-"] {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  font-weight: 600 !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+  transition: all 0.12s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+.btn-secondary:hover, button.btn-secondary:hover,
+#btn-send-fishing-panel:hover, #btn-send-bj-panel:hover, #btn-send-minigames-hub:hover, #btn-convert-setup-msgs:hover, #btn-fetch-live-embed:hover, button[id^="btn-send-"]:hover {
+  background: var(--card) !important;
+  border-color: var(--border-hover) !important;
+  color: #ffffff !important;
+  transform: none !important;
+}
+
+/* Danger Buttons */
+.btn-danger {
+  background: var(--danger-bg) !important;
+  color: var(--danger) !important;
+  font-weight: 600 !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.btn-danger:hover {
+  background: var(--danger) !important;
+  color: #ffffff !important;
+  border-color: var(--danger) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Dropdowns & Search Pickers */
+.ch-pick-dropdown, .role-pick-dropdown, #channel-picker-dropdown, #role-picker-dropdown, [id$="-dropdown"], .dropdown-menu {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+  color: var(--text) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+.dropdown-item:hover, .ch-option:hover, .role-option:hover {
+  background-color: var(--card) !important;
+  color: var(--accent) !important;
+}
+
+/* Dynamic Rows and Lists */
+#fish-leaderboard-list > div,
+#cnt-leaderboard-list > div,
+#coin-top-list > div,
+#mg-active-games-list > div,
+#temp-active-channels-list > div,
+#active-giveaways-list > div,
+#auto-responders-list > div,
+#custom-commands-list > div,
+#partnership-logs-list > div,
+#tk-open-tickets-list > div,
+#rr-panels-list > div,
+.glass-card .bg-white\/90,
+.glass-card .bg-white\/80,
+.glass-card .bg-slate-50,
+.glass-card .bg-slate-900\/80,
+.glass-card .bg-slate-900\/60,
+.glass-card .bg-slate-900 {
+  background-color: var(--card-subtle) !important;
+  border-color: var(--border) !important;
+  border-radius: 3px !important;
+  color: var(--text) !important;
+}
+#fish-leaderboard-list > div:hover,
+#cnt-leaderboard-list > div:hover,
+#coin-top-list > div:hover,
+#mg-active-games-list > div:hover,
+#temp-active-channels-list > div:hover,
+#active-giveaways-list > div:hover,
+.glass-card .bg-white\/90:hover,
+.glass-card .bg-white\/80:hover {
+  background-color: var(--surface) !important;
+  border-color: var(--border-hover) !important;
+}
+.glass-card .bg-slate-100 {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+
+/* Formatting Toolbars */
+.btn-var-tag, button.btn-var-tag,
+.btn-fmt-b, .btn-fmt-i, .btn-fmt-s, .btn-fmt-c, .btn-fmt-cb, .btn-fmt-q, .btn-fmt-l,
+#btn-fmt-bold, #btn-fmt-italic, #btn-fmt-strike, #btn-fmt-code, #btn-fmt-quote, #btn-fmt-link,
+#btn-reset-embed, #btn-save-template, .btn-open-role-pick, #btn-open-role-picker {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 3px !important;
+  color: var(--text-silver) !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  box-shadow: none !important;
+  transition: all 0.12s ease;
+}
+.btn-var-tag:hover, button.btn-var-tag:hover,
+.btn-fmt-b:hover, .btn-fmt-i:hover, .btn-fmt-s:hover, .btn-fmt-c:hover, .btn-fmt-cb:hover, .btn-fmt-q:hover, .btn-fmt-l:hover,
+#btn-fmt-bold:hover, #btn-fmt-italic:hover, #btn-fmt-strike:hover, #btn-fmt-code:hover, #btn-fmt-quote:hover, #btn-fmt-link:hover,
+#btn-reset-embed:hover, #btn-save-template:hover, .btn-open-role-pick:hover, #btn-open-role-picker:hover {
+  background-color: var(--card) !important;
+  border-color: var(--accent) !important;
+  color: var(--text) !important;
+}
+
+/* Channel Picker Inserter */
+.btn-open-ch-pick, #btn-open-channel-picker {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  border-radius: 3px !important;
+  color: var(--accent) !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  transition: all 0.12s ease;
+}
+.btn-open-ch-pick:hover, #btn-open-channel-picker:hover {
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  border-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+/* Notices & Warnings */
+.glass-card .bg-amber-50,
+.glass-card .bg-amber-100 {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  border-radius: 3px !important;
+  color: #fef3c7 !important;
+}
+.glass-card .text-amber-950,
+.glass-card .text-amber-900,
+.glass-card .text-amber-800 {
+  color: #fde68a !important;
+}
+.glass-card .text-amber-700,
+.glass-card .text-amber-600 {
+  color: #fbbf24 !important;
+}
+.glass-card .bg-amber-200 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  border-radius: 3px !important;
+}
+
+/* Glass nav (Header) */
+.glass-nav {
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
+  backdrop-filter: none !important;
+}
+
+/* Sidebar navigation */
+#sidebar-drawer {
+  background: var(--surface) !important;
+  border-right: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+
+.text-gradient {
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  color: var(--text) !important;
+}
+
+.text-crimson {
+  color: var(--accent) !important;
+}
+
+/* Status Badges */
+.badge-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--mono);
+}
+.badge-crest {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: none;
+  animation: none;
+}
+
+/* Toggles / Switches (Minimalist blocky pill) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--surface);
+  transition: 0.15s ease;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--muted);
+  transition: 0.15s ease;
+  border-radius: 2px;
+}
+input:checked + .slider {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+input:checked + .slider:before {
+  transform: translateX(16px);
+  background-color: #000000;
+}
+
+/* Navigation Tabs */
+.nav-tab {
+  color: var(--muted) !important;
+  font-weight: 500;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+  min-height: 34px;
+  border-radius: 3px !important;
+  padding: 6px 10px !important;
+  border: 1px solid transparent;
+}
+.nav-tab:hover {
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border-color: var(--border);
+}
+.nav-tab i,
+.nav-tab svg,
+.nav-tab .lucide {
+  color: var(--muted) !important;
+  stroke: var(--muted) !important;
+  transition: all 0.12s ease;
+}
+.nav-tab:hover i,
+.nav-tab:hover svg,
+.nav-tab:hover .lucide {
+  color: var(--text) !important;
+  stroke: var(--text) !important;
+}
+
+.nav-tab.active {
+  background: var(--card) !important;
+  color: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: none !important;
+}
+.nav-tab.active,
+.nav-tab.active i,
+.nav-tab.active svg,
+.nav-tab.active svg *,
+.nav-tab.active .lucide,
+.nav-tab.active span {
+  color: var(--accent) !important;
+  stroke: var(--accent) !important;
+}
+.nav-tab.active span.rounded {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: var(--accent) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+/* Discord preview container */
+.discord-chat-container {
+  background-color: var(--discord-dark) !important;
+  border-radius: 4px !important;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none !important;
+}
+.discord-chat-container, 
+.discord-chat-container * {
+  color: revert;
+}
+.discord-message {
+  display: flex;
+  gap: 1rem;
+}
+.discord-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.discord-msg-content {
+  flex-grow: 1;
+  overflow: hidden;
+}
+.discord-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.discord-author {
+  font-weight: 700;
+  color: #fff !important;
+  font-size: 0.9rem;
+}
+.discord-bot-badge {
+  background-color: var(--discord-btn-primary);
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.discord-timestamp {
+  font-size: 0.75rem;
+  color: #949ba4 !important;
+}
+
+.discord-embed-box {
+  background-color: var(--discord-embed) !important;
+  border-left: 3px solid var(--accent) !important;
+  border-radius: 3px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.discord-embed-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff !important;
+}
+.discord-embed-author img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+.discord-embed-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff !important;
+}
+.discord-embed-desc {
+  font-size: 0.875rem;
+  color: var(--discord-text) !important;
+  word-break: break-word;
+  line-height: 1.375rem;
+}
+.discord-chat-container strong, 
+.discord-embed-box strong, 
+.discord-chat-container b, 
+.discord-embed-box b {
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+.discord-chat-container em, 
+.discord-embed-box em, 
+.discord-chat-container i, 
+.discord-embed-box i {
+  font-style: italic !important;
+}
+.discord-chat-container u, 
+.discord-embed-box u {
+  text-decoration: underline !important;
+}
+.discord-chat-container del, 
+.discord-embed-box del {
+  text-decoration: line-through !important;
+  opacity: 0.75;
+}
+.discord-chat-container code, 
+.discord-embed-box code {
+  font-family: var(--mono) !important;
+}
+.discord-mention-pill {
+  background-color: rgba(88, 101, 242, 0.25);
+  color: #c9cdfb;
+  font-weight: 600;
+  padding: 0.08rem 0.35rem;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.8125rem;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.discord-mention-pill:hover {
+  background-color: #5865f2;
+  color: #ffffff;
+}
+.discord-embed-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.discord-field {
+  display: flex;
+  flex-direction: column;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  grid-column: 1 / -1;
+  transition: all 0.2s ease;
+}
+.discord-field:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.discord-field.inline {
+  grid-column: span 1;
+}
+@media (max-width: 640px) {
+  .discord-embed-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.discord-field-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #fff !important;
+  margin-bottom: 0.2rem;
+}
+.discord-field-value {
+  font-size: 0.875rem;
+  color: var(--discord-text) !important;
+  line-height: 1.35rem;
+  word-break: break-word;
+}
+.discord-embed-image {
+  max-width: 100%;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+}
+.discord-embed-thumb {
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 3px;
+  float: right;
+  margin-left: 0.5rem;
+}
+.discord-embed-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #949ba4 !important;
+  margin-top: 0.25rem;
+}
+
+/* Toast Notifications */
+#toast-container {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.toast {
+  padding: 0.65rem 1rem;
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: toast-in 0.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toast.success { border-color: var(--accent); color: var(--accent); }
+.toast.error { border-color: var(--danger); color: var(--danger); }
+
+@keyframes toast-in {
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}

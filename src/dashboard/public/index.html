@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentry // Dashboard Moderatori</title>
+  <link rel="icon" href="/logo.svg?v=25" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css?v=200">
+</head>
+<body class="relative min-h-screen text-slate-100 flex flex-col justify-between overflow-x-hidden bg-[#0c0d12]">
+
+  <header class="glass-nav sticky top-0 z-50 w-full px-4 sm:px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="/logo.svg?v=110" alt="Sentry" class="w-8 h-8 rounded border border-[#242735]">
+      <div>
+        <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+          Sentry <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#181a24] text-emerald-400 border border-[#242735] font-bold">v2.0</span>
+        </h1>
+        <p class="text-[11px] text-[#81889c] hidden sm:block">Dashboard Discord Standalone</p>
+      </div>
+    </div>
+
+    <div class="hidden md:flex items-center gap-5 text-xs font-semibold text-[#81889c]">
+      <a href="#servers" class="hover:text-emerald-400 transition-colors">Server</a>
+      <a href="#moduli" class="hover:text-emerald-400 transition-colors">Moduli</a>
+      <a href="/export.html" class="hover:text-emerald-400 transition-colors">Asset</a>
+      <a id="nav-dash-link" href="/dashboard.html" class="hover:text-emerald-400 transition-colors font-bold text-emerald-400">Dashboard</a>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div id="bot-status-badge" class="badge-online text-xs py-1 px-2.5 flex items-center gap-1.5">
+        <div class="pulse-dot"></div>
+        <span id="bot-status-text" class="hidden sm:inline">Bot Online</span>
+      </div>
+      <a id="btn-nav-auth" href="/dashboard.html" class="btn-knight text-xs px-3 py-1.5 flex items-center gap-1.5">
+        <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+        <span>Pannello Moderatori</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-20 text-center">
+    <div id="hero-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#181a24] border border-[#242735] text-[#81889c] text-xs font-medium mb-5">
+      <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
+      <span>Sentry // Controllo &amp; Moderazione</span>
+    </div>
+
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight text-white">
+      Controllo e sicurezza in tempo reale per Discord
+    </h1>
+
+    <p class="max-w-2xl mx-auto text-xs sm:text-sm text-[#81889c] mb-8 leading-relaxed px-2">
+      Pannello di controllo ad alta densità: gestione partnership con form modale, live embed builder, automod e integrazione AI.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
+      <a id="btn-hero-auth" href="/dashboard.html" class="btn-knight text-xs py-2 px-5 flex items-center gap-2">
+        <i data-lucide="layout-dashboard" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        <span>Accedi alla Dashboard</span>
+      </a>
+      <a href="/export.html" class="btn-secondary text-sm sm:text-base py-2.5 sm:py-3 px-5 sm:px-6 flex items-center gap-2">
+        <i data-lucide="image" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        <span>Asset Grafici</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto mb-16">
+      <div class="glass-card p-4 text-center">
+        <div class="text-xl sm:text-2xl font-bold text-white mb-1" id="stat-servers">0</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Server Connessi</div>
+      </div>
+      <div class="glass-card p-4 text-center">
+        <div class="text-xl sm:text-2xl font-bold text-emerald-400 mb-1" id="stat-users">0</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Membri Totali</div>
+      </div>
+      <div class="glass-card p-4 text-center">
+        <div class="text-xl sm:text-2xl font-bold text-white mb-1" id="stat-ai">Llama 70B</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Inference Model</div>
+      </div>
+      <div class="glass-card p-4 text-center">
+        <div class="text-xl sm:text-2xl font-bold text-emerald-400 mb-1" id="stat-ping">0ms</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Latenza API</div>
+      </div>
+    </div>
+
+    <section id="servers" class="max-w-5xl mx-auto text-left mb-16 pt-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="server" class="w-4 h-4 text-emerald-400"></i> Server Gestiti
+          </h2>
+          <p class="text-xs text-[#81889c]">Seleziona un server per configurare i parametri</p>
+        </div>
+        <a id="btn-servers-dash" href="/dashboard.html" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+          Apri Dashboard <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+
+      <div id="guilds-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </section>
+
+    <section id="moduli" class="max-w-6xl mx-auto text-left pt-6">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">
+          Moduli di Gestione
+        </h2>
+        <p class="text-[#81889c] text-xs sm:text-sm font-medium">
+          Tutti i moduli integrati configurabili in tempo reale.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="ai" class="glass-card p-5">
+          <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-1.5">Sentry AI</h3>
+          <p class="text-xs text-[#81889c] leading-relaxed">
+            AI conversazionale basata su Llama 3.3 70B con ricerca web in tempo reale e risposte alle menzioni.
+          </p>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
+            <i data-lucide="scroll" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-1.5">Live Embed Builder</h3>
+          <p class="text-xs text-[#81889c] leading-relaxed">
+            Crea annunci ed Embed con anteprima Discord live, riquadri a 2 o 3 colonne e formattazione rapida.
+          </p>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
+            <i data-lucide="handshake" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-1.5">Sistema Partnership</h3>
+          <p class="text-xs text-[#81889c] leading-relaxed">
+            Form modale rapido su Discord, verifica automatica degli inviti, requisiti minimi e statistiche manager.
+          </p>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-1.5">AutoMod &amp; Sicurezza</h3>
+          <p class="text-xs text-[#81889c] leading-relaxed">
+            Filtri anti-link, anti-invite, anti-spam, parole vietate e comandi di moderazione completi.
+          </p>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-1.5">Reaction Roles</h3>
+          <p class="text-xs text-[#81889c] leading-relaxed">
+            Assegna ruoli con pulsanti e reazioni emoji per tutti i membri del server.
+          </p>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white mb-1.5">Welcomer &amp; Auto-Role</h3>
+          <p class="text-xs text-[#81889c] leading-relaxed">
+            Messaggi di benvenuto personalizzati nei canali e nei DM con assegnazione automatica del ruolo.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="relative z-10 border-t border-slate-800 bg-[#080d16] px-4 sm:px-6 py-6 sm:py-8 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <img src="/logo.svg?v=25" class="w-5 h-5 rounded-full" alt="Sentry">
+        <span class="font-bold text-white font-medieval">Sentry</span> — Dashboard per Moderatori Discord
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/terms" class="hover:text-red-400 transition-colors underline">Termini di Servizio</a>
+        <span>•</span>
+        <a href="/privacy" class="hover:text-red-400 transition-colors underline">Informativa Privacy</a>
+        <span>•</span>
+        <span>Accesso riservato a Moderatori e Amministratori autorizzati</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Global Fetch Interceptor for Anti-Adblock & Brave-Shields localStorage authentication
+    const originalFetch = window.fetch;
+    window.fetch = async function(url, options = {}) {
+      options = options || {};
+      options.headers = options.headers || {};
+      const token = localStorage.getItem('cavaliere_auth_token');
+      if (token) {
+        if (options.headers instanceof Headers) {
+          if (!options.headers.has('Authorization')) options.headers.set('Authorization', `Bearer ${token}`);
+        } else if (typeof options.headers === 'object') {
+          if (!options.headers['Authorization'] && !options.headers['authorization']) options.headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      return originalFetch.call(this, url, options);
+    };
+
+    lucide.createIcons();
+
+    // Universal Click Interceptor: Any click on a red button or dashboard link opens dashboard directly
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('a.btn-knight, #btn-hero-auth, #btn-nav-auth, #nav-dash-link, #btn-servers-dash, a[href="/dashboard.html"], a[href="/auth/login"]');
+      if (btn) {
+        const token = localStorage.getItem('cavaliere_auth_token');
+        if (token) {
+          e.preventDefault();
+          window.location.href = `/dashboard.html?auth_token=${token}`;
+        }
+      }
+    });
+
+    async function checkAuthState() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const err = urlParams.get('error');
+      const msg = urlParams.get('msg');
+      if (err) {
+        localStorage.removeItem('cavaliere_auth_token');
+        let errDesc = 'Accesso non riuscito o sessione scaduta.';
+        if (err === 'missing_client_secret') errDesc = 'DISCORD_CLIENT_SECRET non configurato nelle variabili d\'ambiente.';
+        if (err === 'token_exchange_failed') errDesc = `Errore di scambio token Discord: ${msg || 'verifica il redirect_uri'}`;
+        if (err === 'no_code') errDesc = 'Autorizzazione Discord annullata.';
+        
+        const heroBadge = document.getElementById('hero-badge');
+        if (heroBadge) {
+          heroBadge.className = 'inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-rose-100 border border-rose-300 text-rose-800 text-[11px] sm:text-xs font-bold mb-5 shadow-sm';
+          heroBadge.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i> <span>${errDesc}</span>`;
+          if (window.lucide) lucide.createIcons();
+        }
+        return;
+      }
+
+      try {
+        const res = await fetch('/auth/me');
+        if (res.ok) {
+          const user = await res.json();
+          if (user && user.id) {
+            // User is authenticated! Update buttons & links to direct dashboard navigation
+            const authBtn = document.getElementById('btn-nav-auth');
+            if (authBtn) {
+              authBtn.href = '/dashboard.html';
+              authBtn.innerHTML = `
+                <img src="${user.avatar}" class="w-5 h-5 rounded-full border border-red-400" alt="Avatar">
+                <span>Dashboard</span>
+              `;
+            }
+
+            const heroAuthBtn = document.getElementById('btn-hero-auth');
+            if (heroAuthBtn) {
+              heroAuthBtn.href = '/dashboard.html';
+              heroAuthBtn.innerHTML = `
+                <i data-lucide="layout-dashboard" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                <span>Vai alla Dashboard</span>
+              `;
+            }
+
+            const navDashLink = document.getElementById('nav-dash-link');
+            if (navDashLink) {
+              navDashLink.href = '/dashboard.html';
+            }
+
+            const badge = document.getElementById('hero-badge');
+            if (badge) {
+              badge.className = 'inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-6 shadow-sm';
+              badge.innerHTML = `
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600"></i>
+                <span>Connesso come @${user.username}</span>
+              `;
+              if (window.lucide) lucide.createIcons();
+            }
+          }
+        } else if (res.status === 401) {
+          localStorage.removeItem('cavaliere_auth_token');
+        }
+      } catch (e) {
+        console.warn('Auth check skipped:', e);
+      }
+    }
+
+    async function loadLandingData() {
+      try {
+        const res = await fetch('/api/status');
+        if (res.ok) {
+          const data = await res.json();
+          const statServers = document.getElementById('stat-servers');
+          const statUsers = document.getElementById('stat-users');
+          const statPing = document.getElementById('stat-ping');
+          const botStatusText = document.getElementById('bot-status-text');
+
+          if (statServers) statServers.textContent = data.guildsCount;
+          if (statUsers) statUsers.textContent = data.usersCount.toLocaleString();
+          if (statPing) statPing.textContent = data.ping + 'ms';
+          if (botStatusText) botStatusText.textContent = data.online ? 'Bot Online' : 'In attesa';
+        }
+
+        const guildsRes = await fetch('/api/guilds');
+        if (guildsRes.ok) {
+          const guilds = await guildsRes.json();
+          const grid = document.getElementById('guilds-grid');
+          if (grid && guilds && guilds.length > 0) {
+            grid.innerHTML = '';
+            guilds.forEach(g => {
+              const card = document.createElement('div');
+              card.className = 'glass-card p-4 flex flex-col justify-between hover:border-emerald-500/60 transition-all cursor-pointer';
+              card.onclick = () => window.location.href = `/dashboard.html?guild=${g.id}`;
+              
+              const iconHtml = g.icon 
+                ? `<img src="${g.icon}" class="w-10 h-10 rounded object-cover border border-[#242735]">`
+                : `<div class="w-10 h-10 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center text-xs font-bold text-emerald-400">SRV</div>`;
+
+              card.innerHTML = `
+                <div class="flex items-center gap-3 mb-3">
+                  ${iconHtml}
+                  <div class="overflow-hidden">
+                    <h3 class="font-bold text-white text-xs truncate">${g.name}</h3>
+                    <p class="text-[11px] text-[#81889c]">${g.memberCount} Membri • ${g.activeModulesCount || 8} Moduli</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between pt-3 border-t border-[#242735]">
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#13151c] text-emerald-400 border border-[#242735]">
+                    Moderatore
+                  </span>
+                  <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1">Gestisci <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                </div>
+              `;
+              grid.appendChild(card);
+            });
+            lucide.createIcons();
+          } else {
+            const grid = document.getElementById('guilds-grid');
+            if (grid) {
+              grid.innerHTML = `
+                <div class="col-span-full text-center py-10 glass-card border-slate-300">
+                  <i data-lucide="lock" class="w-8 h-8 text-red-500 mx-auto mb-2"></i>
+                  <p class="text-sm font-semibold text-slate-700">Effettua l'accesso con Discord per visualizzare i server in cui sei Moderatore.</p>
+                  <a href="/auth/login" class="btn-knight text-xs px-4 py-2 mt-4 inline-flex">Accedi con Discord</a>
+                </div>
+              `;
+              lucide.createIcons();
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error loading landing data:', e);
+      }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const authError = urlParams.get('error');
+    if (authError) {
+      let errMsg = 'Errore durante l\'autenticazione Discord.';
+      if (authError === 'missing_client_secret') {
+        errMsg = 'Configurazione incompleta: Inserisci DISCORD_CLIENT_SECRET nelle variabili d\'ambiente di Wispbyte!';
+      } else if (authError === 'token_exchange_failed') {
+        errMsg = 'Autenticazione fallita: Client Secret errato o non corrispondente sul Discord Developer Portal.';
+      }
+      alert('🛡️ [Sentry] ' + errMsg);
+    }
+
+    checkAuthState().then(loadLandingData);
+  </script>
+</body>
+</html>

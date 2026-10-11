@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentry // Dashboard Moderatori</title>
+  <link rel="icon" href="/logo.svg?v=25" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css?v=200">
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col md:flex-row overflow-x-hidden bg-[#0c0d12]">
+  <div id="toast-container"></div>
+
+  <!-- Mobile Backdrop Overlay -->
+  <div id="drawer-backdrop" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+
+  <!-- Mobile Top Header Bar -->
+  <header class="md:hidden flex items-center justify-between p-3 border-b border-[#242735] bg-[#13151c] sticky top-0 z-40">
+    <div class="flex items-center gap-2.5">
+      <button id="btn-toggle-drawer" class="p-1.5 rounded bg-[#181a24] border border-[#242735] text-emerald-400 hover:bg-[#13151c]">
+        <i data-lucide="menu" class="w-4 h-4"></i>
+      </button>
+      <img src="/logo.svg?v=110" alt="Sentry" class="w-7 h-7 rounded border border-[#242735]">
+      <div>
+        <h1 class="text-xs font-bold text-white">Sentry</h1>
+        <span class="text-[9px] text-emerald-400 font-semibold uppercase">Dashboard</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-reload-modules-mobile" class="p-1.5 rounded bg-[#181a24] border border-[#242735] text-[#81889c] hover:text-white transition-colors" title="Ricarica Moduli e Cache">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+      </button>
+      <button id="btn-save-all-mobile" class="btn-knight text-xs py-1 px-2.5 flex items-center gap-1.5">
+        <i data-lucide="check" class="w-3 h-3"></i> Salva
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar / Mobile Drawer Navigation (Peel / Skew Minimalist Theme) -->
+  <aside id="sidebar-drawer" class="fixed md:sticky top-0 left-0 z-50 h-screen w-72 md:w-64 bg-[#13151c] border-r border-[#242735] flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div>
+      <div class="p-3.5 border-b border-[#242735] flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <img src="/logo.svg?v=110" alt="Sentry" class="w-8 h-8 rounded border border-[#242735]">
+          <div>
+            <h1 class="text-xs font-bold text-white tracking-tight">Sentry</h1>
+            <span class="text-[9px] text-emerald-400 font-semibold tracking-wider uppercase">Dashboard Studio</span>
+          </div>
+        </div>
+        <button id="btn-close-drawer" class="md:hidden p-1.5 rounded bg-[#181a24] text-[#81889c] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-3 border-b border-[#242735]">
+        <label class="text-[10px] uppercase tracking-wider text-[#81889c] font-bold block mb-1">Server Selezionato</label>
+        <select id="server-selector" class="form-select text-xs py-1.5 px-2 bg-[#181a24] border-[#242735] text-slate-100">
+          <option value="loading">Caricamento server...</option>
+        </select>
+      </div>
+
+      <nav class="p-2.5 space-y-1 overflow-y-auto max-h-[calc(100vh-260px)]">
+        <button class="nav-tab active w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-overview">
+          <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">Panoramica</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-music">
+          <i data-lucide="music" class="w-4 h-4 shrink-0 text-pink-400"></i>
+          <span class="flex-grow truncate">Sentry Music</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-pink-950/40 text-pink-300 font-semibold uppercase border border-pink-800/60 shrink-0">Voice</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-partnerships">
+          <i data-lucide="handshake" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">Partnership</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-presentations">
+          <i data-lucide="book-open" class="w-4 h-4 shrink-0"></i>
+          <span class="flex-grow truncate">Presentazioni</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 font-semibold uppercase border border-indigo-200 shrink-0">Form</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-setupshowcase">
+          <i data-lucide="monitor" class="w-4 h-4 shrink-0 text-red-600"></i>
+          <span class="flex-grow truncate">Showcase Setup</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-semibold uppercase border border-red-200 shrink-0">Evento</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-embeds">
+          <i data-lucide="scroll" class="w-4 h-4 shrink-0"></i>
+          <span class="flex-grow truncate">Embed Builder</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-semibold uppercase border border-red-200 shrink-0">Live</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-reactionroles">
+          <i data-lucide="layers" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">Reaction Roles</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-welcomer">
+          <i data-lucide="sparkles" class="w-4 h-4 shrink-0 text-fuchsia-400"></i>
+          <span class="truncate">Welcomer &amp; Boost</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-autoresponder">
+          <i data-lucide="zap" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">Auto-Responder</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-automod">
+          <i data-lucide="shield-alert" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">AutoMod &amp; Sicurezza</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-tickets">
+          <i data-lucide="ticket" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">Ticket System</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-giveaways">
+          <i data-lucide="trophy" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">Giveaways &amp; XP</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-minigames">
+          <i data-lucide="gamepad-2" class="w-4 h-4 shrink-0"></i>
+          <span class="flex-grow truncate">Minigiochi</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold uppercase border border-emerald-200 shrink-0">Nuovo</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-tempchannels">
+          <i data-lucide="radio" class="w-4 h-4 shrink-0 text-indigo-600"></i>
+          <span class="flex-grow truncate">Canali Privati</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 font-semibold uppercase border border-indigo-200 shrink-0">Vocali</span>
+        </button>
+
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-emojis">
+          <i data-lucide="smile" class="w-4 h-4 shrink-0"></i>
+          <span class="truncate">Emoji Tracker</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="p-3 border-t border-slate-800/80 bg-[#0a101b]">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <img id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-8 h-8 rounded-full border border-slate-700 shadow-sm" alt="Avatar">
+          <div class="overflow-hidden">
+            <p id="user-name" class="text-xs font-semibold text-white truncate font-medieval">Moderatore</p>
+            <div class="flex items-center gap-1 text-[11px] font-bold text-amber-400 font-mono">
+              <span class="text-xs">🪙</span>
+              <span id="user-sidebar-coins">100</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <a href="/" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors shadow-sm" title="Torna alla Home">
+            <i data-lucide="home" class="w-4 h-4"></i>
+          </a>
+          <a href="/auth/logout" onclick="localStorage.removeItem('cavaliere_auth_token');" class="p-2 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 transition-colors shadow-sm" title="Disconnetti">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="px-4 py-2 border-t border-slate-800/50 bg-[#070b13] flex items-center justify-between text-[10px] text-slate-500">
+      <a href="/terms" target="_blank" class="hover:text-slate-300 transition-colors underline">Termini</a>
+      <span>•</span>
+      <a href="/privacy" target="_blank" class="hover:text-slate-300 transition-colors underline">Privacy</a>
+      <span>•</span>
+      <span>v2.0</span>
+    </div>
+  </aside>
+
+  <main class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full relative z-10">
+    <div class="hidden md:flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-3 border-b border-[#242735]">
+      <div>
+        <h2 id="current-guild-name" class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i> Server Discord
+        </h2>
+        <p class="text-xs text-[#81889c] mt-0.5">Configurazione modulare in tempo reale</p>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <div id="user-coins-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#181a24] border border-[#242735] text-amber-300 font-semibold text-xs">
+          <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Saldo:</span>
+          <span id="user-header-coins" class="text-amber-300 font-bold">100 🪙</span>
+        </div>
+        <div class="badge-online">
+          <div class="pulse-dot"></div>
+          <span id="bot-ws-status">Bot Online</span>
+        </div>
+        <button id="btn-sync-live" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5" title="Sincronizza in tempo reale senza ricaricare la pagina">
+          <i data-lucide="refresh-cw" id="icon-sync-live" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Sincronizza</span>
+        </button>
+        <button id="btn-reload-modules" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5" title="Ricarica forzatamente tutti i moduli e azzera la cache del browser">
+          <i data-lucide="rotate-ccw" id="icon-reload-modules" class="w-3.5 h-3.5 text-[#81889c]"></i>
+          <span>Ricarica Cache</span>
+        </button>
+        <button id="btn-save-all" class="btn-knight text-xs py-1.5 px-3">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i> Salva Modifiche
+        </button>
+      </div>
+    </div>
+
+    
+    
+    
+    <section id="tab-overview" class="tab-content block space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider">Membri Server</span>
+            <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-white" id="ov-members">1,420</div>
+          <span class="text-xs text-emerald-400 mt-1 block">Tutti i permessi sincronizzati</span>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider">Partnership Effettuate</span>
+            <i data-lucide="handshake" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-white" id="ov-partnerships">28</div>
+          <span class="text-xs text-cyan-400 mt-1 block">Modulo attivo</span>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider">Reaction Roles</span>
+            <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-white" id="ov-rr">6</div>
+          <span class="text-xs text-slate-400 mt-1 block">Pannelli configurati</span>
+        </div>
+
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider">Stato Sistema</span>
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="text-lg font-bold text-emerald-300 truncate">Sentry v2.0</div>
+          <span class="text-xs text-emerald-400 mt-1 block">Tutti i sistemi protetti</span>
+        </div>
+      </div>
+
+      
+      <div class="glass-card p-6">
+        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+          <i data-lucide="sliders" class="w-5 h-5 text-purple-400"></i> Gestione Attivazione Moduli
+        </h3>
+        <p class="text-xs text-slate-400 mb-6">Attiva o disattiva istantaneamente le funzionalità del bot su questo server</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="modules-toggle-grid"></div>
+      </div>
+
+      
+      <div class="glass-card p-6">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="settings" class="w-5 h-5 text-cyan-400"></i> Impostazioni Generali & Canali di Log
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1.5">Canale Audit Log (Mod/Eventi)</label>
+            <select id="gen-log-channel" class="form-select">
+              <option value="">Nessun canale di log</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1.5">Prefisso Comandi Testuali</label>
+            <input type="text" id="gen-prefix" class="form-input" value="!" placeholder="!">
+          </div>
+        </div>
+      </div>
+
+      <!-- Wispbyte Persistence & Backup Cloud Card -->
+      <div class="glass-card p-6 border-l-4 border-l-emerald-500">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="database" class="w-5 h-5 text-emerald-400"></i> Cloud MySQL & Persistenza Wispbyte
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Protezione anti-perdita multi-livello: salvataggio istantaneo su SSD, backup cloud su server MySQL Wispbyte esterno e ripristino automatico.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="badge-mysql-status" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              Cloud MySQL Connesso
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Fsync FULL
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
+          <button id="btn-cloud-sync" class="btn-knight text-xs py-2.5 px-3 flex items-center justify-center gap-2">
+            <i data-lucide="cloud-upload" class="w-4 h-4 text-cyan-400"></i>
+            <span>Sincronizza su Cloud MySQL</span>
+          </button>
+          <button id="btn-backup-flush" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2">
+            <i data-lucide="save" class="w-4 h-4 text-emerald-400"></i>
+            <span>Salva su Disco Locale</span>
+          </button>
+          <button id="btn-backup-export" class="btn-cyber text-xs py-2.5 px-3 flex items-center justify-center gap-2">
+            <i data-lucide="download" class="w-4 h-4 text-yellow-400"></i>
+            <span>Scarica Backup (.json)</span>
+          </button>
+          <button id="btn-export-channels-csv" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2 hover:border-emerald-500/50 hover:text-emerald-300 transition-all" title="Scarica l'elenco completo di canali e categorie in formato CSV per Excel">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i>
+            <span>Esporta Canali (.csv)</span>
+          </button>
+          <button id="btn-backup-import-trigger" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2">
+            <i data-lucide="upload" class="w-4 h-4 text-purple-400"></i>
+            <span>Ripristina da Backup</span>
+          </button>
+          <input type="file" id="input-backup-import-file" accept=".json" class="hidden">
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: SENTRY MUSIC (Music Player & Voice Controller) -->
+    <section id="tab-music" class="tab-content hidden space-y-6">
+      <!-- Header Music Card -->
+      <div class="glass-card p-6 relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-gradient-to-br from-pink-500/10 via-red-500/10 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div class="flex items-center gap-2.5 mb-1.5">
+              <div class="w-9 h-9 rounded-xl bg-pink-950/40 text-pink-300 border border-pink-800/60 flex items-center justify-center font-bold shadow-lg">
+                <i data-lucide="music" class="w-5 h-5 text-pink-400"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white font-medieval flex items-center gap-2">
+                🎵 Sentry Music • Riproduttore Vocale HD
+              </h3>
+            </div>
+            <p class="text-xs text-slate-300 max-w-2xl">
+              Streaming ad alta definizione direttamente nei canali vocali di Discord. Supporta ricerche dirette su <strong class="text-red-400">YouTube</strong>, link <strong class="text-emerald-400">Spotify</strong> e <strong class="text-amber-400">SoundCloud</strong> con controlli live e coda sincronizzata.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span id="music-connection-badge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
+              <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+              Non connesso a canali vocali
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Player & Quick Play Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 1. Left 2 Columns: Live Player Card -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="glass-card p-5 space-y-5">
+            <div class="flex items-center justify-between pb-3 border-b border-white/5">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="disc" class="w-4 h-4 text-pink-400"></i> Riproduzione in Corso
+              </h4>
+              <span id="music-status-pill" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-bold">Inattivo</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-5">
+              <!-- Thumbnail -->
+              <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-xl bg-[#0a101b] border border-slate-800 shrink-0 overflow-hidden flex items-center justify-center relative shadow-lg group">
+                <img id="music-now-thumb" src="/banner.svg" alt="Music Thumbnail" class="w-full h-full object-cover hidden">
+                <div id="music-thumb-placeholder" class="flex flex-col items-center justify-center text-slate-600">
+                  <i data-lucide="music-2" class="w-10 h-10 mb-1"></i>
+                  <span class="text-[10px] font-bold">Nessun brano</span>
+                </div>
+              </div>
+
+              <!-- Track Metadata & Details -->
+              <div class="flex-grow space-y-2 text-center sm:text-left min-w-0 w-full">
+                <h5 id="music-now-title" class="text-base font-bold text-white truncate max-w-md">Nessun brano in riproduzione</h5>
+                <p id="music-now-author" class="text-xs text-slate-400">Usa la barra di ricerca sottostante o il comando <code class="text-pink-400 bg-slate-900 px-1 py-0.5 rounded">/play</code></p>
+                
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                  <span id="music-meta-duration" class="text-[11px] px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">⏱️ --:--</span>
+                  <span id="music-meta-requester" class="text-[11px] px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">👤 Dashboard</span>
+                  <span id="music-meta-channel" class="text-[11px] px-2 py-0.5 rounded bg-pink-950/60 border border-pink-800/60 text-pink-300">🔊 Canale: --</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Controller Buttons -->
+            <div class="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <button type="button" id="btn-web-music-playpause" class="btn-cyber text-xs py-2 px-3.5 font-bold flex items-center gap-1.5" style="background: linear-gradient(135deg, #ec4899, #ef4444);">
+                  <i data-lucide="play" class="w-3.5 h-3.5"></i> <span>Play</span>
+                </button>
+                <button type="button" id="btn-web-music-skip" class="btn-secondary text-xs py-2 px-3 font-bold flex items-center gap-1.5">
+                  <i data-lucide="skip-forward" class="w-3.5 h-3.5"></i> <span>Salta</span>
+                </button>
+                <button type="button" id="btn-web-music-stop" class="btn-secondary text-xs py-2 px-3 font-bold flex items-center gap-1.5 text-rose-400 hover:text-rose-300">
+                  <i data-lucide="square" class="w-3.5 h-3.5"></i> <span>Ferma</span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" id="btn-web-music-loop" class="btn-secondary text-xs py-2 px-2.5 font-bold" title="Modalità Loop">
+                  <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" id="btn-web-music-shuffle" class="btn-secondary text-xs py-2 px-2.5 font-bold" title="Mischia Coda">
+                  <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+                </button>
+                <div class="flex items-center gap-1.5 pl-2 border-l border-slate-800">
+                  <i data-lucide="volume-2" class="w-3.5 h-3.5 text-slate-400"></i>
+                  <input type="range" id="music-vol-slider" min="1" max="150" value="100" class="w-20 accent-pink-500 cursor-pointer">
+                  <span id="music-vol-label" class="text-[11px] font-mono text-slate-400 w-8">100%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Queue List Card -->
+          <div class="glass-card p-5 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-white/5">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="list-music" class="w-4 h-4 text-pink-400"></i> Coda di Riproduzione
+              </h4>
+              <span id="music-queue-count" class="text-xs text-slate-400">0 brani in attesa</span>
+            </div>
+            <div id="music-queue-container" class="space-y-2 max-h-60 overflow-y-auto">
+              <p class="text-xs text-slate-500 italic py-3 text-center">Nessun brano in coda al momento.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Right Column: Quick Search & Play Box -->
+        <div class="space-y-4">
+          <div class="glass-card p-5 space-y-4">
+            <div class="pb-2 border-b border-white/5">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="search" class="w-4 h-4 text-pink-400"></i> Riproduci Brano in Vocale
+              </h4>
+              <p class="text-[11px] text-slate-400 mt-0.5">Avvia o aggiungi canzoni direttamente dalla dashboard</p>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Seleziona Canale Vocale:</label>
+                <select id="music-target-voice" class="form-select text-xs">
+                  <option value="">-- Seleziona Canale Vocale --</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Titolo Canzone o Link (YouTube/Spotify):</label>
+                <input type="text" id="music-search-query" class="form-input text-xs" placeholder="es. Bohemian Rhapsody o link YouTube...">
+              </div>
+
+              <button type="button" id="btn-web-music-search-play" class="btn-cyber w-full py-2.5 text-xs font-bold flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #ec4899, #ef4444);">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i> Avvia Riproduzione
+              </button>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="pt-3 border-t border-slate-800 space-y-2">
+              <span class="text-[11px] text-slate-400 block">💡 Suggerimenti Rapidi:</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" class="btn-var-tag px-2 py-0.5 rounded text-[11px]" onclick="document.getElementById('music-search-query').value='Lofi Hip Hop Radio'">☕ Lofi Chill</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 rounded text-[11px]" onclick="document.getElementById('music-search-query').value='Medieval Fantasy Tavern Music'">🏰 Taverna Medievale</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 rounded text-[11px]" onclick="document.getElementById('music-search-query').value='Synthwave Gaming Mix'">🕹️ Synthwave Gaming</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-partnerships" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="handshake" class="w-5 h-5 text-cyan-400"></i> Configurazione Modulo Partnership
+            </h3>
+            <p class="text-xs text-slate-400">Automatizza annunci, verifica membri e ruoli ping per le partnership</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="part-enabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Invio Partnership</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="part-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+              </div>
+              <select id="part-channel" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Ruolo Ping Notifica</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="part-ping-role-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca ruolo...">
+              </div>
+              <select id="part-ping-role" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Ruolo con Permesso /partnership (Manager)</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="part-manager-role-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca ruolo manager...">
+              </div>
+              <select id="part-manager-role" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1.5">Numero Minimo Membri Richiesti</label>
+            <input type="number" id="part-min-members" class="form-input text-xs" value="50" min="0">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1.5">Cooldown tra Rinnovi (Minuti)</label>
+            <input type="number" id="part-cooldown" class="form-input text-xs" value="60" min="0">
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="btn-save-partner-config" class="btn-cyber text-xs py-2.5 px-4">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Configurazione Partnership
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel Generator Card with Form Button -->
+      <div class="glass-card p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <h4 class="text-sm font-bold text-white flex items-center gap-2 font-medieval">
+              <i data-lucide="layout-template" class="w-4 h-4 text-red-600"></i> Pannello Interattivo con Form su Discord
+            </h4>
+            <p class="text-xs text-slate-500">Invia un messaggio Embed nel canale partnership con un pulsante che apre direttamente il Form modale su Discord</p>
+          </div>
+          <button id="btn-send-partner-panel" class="btn-secondary text-xs py-2 px-4 border-red-300 bg-red-50 hover:bg-red-100 text-red-900 font-bold">
+            <i data-lucide="send" class="w-3.5 h-3.5 text-red-600"></i> Invia Pannello nel Canale
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Titolo Pannello</label>
+            <input type="text" id="part-panel-title" class="form-input text-xs" value="🤝 Sistema Partnership & Alleanze">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Banner o Immagine URL (Opzionale)</label>
+            <input type="url" id="part-panel-image" class="form-input text-xs" placeholder="https://i.imgur.com/...">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Descrizione Personalizzata del Pannello</label>
+            <textarea id="part-panel-desc" class="form-textarea h-16 text-xs" placeholder="Lascia vuoto per il testo automatico con requisiti e statistiche, oppure scrivi un messaggio personalizzato..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i> Registra Partnership Rapida dalla Dashboard
+        </h4>
+        <div class="space-y-3 mb-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Link o Codice Invito</label>
+              <input type="text" id="part-quick-invite" class="form-input text-xs" placeholder="discord.gg/partner">
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Banner o Immagine URL (Opzionale)</label>
+              <input type="url" id="part-quick-banner" class="form-input text-xs" placeholder="https://i.imgur.com/...">
+            </div>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1">
+              <label class="text-xs font-semibold text-slate-700 block">Descrizione o Messaggio Pubblicitario</label>
+              <div id="part-notes-toolbar-container" class="flex flex-wrap items-center gap-1"></div>
+            </div>
+            <textarea id="part-quick-notes" class="form-textarea h-20 text-xs" placeholder="Descrizione o note della partnership (usa grassetto, canali o ruoli)..."></textarea>
+          </div>
+          <button id="btn-quick-partner" class="btn-cyber text-xs py-2 px-5">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i> Pubblica Partnership
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card p-6 lg:col-span-2">
+          <h4 class="text-sm font-bold text-white mb-3 font-medieval">Ultime Partnership Registrate</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-500 border-b border-slate-200 uppercase tracking-wider">
+                <tr>
+                  <th class="py-2">Server Partner</th>
+                  <th class="py-2">Rappresentante</th>
+                  <th class="py-2">Membri</th>
+                  <th class="py-2">Data</th>
+                </tr>
+              </thead>
+              <tbody id="part-recent-table" class="divide-y divide-white/5 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="glass-card p-6">
+          <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+            <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i> Top Partner Manager
+          </h4>
+          <div id="part-leaderboard-list" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+    </section>
+
+    
+    
+    </section>
+
+    <!-- Community Presentations / Presentazioni Section -->
+    <section id="tab-presentations" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6 space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+              <i data-lucide="book-open" class="w-5 h-5 text-indigo-600"></i> Modulo Presentazioni con Form
+            </h3>
+            <p class="text-xs text-slate-500">I membri compilano un form modale nativo per presentarsi e ricevono un ruolo speciale ed XP</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="pres-enabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Pubblicazione</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="pres-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+              </div>
+              <select id="pres-channel" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Ruolo Ricompensa (Opzionale)</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="pres-role-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca ruolo...">
+              </div>
+              <select id="pres-role" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1.5">Punti XP Bonus Assegnati</label>
+            <input type="number" id="pres-xp" class="form-input text-xs" value="100" min="0" step="10">
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="btn-save-pres-config" class="btn-cyber text-xs py-2.5 px-5">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Configurazione Presentazioni
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel Generator Card -->
+      <div class="glass-card p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <h4 class="text-sm font-bold text-white flex items-center gap-2 font-medieval">
+              <i data-lucide="layout-template" class="w-4 h-4 text-indigo-600"></i> Pannello Presentazioni per Discord
+            </h4>
+            <p class="text-xs text-slate-500">Invia un messaggio Embed nel canale con un pulsante che apre il Form di presentazione a schermo</p>
+          </div>
+          <button id="btn-send-pres-panel" class="btn-secondary text-xs py-2 px-4 border-indigo-300 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold">
+            <i data-lucide="send" class="w-3.5 h-3.5 text-indigo-600"></i> Invia Pannello nel Canale
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Titolo del Pannello</label>
+            <input type="text" id="pres-panel-title" class="form-input text-xs" value="📜 Benvenuto nella Sala delle Presentazioni">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Banner o Immagine URL (Opzionale)</label>
+            <input type="url" id="pres-panel-image" class="form-input text-xs" placeholder="https://i.imgur.com/...">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Descrizione Personalizzata</label>
+            <textarea id="pres-panel-desc" class="form-textarea h-16 text-xs" placeholder="Lascia vuoto per il messaggio predefinito con premi e istruzioni..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Presentations List -->
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-3 font-medieval flex items-center gap-2">
+          <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i> Ultime Presentazioni della Community
+        </h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-500 border-b border-slate-200 uppercase tracking-wider">
+              <tr>
+                <th class="py-2">Membro</th>
+                <th class="py-2">Nome / Nick</th>
+                <th class="py-2">Età / Pronomi</th>
+                <th class="py-2">Hobby &amp; Passioni</th>
+                <th class="py-2">Data</th>
+              </tr>
+            </thead>
+            <tbody id="pres-recent-table" class="divide-y divide-slate-100 text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: SETUP SHOWCASE (POSTAZIONI) -->
+    <section id="tab-setupshowcase" class="tab-content hidden space-y-6">
+      <!-- Configuration Card -->
+      <div class="glass-card p-6 space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+              <i data-lucide="monitor" class="w-5 h-5 text-red-600"></i> Evento Showcase Postazioni &amp; Setup
+            </h3>
+            <p class="text-xs text-slate-500">I membri condividono foto e specifiche della propria postazione. Il bot le converte in Embed eleganti ed elimina il messaggio originale.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="setup-enabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Dedicato Postazioni</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="setup-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+              </div>
+              <select id="setup-channel" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Ruolo Ricompensa (Opzionale)</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="setup-role-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca ruolo...">
+              </div>
+              <select id="setup-role" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1.5">Punti XP Bonus</label>
+            <input type="number" id="setup-xp" class="form-input text-xs" value="50" min="0" step="10">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Titolo Embed</label>
+            <input type="text" id="setup-title" class="form-input text-xs" value="🖥️ Setup &amp; Postazione">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Colore Embed (HEX)</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="setup-color-picker" class="w-8 h-8 rounded border border-slate-800 p-0.5 cursor-pointer" value="#dc2626">
+              <input type="text" id="setup-color" class="form-input text-xs font-mono" value="#dc2626">
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Reazioni di Voto Automatiche</label>
+            <input type="text" id="setup-reactions" class="form-input text-xs" value="🔥, ⭐, ❤️" placeholder="es. 🔥, ⭐, ❤️ (separate da virgola)">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div>
+              <span class="text-xs font-bold text-slate-200 block">Thread di Discussione Automatico</span>
+              <span class="text-[11px] text-slate-500">Crea un thread sotto ogni postazione per permettere ai membri di commentarla</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="setup-auto-thread" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div>
+              <span class="text-xs font-bold text-slate-200 block">Elimina Messaggi Senza Foto</span>
+              <span class="text-[11px] text-slate-500">Cancella automaticamente messaggi di testo senza foto per tenere la galleria pulita</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="setup-delete-invalid">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="btn-save-setup-config" class="btn-cyber text-xs py-2.5 px-5">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Configurazione Showcase
+          </button>
+          <button id="btn-convert-setup-msgs" class="btn-secondary text-xs py-2.5 px-4 font-bold border-slate-800 hover:bg-slate-100 text-slate-200">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-red-600"></i> Scansiona e Converti Messaggi del Canale
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel Generator Card -->
+      <div class="glass-card p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <h4 class="text-sm font-bold text-white flex items-center gap-2 font-medieval">
+              <i data-lucide="layout-template" class="w-4 h-4 text-red-600"></i> Pannello Istruzioni &amp; Regole Evento
+            </h4>
+            <p class="text-xs text-slate-500">Invia un messaggio Embed informativo nel canale per spiegare alla community come inviare la propria postazione</p>
+          </div>
+          <button id="btn-send-setup-panel" class="btn-secondary text-xs py-2 px-4 border-red-300 bg-red-50 hover:bg-red-100 text-red-900 font-bold">
+            <i data-lucide="send" class="w-3.5 h-3.5 text-red-600"></i> Invia Pannello nel Canale
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Titolo del Pannello</label>
+            <input type="text" id="setup-panel-title" class="form-input text-xs" value="🖥️ Condividi la Tua Postazione da Battaglia">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Banner o Immagine URL (Opzionale)</label>
+            <input type="url" id="setup-panel-image" class="form-input text-xs" placeholder="https://i.imgur.com/...">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Descrizione Personalizzata</label>
+            <textarea id="setup-panel-desc" class="form-textarea h-16 text-xs" placeholder="Lascia vuoto per il messaggio predefinito con premi e istruzioni di partecipazione..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Setup Submissions List -->
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-3 font-medieval flex items-center gap-2">
+          <i data-lucide="image" class="w-4 h-4 text-red-600"></i> Ultime Postazioni Condivise
+        </h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-500 border-b border-slate-200 uppercase tracking-wider">
+              <tr>
+                <th class="py-2">Membro</th>
+                <th class="py-2">Descrizione / Specifiche</th>
+                <th class="py-2">Foto Postazione</th>
+                <th class="py-2">Data</th>
+              </tr>
+            </thead>
+            <tbody id="setup-recent-table" class="divide-y divide-slate-100 text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-embeds" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="glass-card p-5 space-y-4">
+            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-950/40 text-amber-300 border border-amber-800/50 flex items-center justify-center font-bold text-sm shrink-0">
+                  <i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-amber-200">Modifica Messaggio / Embed già Inviato</h4>
+                  <p class="text-[11px] text-amber-400/80">Incolla il link o ID del messaggio del bot per modificarlo live su Discord senza cancellarlo!</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <input type="text" id="embed-fetch-input" class="form-input text-xs py-1.5 px-3 border-amber-800/60 w-full sm:w-64" placeholder="Link messaggio Discord o ID...">
+                <button type="button" id="btn-fetch-live-embed" class="btn-secondary text-xs py-1.5 px-3 border-amber-800/60 hover:bg-amber-900/40 text-amber-300 font-bold">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-amber-400"></i> Carica
+                </button>
+                <button type="button" id="btn-edit-live-embed" class="btn-cyber text-xs py-1.5 px-3 hidden font-bold" style="background: linear-gradient(135deg, #d97706, #b45309);">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i> Salva Modifica Live
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pb-3 border-b border-white/5">
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="sliders" class="w-4 h-4 text-red-500"></i> Personalizzazione Messaggio Embed
+              </h3>
+              <div class="flex items-center gap-2">
+                <button id="btn-reset-embed" class="btn-secondary text-xs py-1 px-2.5">Reset</button>
+                <button id="btn-save-template" class="btn-secondary text-xs py-1 px-3">Salva Template</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Canale di Invio Discord</label>
+                <div class="space-y-1.5">
+                  <div class="relative">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                    <input type="text" id="embed-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale per nome...">
+                  </div>
+                  <select id="embed-channel" class="form-select text-xs"></select>
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Colore Barra Laterale</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="embed-color" value="#dc2626" class="w-10 h-9 rounded cursor-pointer bg-transparent border-0">
+                  <input type="text" id="embed-color-hex" value="#DC2626" class="form-input text-xs uppercase" maxlength="7">
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Nome Autore</label>
+                <input type="text" id="embed-author-name" class="form-input text-xs" placeholder="es. Sentry News">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">URL Icona Autore</label>
+                <input type="text" id="embed-author-icon" class="form-input text-xs" placeholder="https://...">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Titolo Embed</label>
+                <input type="text" id="embed-title" class="form-input text-xs" value="🛡️ Annuncio Ufficiale | Sentry">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">URL Titolo</label>
+                <input type="text" id="embed-title-url" class="form-input text-xs" placeholder="https://...">
+              </div>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
+                <label class="text-xs font-semibold text-slate-300 block">Descrizione (Markdown Discord)</label>
+                
+                <!-- Quick Formatting & Inserter Toolbar -->
+                <div class="flex flex-wrap items-center gap-1">
+                  <button type="button" id="btn-fmt-bold" class="px-2 py-0.5 text-[11px] font-bold rounded bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-colors" title="Grassetto: **testo**">
+                    <b>B</b>
+                  </button>
+                  <button type="button" id="btn-fmt-italic" class="px-2 py-0.5 text-[11px] italic rounded bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-colors" title="Corsivo: *testo*">
+                    <i>I</i>
+                  </button>
+                  <button type="button" id="btn-fmt-strike" class="px-2 py-0.5 text-[11px] line-through rounded bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-colors" title="Barrato: ~~testo~~">
+                    S
+                  </button>
+                  <button type="button" id="btn-fmt-code" class="px-2 py-0.5 text-[11px] font-mono rounded bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-colors" title="Codice: `codice`">
+                    &lt;/&gt;
+                  </button>
+                  <button type="button" id="btn-fmt-quote" class="px-2 py-0.5 text-[11px] rounded bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-colors" title="Citazione: > testo">
+                    &gt; Quote
+                  </button>
+                  <button type="button" id="btn-fmt-link" class="px-2 py-0.5 text-[11px] rounded bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-colors" title="Link: [titolo](url)">
+                    🔗 Link
+                  </button>
+
+                  <!-- Searchable Channel Mention Inserter Dropdown -->
+                  <div class="relative inline-block text-left">
+                    <button type="button" id="btn-open-channel-picker" class="px-2.5 py-0.5 text-[11px] font-bold rounded bg-red-950/40 hover:bg-red-900/60 text-red-300 border border-red-800/60 shadow-sm flex items-center gap-1 transition-colors" title="Cerca e inserisci un canale nel testo">
+                      <span class="text-red-400 font-extrabold text-xs">#</span> Inserisci Canale
+                    </button>
+                    <div id="channel-picker-dropdown" class="hidden absolute right-0 mt-1 w-64 rounded-xl border border-slate-800 shadow-2xl z-50 p-2 space-y-2">
+                      <input type="text" id="picker-channel-search" class="form-input text-xs py-1 px-2" placeholder="🔍 Cerca canale...">
+                      <div id="picker-channels-list" class="max-h-48 overflow-y-auto space-y-0.5 text-xs"></div>
+                    </div>
+                  </div>
+
+                  <!-- Searchable Role Mention Inserter Dropdown -->
+                  <div class="relative inline-block text-left">
+                    <button type="button" id="btn-open-role-picker" class="px-2.5 py-0.5 text-[11px] font-bold rounded bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm flex items-center gap-1 transition-colors" title="Cerca e inserisci un ruolo nel testo">
+                      <span class="text-slate-400 font-extrabold text-xs">@</span> Ruolo
+                    </button>
+                    <div id="role-picker-dropdown" class="hidden absolute right-0 mt-1 w-64 rounded-xl border border-slate-800 shadow-2xl z-50 p-2 space-y-2">
+                      <input type="text" id="picker-role-search" class="form-input text-xs py-1 px-2" placeholder="🔍 Cerca ruolo...">
+                      <div id="picker-roles-list" class="max-h-48 overflow-y-auto space-y-0.5 text-xs"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <textarea id="embed-description" class="form-textarea text-xs h-28" placeholder="Scrivi la descrizione... usa **grassetto**, *corsivo*, <#canale> o i pulsanti sopra.">Benvenuti nel server! Questo è un messaggio generato dal **Live Embed Builder** di *Sentry*.</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">URL Immagine Grande</label>
+                <input type="text" id="embed-image-url" class="form-input text-xs" placeholder="https://...">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">URL Miniatura (Thumbnail)</label>
+                <input type="text" id="embed-thumb-url" class="form-input text-xs" placeholder="https://...">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Testo Footer</label>
+                <input type="text" id="embed-footer-text" class="form-input text-xs" value="Sentry • Notifiche">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">URL Icona Footer</label>
+                <input type="text" id="embed-footer-icon" class="form-input text-xs" placeholder="https://...">
+              </div>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2 pb-1 border-b border-slate-800">
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5 font-medieval">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-red-600"></i> Sottogruppi & Riquadri (Fields)
+                  </label>
+                  <p class="text-[11px] text-slate-500">Suddividi l'embed in sezioni e riquadri affiancati (fino a 3 colonne) o a tutta larghezza</p>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" id="btn-add-field" class="btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1">
+                    <i data-lucide="plus" class="w-3 h-3 text-red-600"></i> + Riquadro
+                  </button>
+                  <button type="button" id="btn-add-field-pair" class="btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1">
+                    <i data-lucide="columns-2" class="w-3 h-3 text-cyan-600"></i> + 2 Colonne
+                  </button>
+                  <button type="button" id="btn-add-field-trio" class="btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1">
+                    <i data-lucide="columns-3" class="w-3 h-3 text-amber-600"></i> + 3 Colonne
+                  </button>
+                </div>
+              </div>
+              <div id="embed-fields-container" class="space-y-2.5"></div>
+            </div>
+
+            <div class="pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
+              <button id="btn-copy-json" class="btn-secondary text-xs py-2 px-3">
+                <i data-lucide="code" class="w-3.5 h-3.5"></i> Copia JSON
+              </button>
+              <button id="btn-send-embed" class="btn-cyber text-xs py-2 px-5">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i> Invia nel Canale Discord
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="sticky top-6 space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-600 font-bold uppercase tracking-wider">
+              <span>Anteprima Live Discord</span>
+              <span class="text-red-600 font-mono text-[10px]">Real-time DOM</span>
+            </div>
+
+            <div class="discord-chat-container">
+              <div class="discord-message">
+                <img src="/logo.svg?v=25" class="discord-avatar" alt="Avatar">
+                <div class="discord-msg-content">
+                  <div class="discord-header">
+                    <span class="discord-author">Sentry</span>
+                    <span class="discord-bot-badge">Bot</span>
+                    <span class="discord-timestamp">Oggi alle 15:30</span>
+                  </div>
+
+                  <div id="preview-embed-box" class="discord-embed-box" style="border-left-color: #dc2626;">
+                    <div>
+                      <div id="prev-author" class="discord-embed-author hidden">
+                        <img id="prev-author-icon" src="" class="hidden" alt="Author Icon">
+                        <span id="prev-author-name"></span>
+                      </div>
+                      <div id="prev-title" class="discord-embed-title">Titolo Embed</div>
+                      <div id="prev-desc" class="discord-embed-desc">Descrizione...</div>
+                      <div id="prev-fields" class="discord-embed-fields"></div>
+                    </div>
+                    <img id="prev-thumb" class="discord-embed-thumb hidden" src="" alt="Thumbnail">
+                    <img id="prev-image" class="discord-embed-image hidden" src="" alt="Image">
+                    <div id="prev-footer" class="discord-embed-footer">
+                      <img id="prev-footer-icon" class="hidden" src="" alt="Footer Icon">
+                      <span id="prev-footer-text">Sentry • Notifiche</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Saved Embeds & Templates Library Card -->
+      <div class="glass-card p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2 font-medieval">
+              <i data-lucide="folder-archive" class="w-5 h-5 text-red-600"></i> Libreria Embed Salvati
+            </h3>
+            <p class="text-xs text-slate-500">I tuoi template ed embed rimangono salvati per sempre nel database anche se esci o cambi account.</p>
+          </div>
+          <button type="button" id="btn-save-as-template" class="btn-cyber text-xs py-2 px-4 flex items-center gap-1.5 shadow">
+            <i data-lucide="bookmark-plus" class="w-4 h-4"></i> Salva Embed Corrente nel Database
+          </button>
+        </div>
+
+        <div id="saved-templates-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    
+    
+    
+    <section id="tab-reactionroles" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6">
+        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+          <i data-lucide="layers" class="w-5 h-5 text-amber-400"></i> Crea Pulsante Ruolo Interattivo
+        </h3>
+        <p class="text-xs text-slate-400 mb-6">Invia un messaggio con pulsante per assegnazione automatica ruoli</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Target</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="rr-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+              </div>
+              <select id="rr-channel" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Ruolo da Assegnare</label>
+            <div class="space-y-1.5">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                <input type="text" id="rr-role-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca ruolo...">
+              </div>
+              <select id="rr-role" class="form-select text-xs"></select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Stile Colore Pulsante</label>
+            <div class="pt-6">
+              <select id="rr-style" class="form-select text-xs">
+                <option value="Primary">Viola / Blurple (Primary)</option>
+                <option value="Secondary">Grigio Scuro (Secondary)</option>
+                <option value="Success">Verde Smeraldo (Success)</option>
+                <option value="Danger">Rosso Rubino (Danger)</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Etichetta del Bottone</label>
+            <input type="text" id="rr-label" class="form-input text-xs" value="Ruolo Notifiche">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-700 block mb-1">Emoji sul Bottone</label>
+            <input type="text" id="rr-emoji" class="form-input text-xs" value="🔔">
+          </div>
+          <div>
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <label class="text-xs font-semibold text-slate-700 block">Titolo Embed</label>
+              <div id="rr-title-toolbar-container" class="flex items-center gap-1"></div>
+            </div>
+            <input type="text" id="rr-title" class="form-input text-xs" value="🎭 Selezione Ruoli">
+          </div>
+        </div>
+
+        <button id="btn-create-rr" class="btn-cyber text-xs py-2.5 px-4">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Crea & Invia Pannello Reaction Role
+        </button>
+      </div>
+
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-3">Reaction Roles Attivi nel Server</h4>
+        <div id="rr-list-container" class="space-y-2"></div>
+      </div>
+    </section>
+
+    
+    
+    
+    <section id="tab-welcomer" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Editor Column (Exact 1:1 with Embed Builder) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="glass-card p-5 space-y-4">
+            
+            <!-- Header with Switches -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="user-plus" class="w-4 h-4 text-red-600"></i> Personalizzazione Welcomer Embed
+              </h3>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold text-slate-600">Attivo:</span>
+                  <label class="switch">
+                    <input type="checkbox" id="wel-enabled" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <button type="button" id="btn-reset-welcomer" class="text-xs text-slate-600 hover:text-white px-2 py-1 rounded bg-slate-200 font-medium">Reset</button>
+              </div>
+            </div>
+
+            <!-- Row 1: Channel & Color -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Canale di Invio Discord</label>
+                <div class="space-y-1.5">
+                  <div class="relative">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                    <input type="text" id="wel-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale per nome...">
+                  </div>
+                  <select id="wel-channel" class="form-select text-xs"></select>
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Colore Barra Laterale</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="wel-embed-color" value="#dc2626" class="w-10 h-9 rounded cursor-pointer bg-transparent border-0">
+                  <input type="text" id="wel-embed-color-hex" value="#DC2626" class="form-input text-xs uppercase" maxlength="7">
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 1.5: Auto-Roles -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Auto-Role Utenti (Ruolo assegnato ai nuovi membri)</label>
+                <select id="wel-autorole-user" class="form-select text-xs"></select>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Auto-Role Bot (Ruolo assegnato ai bot invitati)</label>
+                <select id="wel-autorole-bot" class="form-select text-xs"></select>
+              </div>
+            </div>
+
+            <!-- Row 2: Author Name & Icon -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Nome Autore</label>
+                <input type="text" id="wel-embed-author-name" class="form-input text-xs" placeholder="es. {server.name} Welcome">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">URL Icona Autore</label>
+                <input type="text" id="wel-embed-author-icon" class="form-input text-xs" placeholder="https://... o {user.avatar}">
+              </div>
+            </div>
+
+            <!-- Row 3: Title & Title URL -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Titolo Embed</label>
+                <input type="text" id="wel-embed-title" class="form-input text-xs" value="⚔️ Benvenuto nel Reame, {user}!">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">URL Titolo</label>
+                <input type="text" id="wel-embed-title-url" class="form-input text-xs" placeholder="https://...">
+              </div>
+            </div>
+
+            <!-- Row 4: Description & Markdown Toolbar -->
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
+                <label class="text-xs font-semibold text-slate-700 block">Descrizione (Markdown Discord)</label>
+                <div id="wel-toolbar-container" class="flex flex-wrap items-center gap-1"></div>
+              </div>
+              <textarea id="wel-message" class="form-textarea text-xs h-28" placeholder="Scrivi il messaggio di benvenuto... usa {user.mention}, **grassetto**, *corsivo*, <#canale> o i pulsanti sopra.">Benvenuto {user.mention} in **{server.name}**! Siamo felici di averti tra noi. Sei il membro **#{memberCount}**!</textarea>
+              
+              <!-- Quick Variable Tags -->
+              <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                <span class="text-[11px] font-semibold text-slate-500">Tag Rapidi:</span>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-red-950/40 hover:bg-red-900/60 font-mono text-red-300 font-bold border border-red-800/60 shadow-sm" data-target="wel-message" data-var="{user.mention}">{user.mention}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="wel-message" data-var="{user}">{user}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="wel-message" data-var="{user.tag}">{user.tag}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="wel-message" data-var="{user.id}">{user.id}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="wel-message" data-var="{server.name}">{server.name}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="wel-message" data-var="{memberCount}">{memberCount}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="wel-message" data-var="{user.avatar}">{user.avatar}</button>
+              </div>
+            </div>
+
+            <!-- Row 5: Large Image & Thumbnail -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">URL Immagine Grande</label>
+                <input type="text" id="wel-embed-image" class="form-input text-xs" placeholder="https://i.imgur.com/...">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">URL Miniatura (Thumbnail)</label>
+                <input type="text" id="wel-embed-thumbnail" class="form-input text-xs" placeholder="https://... o {user.avatar}" value="{user.avatar}">
+              </div>
+            </div>
+
+            <!-- Row 6: Footer Text & Footer Icon -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Testo Footer</label>
+                <input type="text" id="wel-embed-footer" class="form-input text-xs" value="Membro #{memberCount} • {server.name}">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">URL Icona Footer</label>
+                <input type="text" id="wel-embed-footer-icon" class="form-input text-xs" placeholder="https://...">
+              </div>
+            </div>
+
+            <!-- Row 7: Fields -->
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2 pb-1 border-b border-slate-800">
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5 font-medieval">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-red-600"></i> Sottogruppi & Riquadri (Fields)
+                  </label>
+                  <p class="text-[11px] text-slate-500">Riquadri informativi (es. Regole, Ruoli, Canali)</p>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" id="btn-wel-add-field" class="btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1">
+                    <i data-lucide="plus" class="w-3 h-3 text-red-600"></i> + Riquadro
+                  </button>
+                  <button type="button" id="btn-wel-add-field-pair" class="btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1">
+                    <i data-lucide="columns-2" class="w-3 h-3 text-cyan-600"></i> + 2 Colonne
+                  </button>
+                  <button type="button" id="btn-wel-add-field-trio" class="btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1">
+                    <i data-lucide="columns-3" class="w-3 h-3 text-amber-600"></i> + 3 Colonne
+                  </button>
+                </div>
+              </div>
+              <div id="wel-fields-list" class="space-y-2.5"></div>
+            </div>
+
+            <!-- Optional DM & Leaver Sub-Settings -->
+            <div class="pt-3 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-200">Messaggio DM Privato</span>
+                  <label class="switch"><input type="checkbox" id="wel-dm-enabled"><span class="slider"></span></label>
+                </div>
+                <textarea id="wel-dm-message" class="form-textarea text-xs h-16" placeholder="Messaggio di benvenuto nei DM...">Benvenuto in **{server.name}**! Leggi le regole e buona permanenza!</textarea>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-200">Messaggio di Addio (Leave)</span>
+                  <label class="switch"><input type="checkbox" id="wel-leave-enabled"><span class="slider"></span></label>
+                </div>
+                <select id="wel-leave-channel" class="form-select text-xs mb-1"></select>
+                <input type="text" id="wel-leave-message" class="form-input text-xs" value="{user.tag} ha lasciato il server. Siamo in {memberCount}.">
+              </div>
+            </div>
+
+            <!-- Row 8: Action Buttons (Exact match to screenshot!) -->
+            <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <button type="button" id="btn-copy-wel-json" class="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5">
+                <i data-lucide="code" class="w-3.5 h-3.5"></i> Copia JSON
+              </button>
+              <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" id="btn-test-welcomer" class="btn-knight text-xs py-2 px-5 flex items-center gap-1.5" style="background: linear-gradient(135deg, #dc2626, #991b1b);">
+                  <i data-lucide="send" class="w-3.5 h-3.5"></i> Invia Embed di Prova nel Canale
+                </button>
+                <button type="button" id="btn-save-welcomer" class="btn-cyber text-xs py-2 px-5 flex items-center gap-1.5">
+                  <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Impostazioni Welcomer
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Real-Time Discord Live Preview Column (Exact 1:1 with Embed Builder) -->
+        <div class="lg:col-span-5">
+          <div class="sticky top-6 space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-600 font-bold uppercase tracking-wider">
+              <span>Anteprima Live Discord</span>
+              <span class="text-red-600 font-mono text-[10px]">Real-time DOM</span>
+            </div>
+
+            <div class="discord-chat-container">
+              <div class="discord-message">
+                <img src="/logo.svg?v=25" class="discord-avatar" alt="Avatar">
+                <div class="discord-msg-content">
+                  <div class="discord-header">
+                    <span class="discord-author">Sentry</span>
+                    <span class="discord-bot-badge">Bot</span>
+                    <span class="discord-timestamp">Oggi alle 15:30</span>
+                  </div>
+
+                  <!-- Simulated User Mention Ping -->
+                  <div class="text-xs mb-1.5 font-mono" id="prev-wel-mention">
+                    <span class="discord-mention-pill user">@NuovoMembro</span>
+                  </div>
+
+                  <div id="prev-wel-embed-box" class="discord-embed-box" style="border-left-color: #dc2626;">
+                    <div>
+                      <!-- Author preview -->
+                      <div id="prev-wel-author" class="discord-embed-author hidden">
+                        <img id="prev-wel-author-icon" src="" class="hidden" alt="Author Icon">
+                        <span id="prev-wel-author-name"></span>
+                      </div>
+
+                      <!-- Title preview -->
+                      <div id="prev-wel-title" class="discord-embed-title">⚔️ Benvenuto nel Server, NuovoMembro!</div>
+                      
+                      <!-- Description preview -->
+                      <div id="prev-wel-desc" class="discord-embed-desc">Benvenuto @NuovoMembro in **Sentry Community**! Siamo felici di averti tra noi. Sei il membro **#128**!</div>
+                      
+                      <!-- Dynamic Fields Grid preview -->
+                      <div id="prev-wel-fields" class="discord-embed-fields"></div>
+                    </div>
+                    <img id="prev-wel-thumb" class="discord-embed-thumb hidden" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Thumbnail">
+                    <img id="prev-wel-image" class="discord-embed-image hidden" src="" alt="Image">
+                    <div id="prev-wel-footer" class="discord-embed-footer">
+                      <img id="prev-wel-footer-icon" class="hidden" src="/logo.svg?v=25" alt="Footer Icon">
+                      <span id="prev-wel-footer-text">Membro #128 • Sentry Community</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nitro Boost Announcement Embed Section -->
+      <div class="glass-card p-6 space-y-4 border border-fuchsia-900/40 bg-gradient-to-br from-fuchsia-950/20 via-slate-900/40 to-slate-900/60">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+              <i data-lucide="sparkles" class="w-5 h-5 text-fuchsia-400"></i> Messaggio &amp; Embed Boost Nitro
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Invia automaticamente un embed speciale di ringraziamento quando qualcuno potenzia il server</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span id="boost-status-badge" class="badge text-[11px] px-2.5 py-0.5 rounded-full bg-fuchsia-950/80 text-fuchsia-300 border border-fuchsia-800/50 font-medium">
+              🚀 0 Boost (Livello 0)
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-300">Attivo:</span>
+              <label class="switch">
+                <input type="checkbox" id="boost-enabled" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Canale Annunci Boost</label>
+            <select id="boost-channel" class="form-select text-xs py-1.5"></select>
+            <span class="text-[10px] text-slate-500">Se non selezionato, usa il Canale di Sistema predefinito di Discord</span>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Testo Menzione / Ping (Opzionale)</label>
+            <input type="text" id="boost-message" class="form-input text-xs py-1.5" placeholder="Grazie per il boost {user.mention}! 🚀">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="sm:col-span-2">
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Titolo Embed</label>
+            <input type="text" id="boost-embed-title" class="form-input text-xs py-1.5" placeholder="🚀 {server.name} è stato Potenziato!">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Colore Embed (HEX)</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="boost-color-picker" class="w-8 h-8 rounded border border-slate-700 bg-transparent cursor-pointer" value="#f47fff">
+              <input type="text" id="boost-embed-color" class="form-input text-xs py-1.5 font-mono" value="#f47fff">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Descrizione Embed</label>
+          <textarea id="boost-embed-desc" class="form-textarea text-xs h-20" placeholder="Un immenso ringraziamento a {user.mention} per aver potenziato il server!&#10;&#10;Grazie al tuo supporto, **{server.name}** ha raggiunto **{server.boost_count}** boost (Livello {server.boost_tier})! ✨💖"></textarea>
+          <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+            <span class="text-[11px] font-semibold text-slate-500">Tag:</span>
+            <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800 hover:bg-slate-700 font-mono text-slate-200 border border-slate-700" data-target="boost-embed-desc" data-var="{user.mention}">{user.mention}</button>
+            <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800 hover:bg-slate-700 font-mono text-slate-200 border border-slate-700" data-target="boost-embed-desc" data-var="{user}">{user}</button>
+            <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800 hover:bg-slate-700 font-mono text-slate-200 border border-slate-700" data-target="boost-embed-desc" data-var="{server.name}">{server.name}</button>
+            <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800 hover:bg-slate-700 font-mono text-slate-200 border border-slate-700" data-target="boost-embed-desc" data-var="{server.boost_count}">{server.boost_count}</button>
+            <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800 hover:bg-slate-700 font-mono text-slate-200 border border-slate-700" data-target="boost-embed-desc" data-var="{server.boost_tier}">{server.boost_tier}</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">URL Immagine Grande (Opzionale)</label>
+            <input type="text" id="boost-embed-image" class="form-input text-xs py-1.5" placeholder="https://... (banner o gif festosa)">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">URL Thumbnail Miniatura (Default: Avatar Utente)</label>
+            <input type="text" id="boost-embed-thumb" class="form-input text-xs py-1.5" placeholder="{user.avatar} o https://...">
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-end gap-2.5">
+          <button type="button" id="btn-test-boost" class="btn-secondary text-xs py-2 px-4 flex items-center gap-1.5 hover:text-fuchsia-300 hover:border-fuchsia-500/50">
+            <i data-lucide="send" class="w-3.5 h-3.5 text-fuchsia-400"></i> Invia Embed di Prova
+          </button>
+          <button type="button" id="btn-save-boost" class="btn-cyber text-xs py-2 px-5 flex items-center gap-1.5" style="background: linear-gradient(135deg, #c026d3, #db2777);">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Impostazioni Boost
+          </button>
+        </div>
+      </div>
+    </section>
+
+    
+    
+    
+    <section id="tab-autoresponder" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6">
+        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+          <i data-lucide="zap" class="w-5 h-5 text-purple-400"></i> Aggiungi Risposta Automatica o Reazione
+        </h3>
+        <p class="text-xs text-slate-400 mb-6">Configura risposte su parole chiave o reazioni emoji</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Trigger (Parola Chiave)</label>
+            <input type="text" id="ar-trigger" class="form-input text-xs" placeholder="es. orari apertura, !ip">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Tipo di Confronto</label>
+            <select id="ar-match" class="form-select text-xs">
+              <option value="CONTAINS">Contiene la parola (Contains)</option>
+              <option value="EXACT">Corrispondenza Esatta (Exact)</option>
+              <option value="STARTS_WITH">Inizia con (Starts with)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Reazioni Emoji Automatiche</label>
+            <input type="text" id="ar-reactions" class="form-input text-xs" placeholder="es. 👍, 🔥, 🛡️">
+          </div>
+          <div class="md:col-span-3">
+            <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
+              <label class="text-xs font-semibold text-slate-700 block">Testo Risposta del Bot</label>
+              <div id="ar-response-toolbar-container" class="flex flex-wrap items-center gap-1"></div>
+            </div>
+            <textarea id="ar-response" class="form-textarea h-24 text-xs" placeholder="La risposta inviata dal bot... usa **grassetto**, <#canale> o @ruolo"></textarea>
+            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <span class="text-[11px] font-semibold text-slate-500">Tag Rapidi:</span>
+              <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="ar-response" data-var="{user.mention}">{user.mention}</button>
+              <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="ar-response" data-var="{user}">{user}</button>
+              <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="ar-response" data-var="{server.name}">{server.name}</button>
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-add-autoresponder" class="btn-cyber text-xs py-2.5 px-4">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Salva Risposta Automatica
+        </button>
+      </div>
+
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i> Canale Auto-Reaction (es. Suggerimenti 👍 👎)
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+          <div class="space-y-1.5">
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+              <input type="text" id="ar-chan-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+            </div>
+            <select id="ar-chan-select" class="form-select text-xs"></select>
+          </div>
+          <div class="pt-6">
+            <input type="text" id="ar-chan-emojis" class="form-input text-xs" value="👍 👎" placeholder="Emoji separate da spazio">
+          </div>
+          <div class="pt-6">
+            <button id="btn-set-autoreact-chan" class="btn-secondary text-xs py-2 w-full justify-center">Applica al Canale</button>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-3">Trigger & Risposte Configurate</h4>
+        <div id="ar-list-container" class="space-y-2"></div>
+      </div>
+    </section>
+
+    
+    
+    
+    <section id="tab-automod" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i> Protezione Automatica AutoMod
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-sm text-white">Filtro Anti-Invite</p>
+              <p class="text-xs text-slate-400">Elimina automaticamente inviti Discord non autorizzati</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="am-invite" checked><span class="slider"></span></label>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-sm text-white">Filtro Anti-Link</p>
+              <p class="text-xs text-slate-400">Elimina link web esterni non autorizzati</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="am-link"><span class="slider"></span></label>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-sm text-white">Anti-Spam Rapido</p>
+              <p class="text-xs text-slate-400">Blocca 5 o più messaggi in 3 secondi</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="am-spam" checked><span class="slider"></span></label>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-sm text-white">Anti-Caps</p>
+              <p class="text-xs text-slate-400">Blocca oltre il 70% di testo in MAIUSCOLO</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="am-caps"><span class="slider"></span></label>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-sm text-white">Filtro Anti-Stickers</p>
+              <p class="text-xs text-slate-400">Blocca sticker al di fuori dei canali autorizzati</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="am-stickers"><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1.5">
+              <i data-lucide="youtube" class="inline w-3.5 h-3.5 text-rose-500 mr-1"></i> Whitelist Canali YouTube (ID Canali separati da virgola o spazio)
+            </label>
+            <input type="text" id="am-yt-channels" class="form-input text-xs" placeholder="123456789012345678, 987654321098765432">
+            <p class="text-[11px] text-slate-400 mt-1">In questi canali i link di YouTube saranno sempre consentiti anche se il filtro Anti-Link è attivo.</p>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1.5">
+              <i data-lucide="smile" class="inline w-3.5 h-3.5 text-amber-400 mr-1"></i> Whitelist Canali Sticker (ID Canali separati da virgola o spazio)
+            </label>
+            <input type="text" id="am-sticker-channels" class="form-input text-xs" placeholder="123456789012345678, 987654321098765432">
+            <p class="text-[11px] text-slate-400 mt-1">In questi canali gli sticker (nativi Discord o link sticker) saranno sempre consentiti.</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1.5">Parole Vietate (Separate da virgola)</label>
+          <input type="text" id="am-badwords" class="form-input text-xs" placeholder="parolaccia1, parola2, insulto3">
+        </div>
+
+        <button id="btn-save-automod" class="btn-cyber text-xs py-2.5 px-4 mt-4">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Regole AutoMod
+        </button>
+      </div>
+
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-3">Cronologia Sanzioni & Audit Moderazione</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-400 border-b border-white/10 uppercase tracking-wider">
+              <tr>
+                <th class="py-2">ID</th>
+                <th class="py-2">Azione</th>
+                <th class="py-2">Utente</th>
+                <th class="py-2">Moderatore</th>
+                <th class="py-2">Motivo</th>
+                <th class="py-2">Data</th>
+              </tr>
+            </thead>
+            <tbody id="am-cases-table" class="divide-y divide-white/5 text-slate-300"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    
+    
+    
+    <section id="tab-tickets" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Settings Form Column -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="glass-card p-6">
+            <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2 font-medieval">
+              <i data-lucide="ticket" class="w-5 h-5 text-amber-400"></i> Personalizzazione Pannello Ticket
+            </h3>
+            <p class="text-xs text-slate-400 mb-6">Configura stile, canali e messaggi di benvenuto del sistema di supporto</p>
+
+            <div class="space-y-4">
+              <!-- Basic Channels & Roles -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-xs font-semibold text-slate-700 block mb-1">Canale per il Pannello</label>
+                  <div class="space-y-1.5">
+                    <div class="relative">
+                      <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                      <input type="text" id="tk-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+                    </div>
+                    <select id="tk-channel" class="form-select text-xs"></select>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-700 block mb-1">Categoria Canali Ticket</label>
+                  <div class="space-y-1.5">
+                    <div class="relative">
+                      <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                      <input type="text" id="tk-category-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca categoria...">
+                    </div>
+                    <select id="tk-category" class="form-select text-xs"></select>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-700 block mb-1">Ruolo Staff di Supporto</label>
+                  <div class="space-y-1.5">
+                    <div class="relative">
+                      <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                      <input type="text" id="tk-support-role-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca ruolo...">
+                    </div>
+                    <select id="tk-support-role" class="form-select text-xs"></select>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Log Transcript (Opzionale)</label>
+                  <div class="space-y-1.5">
+                    <div class="relative">
+                      <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                      <input type="text" id="tk-log-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale log...">
+                    </div>
+                    <select id="tk-log-channel" class="form-select text-xs"></select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel Embed Styling -->
+              <div class="pt-4 border-t border-slate-800 space-y-4">
+                <h4 class="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="layout" class="w-3.5 h-3.5"></i> Grafica Embed del Pannello
+                </h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div class="sm:col-span-2">
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Titolo Pannello</label>
+                    <input type="text" id="tk-title" class="form-input text-xs" value="🎫 Centro Supporto &amp; Assistenza">
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Colore Barra Embed</label>
+                    <div class="flex items-center gap-2">
+                      <input type="color" id="tk-color" class="h-9 w-10 rounded cursor-pointer bg-transparent border-0" value="#dc2626">
+                      <input type="text" id="tk-color-hex" class="form-input text-xs font-mono" value="#dc2626">
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
+                    <label class="text-xs font-semibold text-slate-700 block">Descrizione / Istruzioni del Pannello</label>
+                    <div id="tk-desc-toolbar-container" class="flex flex-wrap items-center gap-1"></div>
+                  </div>
+                  <textarea id="tk-description" class="form-textarea h-24 text-xs">Clicca sul pulsante sottostante per aprire una richiesta di supporto privata con i nostri cavalieri e moderatori.</textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Immagine / Banner URL (Opzionale)</label>
+                    <input type="url" id="tk-image" class="form-input text-xs" placeholder="https://i.imgur.com/...">
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Testo Footer</label>
+                    <input type="text" id="tk-footer" class="form-input text-xs" value="Sentry • Sistema Ticket">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Button Styling -->
+              <div class="pt-4 border-t border-slate-800 space-y-4">
+                <h4 class="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="mouse-pointer" class="w-3.5 h-3.5"></i> Pulsante di Apertura
+                </h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Etichetta Pulsante</label>
+                    <input type="text" id="tk-btn-label" class="form-input text-xs" value="Apri Ticket">
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Emoji Pulsante</label>
+                    <input type="text" id="tk-btn-emoji" class="form-input text-xs" value="📩">
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Stile Colore Pulsante</label>
+                    <select id="tk-btn-style" class="form-select text-xs">
+                      <option value="Primary">Viola / Blurple (Primary)</option>
+                      <option value="Secondary">Grigio Grafite (Secondary)</option>
+                      <option value="Success">Verde Smeraldo (Success)</option>
+                      <option value="Danger">Rosso Rubino (Danger)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ticket Channel Experience -->
+              <div class="pt-4 border-t border-slate-800 space-y-4">
+                <h4 class="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Esperienza all'Interno del Ticket
+                </h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Formato Nome Canale</label>
+                    <select id="tk-naming" class="form-select text-xs">
+                      <option value="ticket-{user}">ticket-username</option>
+                      <option value="supporto-{user}">supporto-username</option>
+                      <option value="ticket-{id}">ticket-1234 (ID Casuale)</option>
+                      <option value="help-{user}">help-username</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Funzionalità Integrate</label>
+                    <div class="text-xs text-slate-600 space-y-1.5 pt-1 font-medium">
+                      <p class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> Trascrizione Transcript automatica</p>
+                      <p class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> Invio Transcript in DM all'autore</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
+                    <label class="text-xs font-semibold text-slate-700 block">Messaggio di Benvenuto all'Interno del Ticket</label>
+                    <div id="tk-welcome-toolbar-container" class="flex flex-wrap items-center gap-1"></div>
+                  </div>
+                  <textarea id="tk-welcome-msg" class="form-textarea h-20 text-xs">Benvenuto {user.mention}! Uno staffer ti risponderà al più presto. Descrivi il tuo problema in dettaglio.</textarea>
+                  <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                    <span class="text-[11px] font-semibold text-slate-500">Tag Rapidi:</span>
+                    <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="tk-welcome-msg" data-var="{user.mention}">{user.mention}</button>
+                    <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="tk-welcome-msg" data-var="{user}">{user}</button>
+                    <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="tk-welcome-msg" data-var="{ticket_id}">{ticket_id}</button>
+                  </div>
+                </div>
+              </div>
+
+              <input type="hidden" id="tk-active-panel-id" value="">
+              <input type="hidden" id="tk-active-message-id" value="">
+
+              <div class="pt-2 flex flex-col sm:flex-row items-center gap-3">
+                <button id="btn-create-ticket-panel" class="btn-cyber text-xs py-3 px-6 flex-1 w-full justify-center">
+                  <i data-lucide="send" class="w-4 h-4"></i> Invia Nuovo Pannello Ticket
+                </button>
+                <button type="button" id="btn-update-ticket-panel" class="btn-secondary text-xs py-3 px-5 hidden sm:flex items-center gap-2 justify-center border-amber-300 text-amber-900 bg-amber-50 hover:bg-amber-100 font-bold" title="Modifica l'embed del pannello già presente in Discord senza cancellarlo">
+                  <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-600"></i> Modifica Pannello Esistente
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Discord Live Ticket Panel Preview Column -->
+        <div class="lg:col-span-5">
+          <div class="sticky top-6 space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
+              <span>Anteprima Pannello Ticket</span>
+              <span class="text-amber-400 font-mono text-[10px]">Real-time Live Preview</span>
+            </div>
+
+            <div class="discord-chat-container">
+              <div class="discord-message">
+                <img src="/logo.svg?v=25" class="discord-avatar" alt="Avatar">
+                <div class="discord-msg-content">
+                  <div class="discord-header">
+                    <span class="discord-author">Sentry</span>
+                    <span class="discord-bot-badge">Bot</span>
+                    <span class="discord-timestamp">Oggi alle 12:00</span>
+                  </div>
+
+                  <div id="prev-tk-embed-box" class="discord-embed-box" style="border-left-color: #dc2626;">
+                    <div>
+                      <div id="prev-tk-title" class="discord-embed-title">🎫 Centro Supporto &amp; Assistenza</div>
+                      <div id="prev-tk-desc" class="discord-embed-desc">Clicca sul pulsante sottostante per aprire una richiesta di supporto privata con lo staff.</div>
+                    </div>
+                    <img id="prev-tk-image" class="discord-embed-image hidden" src="" alt="Banner">
+                    <div id="prev-tk-footer" class="discord-embed-footer">
+                      <img src="/logo.svg?v=25" class="w-4 h-4 rounded-full" alt="Icon">
+                      <span id="prev-tk-footer-text">Sentry • Sistema Ticket</span>
+                    </div>
+                  </div>
+
+                  <!-- Interactive Button Preview -->
+                  <div class="mt-2.5">
+                    <button id="prev-tk-btn" class="px-3.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 bg-[#5865F2] text-white shadow">
+                      <span id="prev-tk-btn-emoji">📩</span>
+                      <span id="prev-tk-btn-label">Apri Ticket</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Tickets List Section -->
+      <div class="glass-card p-6">
+        <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+          <i data-lucide="list" class="w-4 h-4 text-amber-400"></i> Ticket Aperti di Recente
+        </h4>
+        <div id="tk-list-container" class="space-y-2"></div>
+      </div>
+    </section>
+
+    
+    
+    
+    <section id="tab-giveaways" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card p-6">
+          <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+            <i data-lucide="gift" class="w-4 h-4 text-red-600"></i> Avvia Giveaway Istantaneo
+          </h3>
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Giveaway</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="ga-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+                </div>
+                <select id="ga-channel" class="form-select text-xs"></select>
+              </div>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1">
+                <label class="text-xs font-semibold text-slate-700 block">Premio in Palio</label>
+                <div id="ga-prize-toolbar-container" class="flex flex-wrap items-center gap-1"></div>
+              </div>
+              <input type="text" id="ga-prize" class="form-input text-xs" value="Discord Nitro 1 Mese">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Durata</label>
+                <input type="text" id="ga-duration" class="form-input text-xs" value="1h">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Vincitori</label>
+                <input type="number" id="ga-winners" class="form-input text-xs" value="1" min="1">
+              </div>
+            </div>
+            <button id="btn-start-giveaway" class="btn-cyber text-xs py-2 px-4 w-full justify-center">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Avvia Giveaway
+            </button>
+          </div>
+        </div>
+
+        <div class="glass-card p-6">
+          <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2 font-medieval">
+            <i data-lucide="star" class="w-4 h-4 text-amber-500"></i> Configurazione XP &amp; Leveling
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-700 font-semibold">Modulo Leveling Attivo</span>
+              <label class="switch"><input type="checkbox" id="lvl-enabled" checked><span class="slider"></span></label>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Moltiplicatore XP</label>
+                <input type="number" id="lvl-rate" class="form-input text-xs" value="1.0" step="0.1" min="0.1">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Monete per Livello (🪙)</label>
+                <input type="number" id="lvl-coins" class="form-input text-xs" value="100" min="0" step="10">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Annunci Level-Up</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="lvl-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+                </div>
+                <select id="lvl-channel" class="form-select text-xs"></select>
+              </div>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1">
+                <label class="text-xs font-semibold text-slate-700 block">Messaggio Annuncio Level-Up</label>
+                <div id="lvl-msg-toolbar-container" class="flex flex-wrap items-center gap-1"></div>
+              </div>
+              <textarea id="lvl-message" class="form-textarea h-20 text-xs">🎉 Complimenti {user.mention}, hai raggiunto il **Livello {level}** nel reame!</textarea>
+              <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                <span class="text-[11px] font-semibold text-slate-500">Tag Rapidi:</span>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="lvl-message" data-var="{user.mention}">{user.mention}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="lvl-message" data-var="{level}">{level}</button>
+                <button type="button" class="btn-var-tag px-2 py-0.5 text-[10px] rounded bg-slate-800/90 hover:bg-slate-700 font-mono text-slate-200 font-bold border border-slate-700 shadow-sm" data-target="lvl-message" data-var="{server.name}">{server.name}</button>
+              </div>
+            </div>
+            <button id="btn-save-leveling" class="btn-secondary text-xs py-2 px-4 w-full justify-center">
+              <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Impostazioni Leveling
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <!-- Minigames & Medieval Community Section -->
+    <section id="tab-minigames" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Fishing & Medieval Economy Dedicated Card -->
+        <div class="glass-card p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="fish" class="w-4 h-4 text-cyan-600"></i> Modulo Pesca Medievale
+              </h3>
+              <p class="text-xs text-slate-500">Minigioco RPG con oltre 25 specie, tesori sommersi, potenziamenti e pannello interattivo</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="fish-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Dedicato alla Pesca</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="fish-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+                </div>
+                <select id="fish-channel" class="form-select text-xs"></select>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Cooldown tra Lanci (secondi)</label>
+              <input type="number" id="fish-cooldown" class="form-input text-xs" min="3" max="300" value="15">
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-2">
+              <button id="btn-save-fishing" class="btn-cyber text-xs py-2 px-4 flex-1 justify-center">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Configurazione Pesca
+              </button>
+              <button id="btn-send-fishing-panel" type="button" class="btn-secondary text-xs py-2 px-3 hover:bg-slate-100 text-cyan-700 border-cyan-200">
+                <i data-lucide="send" class="w-3.5 h-3.5 text-cyan-600"></i> Invia Pannello Pesca
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800">
+            <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i> Classifica Pescatori Più Ricchi del Reame
+            </h4>
+            <div id="fish-leaderboard-list" class="space-y-1.5 text-xs">
+              <p class="text-slate-500 italic">Caricamento classifica pescatori...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Casino, Blackjack & Slots Card -->
+        <div class="glass-card p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="dice-5" class="w-4 h-4 text-amber-600"></i> Casinò, Blackjack &amp; Slot
+              </h3>
+              <p class="text-xs text-slate-500">Tavoli interattivi da Blackjack, Slot Machine, Dadi e Hub giochi del Regno</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="mg-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Generale Casinò / Minigiochi</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="mg-general-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+                </div>
+                <select id="mg-general-channel" class="form-select text-xs"></select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Dedicato Blackjack</label>
+                <div class="space-y-1.5">
+                  <div class="relative">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                    <input type="text" id="mg-bj-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca...">
+                  </div>
+                  <select id="mg-bj-channel" class="form-select text-xs"></select>
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Dedicato Slot Machine</label>
+                <div class="space-y-1.5">
+                  <div class="relative">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                    <input type="text" id="mg-slot-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca...">
+                  </div>
+                  <select id="mg-slot-channel" class="form-select text-xs"></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-600 block mb-1">Puntata Min (🪙)</label>
+                <input type="number" id="mg-min-bet" class="form-input text-xs" min="1" value="10">
+              </div>
+              <div>
+                <label class="text-[11px] font-semibold text-slate-600 block mb-1">Puntata Max (🪙)</label>
+                <input type="number" id="mg-max-bet" class="form-input text-xs" min="50" value="5000">
+              </div>
+              <div>
+                <label class="text-[11px] font-semibold text-slate-600 block mb-1">Daily Reward (🪙)</label>
+                <input type="number" id="mg-daily-reward" class="form-input text-xs" min="10" value="150">
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-2">
+              <button id="btn-save-minigames" class="btn-cyber text-xs py-2 px-4 flex-1 justify-center">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Configurazione
+              </button>
+              <button id="btn-send-bj-panel" type="button" class="btn-secondary text-xs py-2 px-3 hover:bg-slate-100 text-blue-700 border-blue-200">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i> Tavolo Blackjack
+              </button>
+              <button id="btn-send-minigames-hub" type="button" class="btn-secondary text-xs py-2 px-3 hover:bg-slate-100 text-amber-700 border-amber-200">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-amber-600"></i> Hub Giochi
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Counting Game Card -->
+        <div class="glass-card p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="hash" class="w-4 h-4 text-red-600"></i> Minigioco Counting Reale
+              </h3>
+              <p class="text-xs text-slate-500">I membri contano in sequenza. Chi sbaglia o conta 2 volte azzera lo streak!</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="cnt-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Dedicato al Conteggio</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="cnt-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale...">
+                </div>
+                <select id="cnt-channel" class="form-select text-xs"></select>
+              </div>
+            </div>
+
+            <div class="space-y-2 p-3 rounded-xl border border-slate-800 bg-slate-900/40">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-semibold text-slate-200 block">🧘 Modalità Zen</span>
+                  <span class="text-[11px] text-slate-500">Gli errori non azzerano il record del server a 0</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="cnt-zen-mode" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
+                <div>
+                  <span class="text-xs font-semibold text-slate-200 block">♾️ Numeri Consecutivi</span>
+                  <span class="text-[11px] text-slate-500">Un utente può mandare più numeri uno dopo l'altro</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="cnt-consecutive" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 p-3 rounded-xl border border-slate-800">
+              <div>
+                <span class="text-[11px] text-slate-500 font-medium block">Numero Attuale</span>
+                <span id="cnt-current-val" class="text-lg font-bold text-white font-mono">0</span>
+              </div>
+              <div>
+                <span class="text-[11px] text-slate-500 font-medium block">Record Massimo</span>
+                <span id="cnt-highest-val" class="text-lg font-bold text-red-600 font-mono">0</span>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button id="btn-save-counting" class="btn-cyber text-xs py-2 px-4 flex-1 justify-center">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Configurazione
+              </button>
+              <button id="btn-reset-counting" type="button" class="btn-secondary text-xs py-2 px-3 text-red-700 hover:bg-red-50 border-red-200">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Azzera a 0
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800">
+            <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i> Top Contatori del Server
+            </h4>
+            <div id="cnt-leaderboard-list" class="space-y-1.5 text-xs">
+              <p class="text-slate-500 italic">Caricamento classifica...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player Balance & Treasury Management Card -->
+        <div class="glass-card p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="coins" class="w-4 h-4 text-amber-600"></i> Tesoreria &amp; Saldo Giocatori
+              </h3>
+              <p class="text-xs text-slate-500">Seleziona un membro dall'elenco o cerca per nome per gestire le sue monete</p>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Admin Reale</span>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-semibold text-slate-700">Seleziona Membro del Server</label>
+                <button type="button" id="btn-toggle-manual-user" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-semibold underline">
+                  Inserisci ID manuale
+                </button>
+              </div>
+              
+              <!-- Searchable Dropdown Selector -->
+              <div id="coin-member-dropdown-container" class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="coin-member-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca membro per nome/tag...">
+                </div>
+                <select id="coin-target-user" class="form-select text-xs"></select>
+              </div>
+
+              <!-- Manual ID fallback container (hidden by default) -->
+              <div id="coin-manual-user-container" class="hidden">
+                <input type="text" id="coin-target-user-manual" class="form-input text-xs" placeholder="Es. 123456789012345678 o @utente">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Operazione</label>
+                <select id="coin-operation" class="form-select text-xs">
+                  <option value="add">➕ Aggiungi Monete (+)</option>
+                  <option value="remove">➖ Rimuovi Monete (-)</option>
+                  <option value="set">🟰 Imposta Saldo Esatto (=)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Quantità Monete (🪙)</label>
+                <input type="number" id="coin-amount" class="form-input text-xs" min="1" value="500">
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2 pt-1">
+              <button id="btn-update-player-coins" class="btn-cyber text-xs py-2 px-4 flex-1 justify-center">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Aggiorna Saldo
+              </button>
+              <button id="btn-reset-server-economy" type="button" class="btn-secondary text-xs py-2 px-3 text-red-700 hover:bg-red-50 border-red-200">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-red-600"></i> Azzera Economia Server
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Minigames Slash Commands Guide Card -->
+        <div class="glass-card p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="swords" class="w-4 h-4 text-purple-600"></i> Elenco Minigiochi &amp; Comandi
+              </h3>
+              <p class="text-xs text-slate-500">Panoramica completa di tutti i comandi di gioco disponibili per la community</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-slate-700">
+            <div class="p-3 rounded-xl border border-slate-200">
+              <strong class="text-cyan-700 font-bold block">🎣 /pesca</strong>
+              <span class="text-slate-500 text-[11px]">Lancia l'amo, vendi pescato, compra canne migliori e scala la classifica.</span>
+            </div>
+            <div class="p-3 rounded-xl border border-slate-200">
+              <strong class="text-blue-700 font-bold block">🃏 /blackjack</strong>
+              <span class="text-slate-500 text-[11px]">Sfida il Banco a 21 con pulsanti Carta, Stai, Raddoppia e puntate reali.</span>
+            </div>
+            <div class="p-3 rounded-xl border border-slate-200">
+              <strong class="text-amber-700 font-bold block">🎰 /slots</strong>
+              <span class="text-slate-500 text-[11px]">Gira i rulli della slot medievale e punta al Jackpot Reale (10x).</span>
+            </div>
+            <div class="p-3 rounded-xl border border-slate-200">
+              <strong class="text-emerald-700 font-bold block">🎁 /daily</strong>
+              <span class="text-slate-500 text-[11px]">Riscatta la ricompensa quotidiana di monete ogni 24 ore.</span>
+            </div>
+            <div class="p-3 rounded-xl border border-slate-200">
+              <strong class="text-red-700 font-bold block">⚔️ /duello</strong>
+              <span class="text-slate-500 text-[11px]">Sfida un altro membro in un duello cavalleresco con scommessa di monete.</span>
+            </div>
+            <div class="p-3 rounded-xl border border-slate-200">
+              <strong class="text-purple-700 font-bold block">🎲 /dado &amp; /moneta</strong>
+              <span class="text-slate-500 text-[11px]">Lancio dadi e testa o croce veloci.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    
+    
+    <!-- Private & Temporary Channels Tab Section -->
+    <section id="tab-tempchannels" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Temp Channels Main Config Card -->
+        <div class="glass-card p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="radio" class="w-4 h-4 text-indigo-600"></i> Modulo Canali Privati &amp; Vocali
+              </h3>
+              <p class="text-xs text-slate-500">Crea canali vocali e testuali temporanei con gestione proprietario e "Join-to-Create"</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="tc-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Canale Vocale Master ("Join to Create")</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="tc-gen-voice-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale vocale...">
+                </div>
+                <select id="tc-gen-voice-channel" class="form-select text-xs"></select>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Quando un membro entra in questo canale, il bot crea all'istante la sua stanza privata e lo sposta dentro.</p>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Categoria per le Stanze Temporanee</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="tc-category-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca categoria...">
+                </div>
+                <select id="tc-category" class="form-select text-xs"></select>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-slate-700 block mb-1">Canale per Invio Hub Pannello Creazione</label>
+              <div class="space-y-1.5">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+                  <input type="text" id="tc-panel-channel-search" class="form-input text-xs pl-8 py-1.5" placeholder="🔍 Cerca canale testo...">
+                </div>
+                <select id="tc-panel-channel" class="form-select text-xs"></select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Schema Nome Vocale</label>
+                <input type="text" id="tc-name-voice" class="form-input text-xs" value="🔊 Stanza di {user}">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Schema Nome Chat Testo</label>
+                <input type="text" id="tc-name-text" class="form-input text-xs" value="💬 chat-{user}">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Limite Partecipanti Default</label>
+                <input type="number" id="tc-default-limit" class="form-input text-xs" min="0" max="99" value="0">
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Bitrate Audio (kbps)</label>
+                <select id="tc-bitrate" class="form-select text-xs">
+                  <option value="64000">64 kbps (Standard)</option>
+                  <option value="96000">96 kbps (Alta Qualità)</option>
+                  <option value="128000">128 kbps (Massima)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-2">
+              <button id="btn-save-tempchannels" class="btn-cyber text-xs py-2 px-4 flex-1 justify-center">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Configurazione
+              </button>
+              <button id="btn-send-tempchannels-panel" type="button" class="btn-secondary text-xs py-2 px-3 hover:bg-slate-100 text-indigo-700 border-indigo-200">
+                <i data-lucide="send" class="w-3.5 h-3.5 text-indigo-600"></i> Invia Hub Creazione
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Temporary Rooms List Card -->
+        <div class="glass-card p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2 font-medieval">
+                <i data-lucide="layers" class="w-4 h-4 text-emerald-600"></i> Stanze Attive in Tempo Reale
+              </h3>
+              <p class="text-xs text-slate-500">Monitora e gestisci tutte le stanze create attualmente aperte nel server</p>
+            </div>
+            <button id="btn-refresh-tempchannels" type="button" class="p-1.5 rounded-lg border border-slate-800 text-slate-600 hover:text-white" title="Ricarica stanze">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div id="tc-active-rooms-list" class="space-y-2 text-xs max-h-[480px] overflow-y-auto">
+            <p class="text-slate-500 italic">Caricamento stanze attive...</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="tab-emojis" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="smile" class="w-5 h-5 text-yellow-400"></i> Statistiche e Classifica Utilizzo Emoji
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-400 border-b border-white/10 uppercase tracking-wider">
+              <tr>
+                <th class="py-2">Posizione</th>
+                <th class="py-2">Nome Emoji</th>
+                <th class="py-2">Tipo</th>
+                <th class="py-2">Conteggio Utilizzi</th>
+                <th class="py-2">Ultimo Utilizzo</th>
+              </tr>
+            </thead>
+            <tbody id="emoji-stats-table" class="divide-y divide-white/5 text-slate-300"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/app.js?v=120"></script>
+  <script src="/js/embedBuilder.js?v=120"></script>
+  <script src="/js/modules.js?v=120"></script>
