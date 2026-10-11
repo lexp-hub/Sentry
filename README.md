@@ -34,4 +34,4 @@ For detailed architecture, slash commands reference, module workflows, and headl
 
 ## License
 
-[MIT](LICENSE) &bull; Inspired by [Skew](https://github.com)
+[MIT](LICENSE) &bull; Inspired by [Skew](https://github.com/lexp-hub/Skew)
