@@ -9,6 +9,7 @@ import { SetupShowcaseManager } from '../../bot/modules/setupShowcaseManager.js'
 import { FishingManager } from '../../bot/modules/fishingManager.js';
 import { BlackjackManager } from '../../bot/modules/blackjackManager.js';
 import { WelcomerManager } from '../../bot/modules/welcomerManager.js';
+import { AutoroleManager } from '../../bot/modules/autoroleManager.js';
 import { BoostManager } from '../../bot/modules/boostManager.js';
 import { GiveawayManager } from '../../bot/modules/giveawayManager.js';
 import { TempChannelManager } from '../../bot/modules/tempChannelManager.js';
@@ -514,6 +515,49 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}) {
     const updated = DatabaseHelper.updateWelcomerConfig(req.params.guildId, req.body);
     notifySync(req.params.guildId, 'welcomer', req);
     res.json({ success: true, config: updated });
+  });
+
+  // Dedicated Auto-Role Endpoints
+  router.get('/guilds/:guildId/autorole', requireModAuth, async (req, res) => {
+    const guildId = req.params.guildId;
+    const config = DatabaseHelper.getAutoroleConfig(guildId);
+    let diagnostics = null;
+    if (botClient?.isReady() && botClient.guilds.cache.has(guildId)) {
+      const guild = botClient.guilds.cache.get(guildId);
+      diagnostics = await AutoroleManager.diagnose(guild);
+    }
+    res.json({ config, diagnostics });
+  });
+
+  router.post('/guilds/:guildId/autorole', requireModAuth, async (req, res) => {
+    const guildId = req.params.guildId;
+    const updated = DatabaseHelper.updateAutoroleConfig(guildId, req.body);
+    notifySync(guildId, 'autorole', req);
+
+    let diagnostics = null;
+    if (botClient?.isReady() && botClient.guilds.cache.has(guildId)) {
+      const guild = botClient.guilds.cache.get(guildId);
+      diagnostics = await AutoroleManager.diagnose(guild);
+    }
+    res.json({ success: true, config: updated, diagnostics });
+  });
+
+  router.post('/guilds/:guildId/autorole/test', requireModAuth, async (req, res) => {
+    const guildId = req.params.guildId;
+    if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
+      return res.status(400).json({ error: 'Bot non collegato al server.' });
+    }
+    const guild = botClient.guilds.cache.get(guildId);
+    const config = DatabaseHelper.getAutoroleConfig(guildId);
+    if (!config.user_role_id) {
+      return res.status(400).json({ error: 'Nessun ruolo utenti configurato nell\'Auto-Role.' });
+    }
+
+    const check = await AutoroleManager.validateRole(guild, config.user_role_id);
+    if (!check.valid) {
+      return res.status(400).json({ error: check.error });
+    }
+    res.json({ success: true, message: `Ruolo "${check.role.name}" verificato con successo! Permessi e gerarchia OK.` });
   });
 
   router.post('/guilds/:guildId/welcomer/test', requireModAuth, async (req, res) => {

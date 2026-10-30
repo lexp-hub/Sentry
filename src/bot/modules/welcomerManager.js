@@ -117,19 +117,6 @@ export const WelcomerManager = {
     if (!member.guild) return;
     const config = DatabaseHelper.getWelcomerConfig(member.guild.id);
 
-    // Auto-Role Assignment (robust cache fallback)
-    try {
-      if (member.user.bot && config.auto_role_bot) {
-        const botRole = member.guild.roles.cache.get(config.auto_role_bot) || await member.guild.roles.fetch(config.auto_role_bot).catch(() => null);
-        if (botRole) await member.roles.add(botRole).catch(err => console.error('[Welcomer] Bot role error:', err.message));
-      } else if (!member.user.bot && config.auto_role_user) {
-        const userRole = member.guild.roles.cache.get(config.auto_role_user) || await member.guild.roles.fetch(config.auto_role_user).catch(() => null);
-        if (userRole) await member.roles.add(userRole).catch(err => console.error('[Welcomer] User role error:', err.message));
-      }
-    } catch (e) {
-      console.error('[Welcomer] Error adding auto-role:', e.message);
-    }
-
     // Welcome DM
     if (config.welcome_dm_enabled && config.welcome_dm_message && !member.user.bot) {
       try {

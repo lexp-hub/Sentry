@@ -1,4 +1,5 @@
 import { WelcomerManager } from '../modules/welcomerManager.js';
+import { AutoroleManager } from '../modules/autoroleManager.js';
 import { DatabaseHelper } from '../../database/db.js';
 import { EmbedBuilder } from 'discord.js';
 import { CONFIG } from '../../config.js';
@@ -6,8 +7,15 @@ import { CONFIG } from '../../config.js';
 export default {
   name: 'guildMemberAdd',
   async execute(member) {
-    
-    await WelcomerManager.handleMemberJoin(member);
+    // 1. Modulo dedicato Auto-Role
+    await AutoroleManager.handleMemberJoin(member).catch(err => {
+      console.error('[guildMemberAdd] Errore AutoroleManager:', err.message);
+    });
+
+    // 2. Modulo Welcomer (Messaggi, card e DM di benvenuto)
+    await WelcomerManager.handleMemberJoin(member).catch(err => {
+      console.error('[guildMemberAdd] Errore WelcomerManager:', err.message);
+    });
 
     const settings = DatabaseHelper.getGuildSettings(member.guild.id);
     if (settings.log_channel_id) {

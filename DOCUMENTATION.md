@@ -33,8 +33,8 @@ Sentry is structured as a dual-runtime application:
   thresholds, and staff manager leaderboard tracking.
 - Live Embed Builder: Column-based visual layout generator (1, 2, or 3 columns),
   variable interpolation, and draft persistence.
-- Welcomer & Auto-Role: Customizable welcome embeds, direct message greetings,
-  and role provisioning on member join.
+- Welcomer: Customizable welcome embeds, direct message greetings, and leave notifications.
+- Auto-Role (Dedicated Module): Automated role provisioning on member and bot join, with hierarchy validation, custom delay, and Discord Membership Screening (rule acceptance) support.
 - Ticket System: On-demand private support channels, role permissions, and transcript
   generation.
 - Neural AI: Integration with Llama 3.3 70B (via Cloudflare Workers AI) and Google Gemini
@@ -100,6 +100,10 @@ Management:
 - /partner config                    : Configure partnership criteria and log channels
 - /embed                             : Send a formatted announcement embed
 - /reactionrole button               : Deploy a persistent button role panel
+- /autorole status                   : View current autorole setup & hierarchy diagnostics
+- /autorole set                      : Configure user & bot roles, delay, and screening wait
+- /autorole remove                   : Remove configured roles or disable module
+- /autorole test                     : Test role assignability and hierarchy in real-time
 - /welcomer config                   : Set welcome channel and embed parameters
 - /ticket panel                      : Deploy a support ticket opening panel
 
@@ -118,7 +122,10 @@ Guild Operations:
 - POST /api/guilds/:guildId/settings : Update general guild configuration & module flags
 
 Module Configuration:
-- GET  /api/guilds/:guildId/automod  : Retrieve AutoMod parameters
+- GET  /api/guilds/:guildId/autorole   : Retrieve Auto-Role config and hierarchy diagnostics
+- POST /api/guilds/:guildId/autorole   : Update Auto-Role parameters
+- POST /api/guilds/:guildId/autorole/test: Run diagnostic test on configured user role
+- GET  /api/guilds/:guildId/automod    : Retrieve AutoMod parameters
 - POST /api/guilds/:guildId/automod  : Update AutoMod rules & whitelists
 - GET  /api/guilds/:guildId/embeds   : List saved embed templates
 - POST /api/guilds/:guildId/embeds   : Create or update an embed template
@@ -151,3 +158,4 @@ MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE: MySQL connection paramet
 Start locally:
 $ npm install
 $ node src/index.js
+

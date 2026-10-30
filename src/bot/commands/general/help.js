@@ -139,12 +139,12 @@ export default {
 
         case 'welcomer_auto':
           newEmbed
-            .setTitle('👋 Welcomer & Auto-Responder')
-            .setDescription('Accoglienza membri e risposte automatiche ai messaggi.')
+            .setTitle('👋 Welcomer, Auto-Role & Auto-Responder')
+            .setDescription('Accoglienza membri, assegnazione ruoli automatica e risposte ai messaggi.')
             .addFields(
+              { name: '`/autorole [status|set|remove|test]`', value: 'Modulo dedicato e diagnostica gerarchia per i ruoli automatici.' },
               { name: '`/welcomer config`', value: 'Imposta canali di benvenuto/addio, messaggi e card.' },
               { name: '`/welcomer test`', value: 'Invia un messaggio di benvenuto di prova nel canale corrente.' },
-              { name: '`/welcomer autorole <role>`', value: 'Assegna automaticamente un ruolo ai nuovi arrivati.' },
               { name: '`/autoresponder add`', value: 'Crea un trigger con risposta automatica o reazioni emoji.' },
               { name: '`/autoresponder list`', value: 'Elenca tutte le risposte automatiche attive.' }
             );

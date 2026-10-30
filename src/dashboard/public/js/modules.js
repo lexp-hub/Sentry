@@ -18,6 +18,7 @@
       loadPartnershipData(guildId),
       loadReactionRoles(guildId),
       window.loadWelcomerData ? window.loadWelcomerData(guildId) : Promise.resolve(),
+      loadAutoroleData(guildId),
       loadBoostData(guildId),
       loadAutoresponders(guildId),
       loadAutomodData(guildId),
@@ -45,7 +46,8 @@
         setups: { name: 'Showcase Setup', desc: 'Foto, specifiche ed embed automatici', icon: 'monitor', color: 'text-red-600' },
         embeds: { name: 'Live Embeds', desc: 'Anteprima live e riquadri', icon: 'scroll', color: 'text-red-600' },
         reaction_roles: { name: 'Reaction Roles', desc: 'Pulsanti e ruoli automatici', icon: 'layers', color: 'text-red-600' },
-        welcomer: { name: 'Welcomer & DM', desc: 'Benvenuto, DM e auto-role', icon: 'user-plus', color: 'text-red-600' },
+        autorole: { name: 'Auto-Role', desc: 'Assegnazione ruoli per utenti e bot', icon: 'user-check', color: 'text-amber-500' },
+        welcomer: { name: 'Welcomer & DM', desc: 'Benvenuto, DM e card grafiche', icon: 'user-plus', color: 'text-red-600' },
         autoresponder: { name: 'Auto-Responder', desc: 'Trigger e auto-reaction', icon: 'zap', color: 'text-red-600' },
         moderation: { name: 'AutoMod & Sanzioni', desc: 'Protezione anti-spam e log', icon: 'shield-alert', color: 'text-rose-600' },
         tickets: { name: 'Ticket Support', desc: 'Canali privati di assistenza', icon: 'ticket', color: 'text-red-600' },
@@ -1710,6 +1712,14 @@
         body: JSON.stringify(welPayload)
       }) : Promise.resolve({ ok: true });
 
+      // 3. Auto-Role Config
+      const arPayload = window.getAutorolePayload ? window.getAutorolePayload() : null;
+      const pAutoRole = arPayload ? fetch(`/api/guilds/${guildId}/autorole`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(arPayload)
+      }) : Promise.resolve({ ok: true });
+
       // 4. Partnership Config
       const p4 = fetch(`/api/guilds/${guildId}/partnerships/config`, {
         method: 'POST',
@@ -1807,7 +1817,7 @@
         })
       });
 
-      const results = await Promise.allSettled([p1, p3, p4, p5, p6, p7, p8, p9, p10]);
+      const results = await Promise.allSettled([p1, p3, pAutoRole, p4, p5, p6, p7, p8, p9, p10]);
       const failures = results.filter(r => r.status === 'rejected' || (r.value && !r.value.ok));
 
       // Update in-memory state
@@ -2662,6 +2672,146 @@
         window.showToast('Errore durante l\'invio del test.', 'error');
       } finally {
         btnTestBoost.disabled = false;
+      }
+    });
+  }
+  // ==========================================
+  // AUTOROLE DEDICATED MODULE HANDLERS
+  // ==========================================
+  function getAutorolePayload() {
+    return {
+      enabled: document.getElementById('autorole-enabled')?.checked ?? true,
+      user_role_id: document.getElementById('autorole-role-user')?.value || null,
+      bot_role_id: document.getElementById('autorole-role-bot')?.value || null,
+      delay_seconds: parseInt(document.getElementById('autorole-delay')?.value || '0', 10),
+      wait_for_screening: document.getElementById('autorole-screening')?.checked ?? true
+    };
+  }
+  window.getAutorolePayload = getAutorolePayload;
+
+  async function loadAutoroleData(guildId) {
+    if (!guildId) return;
+    try {
+      const res = await fetch(`/api/guilds/${guildId}/autorole`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const config = data.config || {};
+      const diag = data.diagnostics || {};
+
+      const enabledEl = document.getElementById('autorole-enabled');
+      const userRoleEl = document.getElementById('autorole-role-user');
+      const botRoleEl = document.getElementById('autorole-role-bot');
+      const delayEl = document.getElementById('autorole-delay');
+      const screeningEl = document.getElementById('autorole-screening');
+      const diagBox = document.getElementById('autorole-diag-box');
+      const userHint = document.getElementById('autorole-user-hierarchy-hint');
+      const botHint = document.getElementById('autorole-bot-hierarchy-hint');
+
+      if (enabledEl) enabledEl.checked = Boolean(config.enabled !== false && config.enabled !== 0);
+      if (userRoleEl) {
+        userRoleEl.value = config.user_role_id || '';
+        userRoleEl.dataset.savedValue = config.user_role_id || '';
+      }
+      if (botRoleEl) {
+        botRoleEl.value = config.bot_role_id || '';
+        botRoleEl.dataset.savedValue = config.bot_role_id || '';
+      }
+      if (delayEl) delayEl.value = config.delay_seconds || 0;
+      if (screeningEl) screeningEl.checked = Boolean(config.wait_for_screening !== false && config.wait_for_screening !== 0);
+
+      // Diagnostic display
+      if (diagBox) {
+        diagBox.classList.remove('hidden');
+        let diagHtml = '';
+
+        if (!diag.botHasManageRoles) {
+          diagHtml += `<div class="flex items-center gap-2 text-xs text-rose-400 font-semibold"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i> ⚠️ Il bot non ha il permesso <strong>"Gestisci Ruoli"</strong> su Discord! Assegnalo nelle impostazioni del server.</div>`;
+        } else {
+          diagHtml += `<div class="flex items-center gap-2 text-xs text-emerald-400 font-semibold"><i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i> Permesso "Gestisci Ruoli" Discord rilevato e attivo.</div>`;
+        }
+
+        if (diag.userRoleCheck && !diag.userRoleCheck.valid) {
+          diagHtml += `<div class="flex items-center gap-2 text-xs text-amber-300"><i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i> <strong>Avviso Ruolo Utenti:</strong> ${diag.userRoleCheck.error}</div>`;
+          if (userHint) userHint.innerHTML = `<span class="text-rose-400">⚠️ Gerarchia non valida: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
+        } else if (userHint && config.user_role_id) {
+          userHint.innerHTML = `<span class="text-emerald-400">✓ Gerarchia verificata e pronta all'assegnazione.</span>`;
+        } else if (userHint) {
+          userHint.innerHTML = '';
+        }
+
+        if (diag.botRoleCheck && !diag.botRoleCheck.valid) {
+          diagHtml += `<div class="flex items-center gap-2 text-xs text-amber-300"><i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i> <strong>Avviso Ruolo Bot:</strong> ${diag.botRoleCheck.error}</div>`;
+          if (botHint) botHint.innerHTML = `<span class="text-rose-400">⚠️ Gerarchia non valida: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
+        } else if (botHint && config.bot_role_id) {
+          botHint.innerHTML = `<span class="text-emerald-400">✓ Gerarchia verificata e pronta all'assegnazione.</span>`;
+        } else if (botHint) {
+          botHint.innerHTML = '';
+        }
+
+        diagBox.innerHTML = diagHtml;
+        if (window.lucide) lucide.createIcons();
+      }
+    } catch (e) {
+      console.error('Error loading Autorole data:', e);
+    }
+  }
+  window.loadAutoroleData = loadAutoroleData;
+
+  // Save Autorole button
+  const btnSaveAutorole = document.getElementById('btn-save-autorole');
+  if (btnSaveAutorole) {
+    btnSaveAutorole.addEventListener('click', async () => {
+      const guildId = window.AppState.currentGuildId;
+      if (!guildId) return;
+
+      const payload = getAutorolePayload();
+      try {
+        btnSaveAutorole.disabled = true;
+        const res = await fetch(`/api/guilds/${guildId}/autorole`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          window.showToast('Modulo Auto-Role salvato con successo!');
+          await loadAutoroleData(guildId);
+        } else {
+          window.showToast('Errore durante il salvataggio di Auto-Role.', 'error');
+        }
+      } catch (err) {
+        window.showToast('Errore di connessione durante il salvataggio.', 'error');
+      } finally {
+        btnSaveAutorole.disabled = false;
+      }
+    });
+  }
+
+  // Test Autorole button
+  const btnTestAutorole = document.getElementById('btn-test-autorole');
+  if (btnTestAutorole) {
+    btnTestAutorole.addEventListener('click', async () => {
+      const guildId = window.AppState.currentGuildId;
+      if (!guildId) return;
+
+      try {
+        btnTestAutorole.disabled = true;
+        const res = await fetch(`/api/guilds/${guildId}/autorole/test`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          window.showToast(data.message || 'Verifica ruoli completata con successo!');
+          await loadAutoroleData(guildId);
+        } else {
+          window.showToast(data.error || 'Verifica fallita.', 'error');
+        }
+      } catch (err) {
+        window.showToast('Errore durante il test di diagnostica.', 'error');
+      } finally {
+        btnTestAutorole.disabled = false;
       }
     });
   }

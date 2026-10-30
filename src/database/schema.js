@@ -102,6 +102,16 @@ CREATE TABLE IF NOT EXISTS welcomer_configs (
   auto_role_bot TEXT
 );
 
+CREATE TABLE IF NOT EXISTS autorole_configs (
+  guild_id TEXT PRIMARY KEY,
+  enabled INTEGER DEFAULT 1,
+  user_role_id TEXT,
+  bot_role_id TEXT,
+  delay_seconds INTEGER DEFAULT 0,
+  wait_for_screening INTEGER DEFAULT 1,
+  updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
 
 CREATE TABLE IF NOT EXISTS boost_configs (
   guild_id TEXT PRIMARY KEY,

@@ -121,15 +121,20 @@ export default {
       if (botRole) updates.auto_role_bot = botRole.id;
 
       DatabaseHelper.updateWelcomerConfig(interaction.guild.id, updates);
+      DatabaseHelper.updateAutoroleConfig(interaction.guild.id, {
+        user_role_id: userRole ? userRole.id : undefined,
+        bot_role_id: botRole ? botRole.id : undefined
+      });
 
       const embed = new EmbedBuilder()
         .setColor(CONFIG.EMBED_SUCCESS_COLOR)
         .setTitle('🎭 Auto-Role Aggiornato')
-        .setDescription('I ruoli automatici all\'ingresso sono stati configurati:')
+        .setDescription('I ruoli automatici sono stati configurati con successo sia nel Welcomer che nel nuovo modulo dedicato **`/autorole`**:')
         .addFields(
           { name: '👤 Ruolo Utenti', value: userRole ? `${userRole}` : '`Invariato`', inline: true },
           { name: '🤖 Ruolo Bot', value: botRole ? `${botRole}` : '`Invariato`', inline: true }
         )
+        .setFooter({ text: '💡 Suggerimento: puoi usare anche il comando dedicato /autorole per status, delay e diagnostica gerarchia!' })
         .setTimestamp();
 
       await interaction.reply({ embeds: [embed] });

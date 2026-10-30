@@ -644,7 +644,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
   const roleSelectIds = [
     'part-ping-role', 'part-manager-role', 'rr-role',
     'wel-autorole-user', 'wel-autorole-bot', 'tk-support-role',
-    'pres-role', 'setup-role'
+    'pres-role', 'setup-role', 'autorole-role-user', 'autorole-role-bot'
   ];
   roleSelectIds.forEach(id => {
     const select = document.getElementById(id);

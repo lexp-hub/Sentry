@@ -1,4 +1,5 @@
 import { BoostManager } from '../modules/boostManager.js';
+import { AutoroleManager } from '../modules/autoroleManager.js';
 import { DatabaseHelper } from '../../database/db.js';
 import { EmbedBuilder, AuditLogEvent } from 'discord.js';
 import { CONFIG } from '../../config.js';
@@ -7,6 +8,13 @@ export default {
   name: 'guildMemberUpdate',
   async execute(oldMember, newMember) {
     if (!newMember.guild) return;
+
+    // 0. Auto-Role: Rileva completamento Membership Screening (accettazione regole server)
+    if (oldMember.pending && !newMember.pending) {
+      await AutoroleManager.handleMemberScreeningComplete(newMember).catch(err => {
+        console.error('[guildMemberUpdate] Errore Autorole Screening:', err.message);
+      });
+    }
 
     // 1. Detect Boost updates
     const oldBoost = Boolean(oldMember.premiumSinceTimestamp);

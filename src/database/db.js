@@ -203,6 +203,28 @@ try {
   `);
 } catch (e) {}
 
+try {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS autorole_configs (
+      guild_id TEXT PRIMARY KEY,
+      enabled INTEGER DEFAULT 1,
+      user_role_id TEXT,
+      bot_role_id TEXT,
+      delay_seconds INTEGER DEFAULT 0,
+      wait_for_screening INTEGER DEFAULT 1,
+      updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+    );
+  `);
+  // Migrazione retrocompatibile automatica: popola autorole_configs con dati esistenti da welcomer_configs
+  db.exec(`
+    INSERT OR IGNORE INTO autorole_configs (guild_id, enabled, user_role_id, bot_role_id)
+    SELECT guild_id, 1, auto_role_user, auto_role_bot
+    FROM welcomer_configs
+    WHERE (auto_role_user IS NOT NULL AND auto_role_user != '')
+       OR (auto_role_bot IS NOT NULL AND auto_role_bot != '');
+  `);
+} catch (e) {}
+
 export const DatabaseHelper = {
   db,
 
@@ -224,7 +246,8 @@ export const DatabaseHelper = {
       leveling: true,
       starboard: true,
       ai: true,
-      setups: true
+      setups: true,
+      autorole: true
     };
     const parsed = JSON.parse(row.modules_enabled || '{}');
     return {
@@ -236,7 +259,7 @@ export const DatabaseHelper = {
   initGuildSettings(guildId) {
     const stmt = db.prepare(`
       INSERT OR IGNORE INTO guild_settings (guild_id, prefix, language, modules_enabled)
-      VALUES (?, '!', 'it', '{"partnerships":true,"embeds":true,"reaction_roles":true,"welcomer":true,"autoresponder":true,"moderation":true,"tickets":true,"giveaways":true,"leveling":true,"starboard":true,"ai":true,"setups":true}')
+      VALUES (?, '!', 'it', '{"partnerships":true,"embeds":true,"reaction_roles":true,"welcomer":true,"autoresponder":true,"moderation":true,"tickets":true,"giveaways":true,"leveling":true,"starboard":true,"ai":true,"setups":true,"autorole":true}')
     `);
     stmt.run(guildId);
   },
@@ -576,8 +599,21 @@ export const DatabaseHelper = {
       parsedLeaveEmbed = null;
     }
 
+    // Sincronizza anche con autorole_configs per consistenza
+    let autoRoleUser = row.auto_role_user;
+    let autoRoleBot = row.auto_role_bot;
+    try {
+      const autoRow = db.prepare('SELECT user_role_id, bot_role_id FROM autorole_configs WHERE guild_id = ?').get(guildId);
+      if (autoRow) {
+        if (autoRow.user_role_id !== undefined) autoRoleUser = autoRow.user_role_id;
+        if (autoRow.bot_role_id !== undefined) autoRoleBot = autoRow.bot_role_id;
+      }
+    } catch (e) {}
+
     return {
       ...row,
+      auto_role_user: autoRoleUser || null,
+      auto_role_bot: autoRoleBot || null,
       welcome_enabled: Boolean(row.welcome_enabled),
       welcome_dm_enabled: Boolean(row.welcome_dm_enabled),
       leave_enabled: Boolean(row.leave_enabled),
@@ -585,6 +621,67 @@ export const DatabaseHelper = {
       welcome_embed: parsedWelcomeEmbed,
       leave_embed: parsedLeaveEmbed
     };
+  },
+
+  getAutoroleConfig(guildId) {
+    let row = db.prepare('SELECT * FROM autorole_configs WHERE guild_id = ?').get(guildId);
+    if (!row) {
+      const welcomerRow = db.prepare('SELECT auto_role_user, auto_role_bot FROM welcomer_configs WHERE guild_id = ?').get(guildId);
+      const legacyUser = welcomerRow?.auto_role_user || null;
+      const legacyBot = welcomerRow?.auto_role_bot || null;
+
+      db.prepare(`
+        INSERT INTO autorole_configs (guild_id, enabled, user_role_id, bot_role_id, delay_seconds, wait_for_screening)
+        VALUES (?, 1, ?, ?, 0, 1)
+      `).run(guildId, legacyUser, legacyBot);
+
+      row = db.prepare('SELECT * FROM autorole_configs WHERE guild_id = ?').get(guildId);
+    }
+
+    return {
+      guild_id: row.guild_id,
+      enabled: Boolean(row.enabled),
+      user_role_id: row.user_role_id || null,
+      bot_role_id: row.bot_role_id || null,
+      delay_seconds: Number(row.delay_seconds || 0),
+      wait_for_screening: Boolean(row.wait_for_screening !== 0),
+      updated_at: row.updated_at
+    };
+  },
+
+  updateAutoroleConfig(guildId, data) {
+    const current = this.getAutoroleConfig(guildId);
+    const updated = { ...current, ...data };
+
+    db.prepare(`
+      INSERT OR REPLACE INTO autorole_configs (
+        guild_id, enabled, user_role_id, bot_role_id, delay_seconds, wait_for_screening, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, strftime('%s', 'now'))
+    `).run(
+      guildId,
+      updated.enabled ? 1 : 0,
+      updated.user_role_id !== undefined ? updated.user_role_id : null,
+      updated.bot_role_id !== undefined ? updated.bot_role_id : null,
+      parseInt(updated.delay_seconds, 10) || 0,
+      updated.wait_for_screening ? 1 : 0
+    );
+
+    // Retrocompatibilità: sincronizza le vecchie colonne in welcomer_configs e guild_settings
+    try {
+      db.prepare(`
+        UPDATE welcomer_configs
+        SET auto_role_user = ?, auto_role_bot = ?
+        WHERE guild_id = ?
+      `).run(updated.user_role_id || null, updated.bot_role_id || null, guildId);
+
+      db.prepare(`
+        UPDATE guild_settings
+        SET auto_role_user = ?, auto_role_bot = ?
+        WHERE guild_id = ?
+      `).run(updated.user_role_id || null, updated.bot_role_id || null, guildId);
+    } catch (e) {}
+
+    return this.getAutoroleConfig(guildId);
   },
 
   updateWelcomerConfig(guildId, data) {
@@ -623,6 +720,15 @@ export const DatabaseHelper = {
       updated.auto_role_user || null,
       updated.auto_role_bot || null
     );
+
+    // Se vengono passati auto_role_user o auto_role_bot, aggiorna anche il nuovo modulo dedicato
+    if (data.auto_role_user !== undefined || data.auto_role_bot !== undefined) {
+      const autoUpdates = {};
+      if (data.auto_role_user !== undefined) autoUpdates.user_role_id = data.auto_role_user;
+      if (data.auto_role_bot !== undefined) autoUpdates.bot_role_id = data.auto_role_bot;
+      this.updateAutoroleConfig(guildId, autoUpdates);
+    }
+
     return this.getWelcomerConfig(guildId);
   },
 
