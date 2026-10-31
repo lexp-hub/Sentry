@@ -69,6 +69,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUserData();
   await loadGuilds();
 
+  const btnProfDiscord = document.getElementById('btn-profile-discord');
+  const btnProfYapin = document.getElementById('btn-profile-yapin');
+  if (btnProfDiscord) {
+    btnProfDiscord.addEventListener('click', () => window.switchProfile('discord'));
+  }
+  if (btnProfYapin) {
+    btnProfYapin.addEventListener('click', () => window.switchProfile('yapin'));
+  }
+
+  const activeUrlPlatform = urlParams.get('platform') || localStorage.getItem('sentry_active_platform');
+  if (activeUrlPlatform === 'yapin') {
+    window.switchProfile('yapin');
+  }
+
   const btnSyncLive = document.getElementById('btn-sync-live');
   if (btnSyncLive) {
     btnSyncLive.addEventListener('click', () => {
@@ -250,9 +264,54 @@ async function loadUserData() {
   }
 }
 
-async function loadGuilds() {
+let currentPlatform = localStorage.getItem('sentry_active_platform') || 'discord';
+
+window.switchProfile = async function(platform) {
+  currentPlatform = platform;
+  localStorage.setItem('sentry_active_platform', platform);
+
+  const btnDiscord = document.getElementById('btn-profile-discord');
+  const btnYapin = document.getElementById('btn-profile-yapin');
+  const badge = document.getElementById('active-profile-badge');
+
+  if (platform === 'yapin') {
+    if (btnYapin) {
+      btnYapin.className = 'profile-switch-btn active flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-white bg-amber-600/40 border border-amber-500/60 shadow-sm';
+    }
+    if (btnDiscord) {
+      btnDiscord.className = 'profile-switch-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-[#81889c] hover:text-white hover:bg-[#1f2230]';
+    }
+    if (badge) {
+      badge.textContent = 'Yapin Mode';
+      badge.className = 'text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-amber-950/90 text-amber-300 border border-amber-800';
+    }
+  } else {
+    if (btnDiscord) {
+      btnDiscord.className = 'profile-switch-btn active flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-white bg-indigo-600/40 border border-indigo-500/60 shadow-sm';
+    }
+    if (btnYapin) {
+      btnYapin.className = 'profile-switch-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-[#81889c] hover:text-white hover:bg-[#1f2230]';
+    }
+    if (badge) {
+      badge.textContent = 'Discord Mode';
+      badge.className = 'text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-indigo-950/90 text-indigo-300 border border-indigo-800';
+    }
+  }
+
+  fetch('/auth/switch-profile', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ platform })
+  }).catch(() => {});
+
+  await loadGuilds(platform);
+  window.showToast(`Passato a ${platform === 'yapin' ? '🛡️ Profilo Yapin' : '🎮 Profilo Discord'}!`);
+};
+
+async function loadGuilds(filterPlatform = null) {
   try {
-    const res = await fetch('/api/guilds');
+    const platform = filterPlatform || currentPlatform || 'discord';
+    const res = await fetch(`/api/guilds?platform=${platform}`);
     if (res.status === 401) {
       localStorage.removeItem('cavaliere_auth_token');
       window.location.href = '/auth/login';
@@ -268,8 +327,8 @@ async function loadGuilds() {
 
     selector.innerHTML = '';
     if (guilds.length === 0) {
-      selector.innerHTML = '<option value="">Nessun Server Trovato</option>';
-      window.showToast('Nessun server trovato in cui possiedi i permessi di Moderatore/Amministratore.', 'error');
+      selector.innerHTML = `<option value="">Nessun Server ${platform === 'yapin' ? 'Yapin' : 'Discord'} Trovato</option>`;
+      window.showToast(`Nessun server ${platform === 'yapin' ? 'Yapin' : 'Discord'} trovato in cui possiedi permessi amministratore.`, 'error');
       return;
     }
 

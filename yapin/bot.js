@@ -56,15 +56,18 @@ function getContextData(ctx) {
 
 // 1. Ping Command (Instant Latency Benchmark)
 bot.command('ping', 'Check Sentry response time and operational status', async (ctx) => {
+  const { channelId } = getContextData(ctx);
   const start = Date.now();
   const res = await ctx.reply('🏓 Pinging Yapin Gateway...');
   const latency = Date.now() - start;
   const content = `🏓 **Pong!** Gateway Latency: \`${latency}ms\` | Status: **Operational** 🛡️`;
-  if (res && typeof res.edit === 'function') {
-    await res.edit(content);
-  } else {
-    await ctx.reply(content);
+  if (res?.id && channelId) {
+    try {
+      await bot.edit(channelId, res.id, content);
+      return;
+    } catch (e) {}
   }
+  await ctx.reply(content);
 });
 
 // 2. Help Command
@@ -373,13 +376,16 @@ bot.command('bridge', 'Check Cross-Platform Discord <-> Yapin bridge status', as
 
 // 16. Message Event Handler (Direct Interactions & Auto-replies)
 bot.on('message', (msg) => {
+  if (!msg || !msg.author_id) return;
   if (msg.author_id === bot.me?.id) return;
 
-  const content = msg.content?.toLowerCase() || '';
+  const content = (msg.content || '').toLowerCase().trim();
 
   // Quick automated greetings
   if (content === 'hi bot' || content === 'hello sentry' || content === 'ciao sentry') {
-    msg.reply('Hello! I am Sentry for Yapin 🛡️ (Type `/help` or `!help` for available commands)');
+    if (typeof msg.reply === 'function') {
+      msg.reply('Hello! I am Sentry for Yapin 🛡️ (Type `/help` or `!help` for available commands)');
+    }
   }
 });
 

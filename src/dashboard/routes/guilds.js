@@ -17,76 +17,101 @@ export function createGuildsRouter(botClient, yapinBot) {
   router.get('/', requireModAuth, async (req, res) => {
     const user = req.user || req.session?.user;
     const isCreator = user?.id === CONFIG.CREATOR_ID || user?.isAdmin;
+    const targetPlatform = req.query.platform || user?.activePlatform || 'all';
     const result = [];
 
-    // 1. Server Discord
-    if (botClient?.isReady() && botClient.guilds.cache.size > 0) {
-      const botGuilds = botClient.guilds.cache;
-      const accessibleDiscord = [];
+    // 1. Server Discord (se richiesto dal profilo attivo)
+    if (targetPlatform === 'all' || targetPlatform === 'discord') {
+      if (botClient?.isReady() && botClient.guilds.cache.size > 0) {
+        const botGuilds = botClient.guilds.cache;
+        const accessibleDiscord = [];
 
-      for (const [id, guild] of botGuilds.entries()) {
-        if (isCreator) {
-          accessibleDiscord.push(guild);
-          continue;
+        for (const [id, guild] of botGuilds.entries()) {
+          if (isCreator) {
+            accessibleDiscord.push(guild);
+            continue;
+          }
+
+          try {
+            const member = await guild.members.fetch(user.id);
+            const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
+                          member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
+                          member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
+                          member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
+                          member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
+                          guild.ownerId === user.id;
+
+            if (isMod) {
+              accessibleDiscord.push(guild);
+            }
+          } catch (e) {}
         }
 
-        try {
-          const member = await guild.members.fetch(user.id);
-          const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
-                        member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
-                        member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
-                        member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
-                        member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
-                        guild.ownerId === user.id;
-
-          if (isMod) {
-            accessibleDiscord.push(guild);
-          }
-        } catch (e) {}
-      }
-
-      accessibleDiscord.forEach(g => {
-        const iconUrl = g.iconURL ? g.iconURL({ size: 128 }) : null;
-        const settings = DatabaseHelper.getGuildSettings(g.id);
-        const activeCount = settings ? Object.values(settings.modules_enabled || {}).filter(Boolean).length : 8;
-        result.push({
-          id: g.id,
-          name: `[Discord] ${g.name}`,
-          rawName: g.name,
-          platform: 'discord',
-          icon: iconUrl,
-          memberCount: g.memberCount,
-          botJoined: true,
-          permissions: 'Moderatore',
-          activeModulesCount: activeCount
+        accessibleDiscord.forEach(g => {
+          const iconUrl = g.iconURL ? g.iconURL({ size: 128 }) : null;
+          const settings = DatabaseHelper.getGuildSettings(g.id);
+          const activeCount = settings ? Object.values(settings.modules_enabled || {}).filter(Boolean).length : 8;
+          result.push({
+            id: g.id,
+            name: `[Discord] ${g.name}`,
+            rawName: g.name,
+            platform: 'discord',
+            icon: iconUrl,
+            memberCount: g.memberCount,
+            botJoined: true,
+            permissions: 'Moderatore',
+            activeModulesCount: activeCount
+          });
         });
-      });
+      }
     }
 
-    // 2. Server Yapin (Ponte Universale)
-    if (yapinBot && typeof yapinBot.servers === 'function') {
-      try {
-        const yapinServers = await yapinBot.servers().catch(() => []);
-        if (Array.isArray(yapinServers)) {
-          for (const s of yapinServers) {
-            const guildKey = `yapin_${s.id}`;
-            const settings = DatabaseHelper.getGuildSettings(guildKey);
-            const activeCount = settings ? Object.values(settings.modules_enabled || {}).filter(Boolean).length : 6;
-            result.push({
-              id: guildKey,
-              name: `[Yapin] ${s.name}`,
-              rawName: s.name,
-              platform: 'yapin',
-              icon: s.avatar_url || s.banner_url || null,
-              memberCount: s.member_count || 1,
-              botJoined: true,
-              permissions: 'Admin Yapin',
-              activeModulesCount: activeCount
-            });
+    // 2. Server Yapin (se richiesto dal profilo attivo)
+    if (targetPlatform === 'all' || targetPlatform === 'yapin') {
+      if (yapinBot && typeof yapinBot.servers === 'function') {
+        try {
+          const yapinServers = await yapinBot.servers().catch(() => []);
+          if (Array.isArray(yapinServers)) {
+            for (const s of yapinServers) {
+              let hasPermission = isCreator;
+              if (!hasPermission && user?.id) {
+                // Se l'utente è loggato con Yapin, verifica se è l'owner o membro autorizzato
+                if (s.owner_id === user.id || user.isAdmin) {
+                  hasPermission = true;
+                } else {
+                  try {
+                    const member = await yapinBot.member(s.id, user.id).catch(() => null);
+                    if (member && (member.owner || member.is_owner || member.permissions?.administrator || member.permissions?.manage_server)) {
+                      hasPermission = true;
+                    }
+                  } catch (e) {}
+                }
+              }
+
+              // Se profilo Yapin attivo e non è admin, salta (proprio come su Discord)
+              if (user?.platform === 'yapin' && !isCreator && !hasPermission) {
+                continue;
+              }
+
+              const guildKey = `yapin_${s.id}`;
+              const settings = DatabaseHelper.getGuildSettings(guildKey);
+              const activeCount = settings ? Object.values(settings.modules_enabled || {}).filter(Boolean).length : 6;
+              result.push({
+                id: guildKey,
+                name: `[Yapin] ${s.name}`,
+                rawName: s.name,
+                platform: 'yapin',
+                icon: s.avatar_url || s.banner_url || null,
+                memberCount: s.member_count || 1,
+                botJoined: true,
+                permissions: 'Admin Yapin',
+                activeModulesCount: activeCount
+              });
+            }
           }
+        } catch (err) {
+          console.warn('[Guilds Router] Errore lettura server Yapin:', err.message);
         }
-      } catch (err) {
-        console.warn('[Guilds Router] Errore lettura server Yapin:', err.message);
       }
     }
 

@@ -63,9 +63,13 @@
         <i data-lucide="layout-dashboard" class="w-4 h-4 sm:w-5 sm:h-5"></i>
         <span>Accedi alla Dashboard</span>
       </a>
-      <a href="/export.html" class="btn-secondary text-sm sm:text-base py-2.5 sm:py-3 px-5 sm:px-6 flex items-center gap-2">
-        <i data-lucide="image" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-        <span>Asset Grafici</span>
+      <a href="/auth/login" class="text-xs py-2 px-4 rounded-xl font-bold flex items-center gap-2 bg-[#5865f2]/20 hover:bg-[#5865f2]/30 text-indigo-300 border border-[#5865f2]/40 transition-all shadow-sm">
+        <i data-lucide="message-square" class="w-4 h-4 text-indigo-400"></i>
+        <span>Accedi con Discord</span>
+      </a>
+      <a href="/auth/yapin" class="text-xs py-2 px-4 rounded-xl font-bold flex items-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all shadow-sm">
+        <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+        <span>Accedi con Yapin</span>
       </a>
     </div>
 
@@ -345,10 +349,17 @@
             const grid = document.getElementById('guilds-grid');
             if (grid) {
               grid.innerHTML = `
-                <div class="col-span-full text-center py-10 glass-card border-slate-300">
-                  <i data-lucide="lock" class="w-8 h-8 text-red-500 mx-auto mb-2"></i>
-                  <p class="text-sm font-semibold text-slate-700">Effettua l'accesso con Discord per visualizzare i server in cui sei Moderatore.</p>
-                  <a href="/auth/login" class="btn-knight text-xs px-4 py-2 mt-4 inline-flex">Accedi con Discord</a>
+                <div class="col-span-full text-center py-10 glass-card border-slate-700 bg-slate-900/40">
+                  <i data-lucide="lock" class="w-8 h-8 text-cyan-400 mx-auto mb-2"></i>
+                  <p class="text-sm font-semibold text-slate-300">Effettua l'accesso con Discord o Yapin per gestire i server in cui possiedi permessi Amministratore.</p>
+                  <div class="flex flex-wrap items-center justify-center gap-3 mt-4">
+                    <a href="/auth/login" class="btn-knight text-xs px-4 py-2 inline-flex items-center gap-1.5">
+                      <i data-lucide="message-square" class="w-3.5 h-3.5 text-indigo-400"></i> Accedi con Discord
+                    </a>
+                    <a href="/auth/yapin" class="text-xs px-4 py-2 rounded-xl font-bold inline-flex items-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all">
+                      <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Accedi con Yapin
+                    </a>
+                  </div>
                 </div>
               `;
               lucide.createIcons();
