@@ -122,3 +122,4 @@ export function createPrefixInteraction(message, args, command) {
     }
   };
 }
+

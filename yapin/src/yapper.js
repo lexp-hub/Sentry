@@ -945,7 +945,7 @@ export class Bot {
 
   wrap(data) {
     const bot = this;
-    return {
+    const res = {
       ...data,
       /** True when a bot or a webhook sent it. */
       author_bot: !!data.author_bot,
@@ -956,6 +956,8 @@ export class Bot {
       /** <@id> for the author, for mentioning them back. */
       get authorMention() { return `<@${data.author_id}>`; },
     };
+    res.message = res;
+    return res;
   }
 }
 
