@@ -44,6 +44,9 @@ export const CONFIG = {
   PROMPT_PATH: path.join(__dirname, 'config/prompt.json'),
 
   YAPPER_BOT_TOKEN: process.env.YAPPER_BOT_TOKEN || '',
+  YAPIN_CLIENT_ID: process.env.YAPIN_CLIENT_ID || '',
+  YAPIN_CLIENT_SECRET: process.env.YAPIN_CLIENT_SECRET || '',
+  YAPIN_REDIRECT_URI: process.env.YAPIN_REDIRECT_URI || 'https://sentry.wispbyte.app/auth/yapin/callback',
   YAPIN_ENABLED: process.env.YAPIN_ENABLED !== 'false',
   
   DEMO_MODE: process.env.DEMO_MODE === 'true' || (!process.env.DISCORD_BOT_TOKEN && !process.env.DISCORD_TOKEN)
