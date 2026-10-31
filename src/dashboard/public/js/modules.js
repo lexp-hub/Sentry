@@ -19,6 +19,7 @@
       loadReactionRoles(guildId),
       window.loadWelcomerData ? window.loadWelcomerData(guildId) : Promise.resolve(),
       loadAutoroleData(guildId),
+      loadBridgeData(),
       loadBoostData(guildId),
       loadAutoresponders(guildId),
       loadAutomodData(guildId),
@@ -2787,31 +2788,171 @@
     });
   }
 
-  // Test Autorole button
-  const btnTestAutorole = document.getElementById('btn-test-autorole');
-  if (btnTestAutorole) {
-    btnTestAutorole.addEventListener('click', async () => {
-      const guildId = window.AppState.currentGuildId;
-      if (!guildId) return;
+  // ==========================================
+  // CROSS-PLATFORM BRIDGE HANDLERS
+  // ==========================================
+  async function loadBridgeData() {
+    try {
+      const res = await fetch('/api/bridges');
+      if (!res.ok) return;
+      const data = await res.json();
+      const bridges = data.bridges || [];
+      const status = data.status || {};
+
+      // Badges di stato piattaforme
+      const badgeContainer = document.getElementById('bridge-status-badges');
+      if (badgeContainer) {
+        badgeContainer.innerHTML = `
+          <span class="text-[11px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 ${status.discordConnected ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800' : 'bg-slate-800 text-slate-400'}">
+            <span class="w-2 h-2 rounded-full ${status.discordConnected ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}"></span>
+            Discord: ${status.discordConnected ? 'Connesso' : 'Offline'}
+          </span>
+          <span class="text-[11px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 ${status.yapinConnected ? 'bg-amber-950/80 text-amber-300 border border-amber-800' : 'bg-slate-800 text-slate-400'}">
+            <span class="w-2 h-2 rounded-full ${status.yapinConnected ? 'bg-amber-400 animate-pulse' : 'bg-slate-500'}"></span>
+            Yapin: ${status.yapinConnected ? 'Connesso' : 'Offline'}
+          </span>
+        `;
+      }
+
+      // Conteggio
+      const countEl = document.getElementById('bridge-count-badge');
+      if (countEl) countEl.textContent = `${bridges.length} ponti configurati`;
+
+      // Render lista ponti
+      const listContainer = document.getElementById('bridge-list-container');
+      if (listContainer) {
+        if (bridges.length === 0) {
+          listContainer.innerHTML = `
+            <div class="p-6 text-center rounded-xl border border-slate-800 bg-slate-900/20 text-slate-400 text-xs">
+              <i data-lucide="git-merge" class="w-8 h-8 text-slate-600 mx-auto mb-2 opacity-50"></i>
+              Nessun ponte cross-platform attivo. Crea il tuo primo ponte sopra per sincronizzare i messaggi tra Discord e Yapin!
+            </div>
+          `;
+        } else {
+          listContainer.innerHTML = bridges.map(b => `
+            <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/40 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-white text-xs">${b.name}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${b.enabled ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-slate-800 text-slate-400'}">
+                    ${b.enabled ? 'Attivo' : 'Inattivo'}
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+                  <span class="text-indigo-400">🎮 Discord &lt;#${b.discord_channel_id}&gt;</span>
+                  <span class="text-cyan-400">⟷</span>
+                  <span class="text-amber-400">🛡️ Yapin &lt;#${b.yapin_channel_id}&gt;</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="window.testBridge(${b.id})" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold border border-slate-700 flex items-center gap-1 transition-colors">
+                  <i data-lucide="send" class="w-3 h-3 text-cyan-400"></i> Test Ping
+                </button>
+                <button type="button" onclick="window.toggleBridge(${b.id}, ${!b.enabled})" class="px-2.5 py-1.5 rounded ${b.enabled ? 'bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 border border-amber-800/80' : 'bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-800/80'} text-[11px] font-semibold transition-colors">
+                  ${b.enabled ? 'Disattiva' : 'Attiva'}
+                </button>
+                <button type="button" onclick="window.deleteBridge(${b.id})" class="p-1.5 rounded bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 border border-rose-800/60 transition-colors" title="Elimina Ponte">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+        if (window.lucide) lucide.createIcons();
+      }
+    } catch (e) {
+      console.error('Error loading bridges:', e);
+    }
+  }
+  window.loadBridgeData = loadBridgeData;
+
+  window.toggleBridge = async function(id, enable) {
+    try {
+      const res = await fetch(`/api/bridges/${id}/toggle`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: enable })
+      });
+      if (res.ok) {
+        window.showToast(`Ponte ${enable ? 'attivato' : 'disattivato'}!`);
+        await loadBridgeData();
+      }
+    } catch (e) {
+      window.showToast('Errore durante la modifica del ponte.', 'error');
+    }
+  };
+
+  window.deleteBridge = async function(id) {
+    if (!confirm('Sei sicuro di voler rimuovere questo ponte cross-platform?')) return;
+    try {
+      const res = await fetch(`/api/bridges/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        window.showToast('Ponte rimosso con successo.');
+        await loadBridgeData();
+      }
+    } catch (e) {
+      window.showToast('Errore durante l\'eliminazione.', 'error');
+    }
+  };
+
+  window.testBridge = async function(id) {
+    try {
+      window.showToast('Invio messaggio di test in corso...');
+      const res = await fetch(`/api/bridges/${id}/test`, { method: 'POST' });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        window.showToast('Test ponte completato! Verifica i canali su Discord e Yapin.');
+      } else {
+        window.showToast(data.error || 'Test fallito.', 'error');
+      }
+    } catch (e) {
+      window.showToast('Errore durante il test del ponte.', 'error');
+    }
+  };
+
+  // Creazione nuovo ponte
+  const btnCreateBridge = document.getElementById('btn-create-bridge');
+  if (btnCreateBridge) {
+    btnCreateBridge.addEventListener('click', async () => {
+      const name = document.getElementById('bridge-name')?.value?.trim();
+      const discordChannel = document.getElementById('bridge-discord-channel')?.value;
+      const yapinChannel = document.getElementById('bridge-yapin-channel')?.value?.trim();
+      const currentGuildId = window.AppState.currentGuildId;
+
+      if (!discordChannel) {
+        return window.showToast('Seleziona il canale Discord di partenza.', 'error');
+      }
+      if (!yapinChannel) {
+        return window.showToast('Inserisci l\'ID del canale Yapin di destinazione.', 'error');
+      }
 
       try {
-        btnTestAutorole.disabled = true;
-        const res = await fetch(`/api/guilds/${guildId}/autorole/test`, {
+        btnCreateBridge.disabled = true;
+        const res = await fetch('/api/bridges', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name || 'Ponte Discord ⟷ Yapin',
+            discord_guild_id: currentGuildId?.startsWith('yapin_') ? '' : currentGuildId,
+            discord_channel_id: discordChannel,
+            yapin_server_id: currentGuildId?.startsWith('yapin_') ? currentGuildId.replace('yapin_', '') : '',
+            yapin_channel_id: yapinChannel
+          })
         });
 
-        const data = await res.json();
-        if (res.ok && data.success) {
-          window.showToast(data.message || 'Verifica ruoli completata con successo!');
-          await loadAutoroleData(guildId);
+        if (res.ok) {
+          window.showToast('🌉 Ponte cross-platform attivato con successo!');
+          document.getElementById('bridge-name').value = '';
+          document.getElementById('bridge-yapin-channel').value = '';
+          await loadBridgeData();
         } else {
-          window.showToast(data.error || 'Verifica fallita.', 'error');
+          const err = await res.json();
+          window.showToast(err.error || 'Errore creazione ponte.', 'error');
         }
-      } catch (err) {
-        window.showToast('Errore durante il test di diagnostica.', 'error');
+      } catch (e) {
+        window.showToast('Errore di connessione durante la creazione del ponte.', 'error');
       } finally {
-        btnTestAutorole.disabled = false;
+        btnCreateBridge.disabled = false;
       }
     });
   }

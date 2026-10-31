@@ -13,7 +13,7 @@ import { createApiRouter } from './routes/api.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export function createDashboardServer(botClient) {
+export function createDashboardServer(botClient, yapinBot = null) {
   const app = express();
   const server = http.createServer(app);
   const wss = new WebSocketServer({ server, path: '/ws' });
@@ -109,8 +109,8 @@ export function createDashboardServer(botClient) {
   });
 
   app.use('/auth', authRouter);
-  app.use('/api/guilds', createGuildsRouter(botClient));
-  app.use('/api', createApiRouter(botClient, broadcastToGuild));
+  app.use('/api/guilds', createGuildsRouter(botClient, yapinBot));
+  app.use('/api', createApiRouter(botClient, broadcastToGuild, yapinBot));
 
   // WebSocket Connection Handling & Heartbeat Keepalive
   wss.on('connection', (ws) => {

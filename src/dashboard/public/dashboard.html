@@ -114,6 +114,12 @@
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/40 text-amber-300 font-semibold uppercase border border-amber-800/60 shrink-0">Modulo</span>
         </button>
 
+        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-bridge">
+          <i data-lucide="git-merge" class="w-4 h-4 shrink-0 text-cyan-400"></i>
+          <span class="flex-grow truncate">Ponte Cross-Platform</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/40 text-cyan-300 font-semibold uppercase border border-cyan-800/60 shrink-0">Bridge</span>
+        </button>
+
         <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-autoresponder">
           <i data-lucide="zap" class="w-4 h-4 shrink-0"></i>
           <span class="truncate">Auto-Responder</span>
@@ -1607,6 +1613,93 @@
           <button type="button" id="btn-save-autorole" class="btn-cyber text-xs py-2 px-5 flex items-center gap-1.5" style="background: linear-gradient(135deg, #d97706, #b45309);">
             <i data-lucide="save" class="w-3.5 h-3.5"></i> Salva Modulo Auto-Role
           </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEZIONE PONTE CROSS-PLATFORM (DISCORD <-> YAPIN) -->
+    <section id="tab-bridge" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2.5">
+              <i data-lucide="git-merge" class="w-5 h-5 text-cyan-400"></i> Ponte Universale Discord ⟷ Yapin
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+              Collega in tempo reale canali Discord e canali Yapin: i messaggi inviati su una piattaforma vengono inoltrati all'altra automaticamente.
+            </p>
+          </div>
+          <div id="bridge-status-badges" class="flex items-center gap-2"></div>
+        </div>
+
+        <!-- Visual Bridge Diagram -->
+        <div class="mt-5 p-5 rounded-xl border border-slate-800 bg-slate-900/40">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shrink-0">
+                <i data-lucide="message-square" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-white uppercase tracking-wider block">Server Discord</span>
+                <span class="text-[11px] text-slate-400">Canali &amp; Community Discord</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-1 my-2 md:my-0">
+              <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/80 text-cyan-300 text-xs font-bold tracking-wider">
+                <i data-lucide="repeat" class="w-3.5 h-3.5 animate-pulse text-cyan-400"></i>
+                <span>RELAY BIDIREZIONALE REAL-TIME</span>
+              </div>
+              <span class="text-[10px] text-slate-500">Sincronizzazione messaggi, media e avatar</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+                <i data-lucide="message-circle" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-white uppercase tracking-wider block">Server Yapin</span>
+                <span class="text-[11px] text-slate-400">Canali &amp; Community Yapin.gg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create Bridge Form -->
+        <div class="mt-6 p-5 rounded-xl border border-slate-800 bg-slate-900/30 space-y-4">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-4 h-4 text-cyan-400"></i> Crea Nuovo Ponte tra Canali
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Nome Ponte / Etichetta</label>
+              <input type="text" id="bridge-name" class="form-input text-xs w-full" placeholder="es. Chat Generale Discord ⟷ Yapin">
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Canale Discord di Partenza</label>
+              <select id="bridge-discord-channel" class="form-select text-xs w-full"></select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">ID Canale Yapin di Destinazione</label>
+              <input type="text" id="bridge-yapin-channel" class="form-input text-xs w-full" placeholder="ID Canale Yapin (es. 018f...)">
+            </div>
+          </div>
+          <div class="flex items-center justify-end pt-2">
+            <button type="button" id="btn-create-bridge" class="btn-cyber text-xs py-2 px-5 flex items-center gap-1.5" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+              <i data-lucide="link" class="w-3.5 h-3.5"></i> Connetti e Attiva Ponte
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Bridges List -->
+        <div class="mt-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="list" class="w-4 h-4 text-slate-400"></i> Ponti Attivi Configurati
+            </h4>
+            <span id="bridge-count-badge" class="text-xs text-slate-400">0 ponti configurati</span>
+          </div>
+          <div id="bridge-list-container" class="space-y-2"></div>
         </div>
       </div>
     </section>

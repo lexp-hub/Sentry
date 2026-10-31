@@ -273,12 +273,25 @@ async function loadGuilds() {
       return;
     }
 
+    const discordGroup = document.createElement('optgroup');
+    discordGroup.label = '🎮 Server Discord';
+    const yapinGroup = document.createElement('optgroup');
+    yapinGroup.label = '🛡️ Realm Yapin';
+
     guilds.forEach(g => {
       const opt = document.createElement('option');
       opt.value = g.id;
-      opt.textContent = `${g.name} (${g.memberCount} membri)`;
-      selector.appendChild(opt);
+      const isYapin = g.platform === 'yapin' || g.id.startsWith('yapin_');
+      opt.textContent = `${isYapin ? '🛡️' : '🎮'} ${g.rawName || g.name} (${g.memberCount} membri)`;
+      if (isYapin) {
+        yapinGroup.appendChild(opt);
+      } else {
+        discordGroup.appendChild(opt);
+      }
     });
+
+    if (discordGroup.children.length > 0) selector.appendChild(discordGroup);
+    if (yapinGroup.children.length > 0) selector.appendChild(yapinGroup);
 
     selector.addEventListener('change', (e) => switchGuild(e.target.value));
 
@@ -475,7 +488,14 @@ window.switchGuild = async function(guildId) {
 
     const nameEl = document.getElementById('current-guild-name');
     if (nameEl) {
-      nameEl.innerHTML = `<i data-lucide="shield" class="w-6 h-6 text-red-600 inline-block mr-2 align-middle"></i><span>${guildData.name}</span>`;
+      const isYapin = guildData.platform === 'yapin' || guildId.startsWith('yapin_');
+      const icon = isYapin
+        ? '<i data-lucide="sparkles" class="w-6 h-6 text-amber-400 inline-block mr-2 align-middle"></i>'
+        : '<i data-lucide="shield" class="w-6 h-6 text-red-600 inline-block mr-2 align-middle"></i>';
+      const badge = isYapin
+        ? '<span class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-950/80 text-amber-300 border border-amber-800 uppercase tracking-wider">Yapin Realm</span>'
+        : '<span class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-800 uppercase tracking-wider">Discord Guild</span>';
+      nameEl.innerHTML = `${icon}<span>${guildData.rawName || guildData.name}</span>${badge}`;
       if (window.lucide) lucide.createIcons();
     }
 
@@ -550,7 +570,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     'wel-channel', 'wel-leave-channel', 'ar-chan-select', 'tk-channel', 'tk-log-channel',
     'ga-channel', 'lvl-channel', 'cnt-channel', 'pres-channel', 'setup-channel',
     'fish-channel', 'mg-general-channel', 'mg-bj-channel', 'mg-slot-channel',
-    'tc-panel-channel', 'boost-channel'
+    'tc-panel-channel', 'boost-channel', 'bridge-discord-channel'
   ];
 
   channelSelectIds.forEach(id => {

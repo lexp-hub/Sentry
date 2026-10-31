@@ -18,7 +18,7 @@ import { exportChannelsToCSV } from '../../bot/modules/channelExporter.js';
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } from 'discord.js';
 import { CONFIG } from '../../config.js';
 
-export function createApiRouter(botClient, broadcastToGuild = () => {}) {
+export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot = null) {
   const router = express.Router();
 
   const notifySync = (guildId, module, req, extraData = {}) => {
@@ -558,6 +558,79 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}) {
       return res.status(400).json({ error: check.error });
     }
     res.json({ success: true, message: `Ruolo "${check.role.name}" verificato con successo! Permessi e gerarchia OK.` });
+  });
+
+  // ==========================================
+  // CROSS-PLATFORM BRIDGE ENDPOINTS
+  // ==========================================
+  router.get('/bridges', requireModAuth, (req, res) => {
+    const bridges = DatabaseHelper.getAllBridges();
+    res.json({
+      bridges,
+      status: {
+        discordConnected: Boolean(botClient?.isReady()),
+        yapinConnected: Boolean(yapinBot),
+        discordGuildCount: botClient?.guilds?.cache?.size || 0
+      }
+    });
+  });
+
+  router.post('/bridges', requireModAuth, (req, res) => {
+    const { name, discord_guild_id, discord_channel_id, yapin_server_id, yapin_channel_id } = req.body;
+    if (!discord_channel_id || !yapin_channel_id) {
+      return res.status(400).json({ error: 'Specificare sia il canale Discord che il canale Yapin.' });
+    }
+    const created = DatabaseHelper.createBridge({
+      name: name || 'Ponte Cross-Platform',
+      discord_guild_id: discord_guild_id || '',
+      discord_channel_id,
+      yapin_server_id: yapin_server_id || '',
+      yapin_channel_id,
+      enabled: true,
+      sync_messages: true,
+      sync_embeds: true
+    });
+    res.json({ success: true, bridge: created });
+  });
+
+  router.delete('/bridges/:id', requireModAuth, (req, res) => {
+    DatabaseHelper.deleteBridge(req.params.id);
+    res.json({ success: true });
+  });
+
+  router.patch('/bridges/:id/toggle', requireModAuth, (req, res) => {
+    const { enabled } = req.body;
+    const updated = DatabaseHelper.toggleBridge(req.params.id, enabled);
+    res.json({ success: true, bridge: updated });
+  });
+
+  router.post('/bridges/:id/test', requireModAuth, async (req, res) => {
+    const bridge = DatabaseHelper.getAllBridges().find(b => b.id == req.params.id);
+    if (!bridge) return res.status(404).json({ error: 'Ponte non trovato.' });
+
+    let discordOk = false;
+    let yapinOk = false;
+
+    // Invia test a Discord
+    if (botClient?.isReady()) {
+      try {
+        const chan = botClient.channels.cache.get(bridge.discord_channel_id) || await botClient.channels.fetch(bridge.discord_channel_id);
+        if (chan?.isTextBased()) {
+          await chan.send('🌉 **[Sentry Bridge Test]** Verifica connessione cross-platform completata con successo!');
+          discordOk = true;
+        }
+      } catch (e) {}
+    }
+
+    // Invia test a Yapin
+    if (yapinBot) {
+      try {
+        await yapinBot.send(bridge.yapin_channel_id, '🌉 **[Sentry Bridge Test]** Cross-platform connection verified successfully!');
+        yapinOk = true;
+      } catch (e) {}
+    }
+
+    res.json({ success: true, discordOk, yapinOk });
   });
 
   router.post('/guilds/:guildId/welcomer/test', requireModAuth, async (req, res) => {

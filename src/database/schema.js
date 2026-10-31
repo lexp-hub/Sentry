@@ -112,6 +112,19 @@ CREATE TABLE IF NOT EXISTS autorole_configs (
   updated_at INTEGER DEFAULT (strftime('%s', 'now'))
 );
 
+CREATE TABLE IF NOT EXISTS platform_bridges (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  discord_guild_id TEXT NOT NULL,
+  discord_channel_id TEXT NOT NULL,
+  yapin_server_id TEXT NOT NULL,
+  yapin_channel_id TEXT NOT NULL,
+  enabled INTEGER DEFAULT 1,
+  sync_messages INTEGER DEFAULT 1,
+  sync_embeds INTEGER DEFAULT 1,
+  created_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
 
 CREATE TABLE IF NOT EXISTS boost_configs (
   guild_id TEXT PRIMARY KEY,

@@ -25,12 +25,28 @@ async function main() {
     console.error('[System] Errore nel caricamento dei comandi:', error);
   }
 
-  const { server } = createDashboardServer(botClient);
+  // Avvio simultaneo Sentry per Yapin Platform (se configurato in .env)
+  let yapinBot = null;
+  if (CONFIG.YAPIN_ENABLED && CONFIG.YAPPER_BOT_TOKEN) {
+    try {
+      console.log('[Yapin] Inizializzazione Sentry per Yapin Platform...');
+      const { startYapinBot } = await import('./yapin/bot.js');
+      yapinBot = startYapinBot(CONFIG.YAPPER_BOT_TOKEN);
+    } catch (yapinErr) {
+      console.warn('[Yapin Warning] Impossibile avviare Sentry per Yapin:', yapinErr.message);
+    }
+  }
+
+  // Inizializza il Ponte Cross-Platform (Bridge) tra Discord e Yapin
+  const { BridgeManager } = await import('./src/bot/modules/bridgeManager.js');
+  BridgeManager.init(botClient, yapinBot);
+
+  const { server } = createDashboardServer(botClient, yapinBot);
   
   server.listen(CONFIG.PORT, '0.0.0.0', () => {
     console.log(`\n🌐 [Dashboard] Web Server attivo con successo su Wispbyte!`);
     console.log(`🔗 In ascolto su: Sentry.wispbyte.app`);
-    console.log(`🛡️ Sentry Management Dashboard Online\n`);
+    console.log(`🛡️ Sentry Management Dashboard Online (Piattaforma Universale Discord & Yapin)\n`);
   });
 
   if (CONFIG.BOT_TOKEN && CONFIG.BOT_TOKEN.trim().length > 10) {
@@ -46,17 +62,6 @@ async function main() {
   } else {
     console.log('\x1b[33m[Bot Avviso] DISCORD_BOT_TOKEN non impostato nelle variabili d\'ambiente.\x1b[0m');
     console.log('\x1b[32m[Dashboard] La Dashboard è pienamente accessibile all\'indirizzo: Sentry.wispbyte.app \x1b[0m\n');
-  }
-
-  // Avvio simultaneo Sentry per Yapin (se configurato in .env)
-  if (CONFIG.YAPIN_ENABLED && CONFIG.YAPPER_BOT_TOKEN) {
-    try {
-      console.log('[Yapin] Inizializzazione Sentry per Yapin Platform...');
-      const { startYapinBot } = await import('./yapin/bot.js');
-      startYapinBot(CONFIG.YAPPER_BOT_TOKEN);
-    } catch (yapinErr) {
-      console.warn('[Yapin Warning] Impossibile avviare Sentry per Yapin:', yapinErr.message);
-    }
   }
 }
 

@@ -225,6 +225,23 @@ try {
   `);
 } catch (e) {}
 
+try {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS platform_bridges (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      discord_guild_id TEXT NOT NULL,
+      discord_channel_id TEXT NOT NULL,
+      yapin_server_id TEXT NOT NULL,
+      yapin_channel_id TEXT NOT NULL,
+      enabled INTEGER DEFAULT 1,
+      sync_messages INTEGER DEFAULT 1,
+      sync_embeds INTEGER DEFAULT 1,
+      created_at INTEGER DEFAULT (strftime('%s', 'now'))
+    );
+  `);
+} catch (e) {}
+
 export const DatabaseHelper = {
   db,
 
@@ -730,6 +747,83 @@ export const DatabaseHelper = {
     }
 
     return this.getWelcomerConfig(guildId);
+  },
+
+  getAllBridges() {
+    try {
+      const rows = db.prepare('SELECT * FROM platform_bridges ORDER BY id DESC').all();
+      return rows.map(r => ({
+        ...r,
+        enabled: Boolean(r.enabled),
+        sync_messages: Boolean(r.sync_messages),
+        sync_embeds: Boolean(r.sync_embeds)
+      }));
+    } catch (e) {
+      return [];
+    }
+  },
+
+  getBridgesForGuild(guildId) {
+    try {
+      const rows = db.prepare(`
+        SELECT * FROM platform_bridges 
+        WHERE discord_guild_id = ? OR yapin_server_id = ?
+        ORDER BY id DESC
+      `).all(guildId, guildId);
+      return rows.map(r => ({
+        ...r,
+        enabled: Boolean(r.enabled),
+        sync_messages: Boolean(r.sync_messages),
+        sync_embeds: Boolean(r.sync_embeds)
+      }));
+    } catch (e) {
+      return [];
+    }
+  },
+
+  getBridgeForDiscordChannel(channelId) {
+    try {
+      const row = db.prepare('SELECT * FROM platform_bridges WHERE discord_channel_id = ? AND enabled = 1').get(channelId);
+      return row ? { ...row, enabled: true, sync_messages: Boolean(row.sync_messages) } : null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  getBridgeForYapinChannel(channelId) {
+    try {
+      const row = db.prepare('SELECT * FROM platform_bridges WHERE yapin_channel_id = ? AND enabled = 1').get(channelId);
+      return row ? { ...row, enabled: true, sync_messages: Boolean(row.sync_messages) } : null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  createBridge(data) {
+    const res = db.prepare(`
+      INSERT INTO platform_bridges (
+        name, discord_guild_id, discord_channel_id, yapin_server_id, yapin_channel_id, enabled, sync_messages, sync_embeds
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      data.name || 'Ponte Cross-Platform',
+      data.discord_guild_id,
+      data.discord_channel_id,
+      data.yapin_server_id,
+      data.yapin_channel_id,
+      data.enabled !== false ? 1 : 0,
+      data.sync_messages !== false ? 1 : 0,
+      data.sync_embeds !== false ? 1 : 0
+    );
+    return db.prepare('SELECT * FROM platform_bridges WHERE id = ?').get(res.lastInsertRowid);
+  },
+
+  deleteBridge(id) {
+    return db.prepare('DELETE FROM platform_bridges WHERE id = ?').run(id);
+  },
+
+  toggleBridge(id, enabled) {
+    db.prepare('UPDATE platform_bridges SET enabled = ? WHERE id = ?').run(enabled ? 1 : 0, id);
+    return db.prepare('SELECT * FROM platform_bridges WHERE id = ?').get(id);
   },
 
   getBoostConfig(guildId) {
