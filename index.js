@@ -1,3 +1,8 @@
+import WebSocket from 'ws';
+if (!globalThis.WebSocket) {
+  globalThis.WebSocket = WebSocket;
+}
+
 import { createBotClient, loadCommandsAndEvents, registerSlashCommands } from './src/bot/client.js';
 import { createDashboardServer } from './src/dashboard/server.js';
 import { CONFIG } from './src/config.js';

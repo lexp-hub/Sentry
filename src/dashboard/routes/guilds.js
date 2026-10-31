@@ -164,7 +164,6 @@ export function createGuildsRouter(botClient, yapinBot) {
     }
 
     const guild = botClient.guilds.cache.get(guildId);
-    const isCreator = user?.id === CONFIG.CREATOR_ID || user?.isAdmin;
 
     if (!isCreator && user?.id) {
       try {

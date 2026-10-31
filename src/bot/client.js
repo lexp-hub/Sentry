@@ -139,6 +139,21 @@ export async function registerSlashCommands(client) {
     );
 
     console.log(`[Commands Deploy] Registrati con successo ${data.length} comandi slash globali.`);
+
+    // Registra i comandi istantaneamente sui server attivi per azzerare il delay della cache di Discord (1 ora)
+    if (client.guilds?.cache?.size > 0) {
+      for (const [guildId, guild] of client.guilds.cache) {
+        try {
+          await rest.put(
+            Routes.applicationGuildCommands(CONFIG.CLIENT_ID, guildId),
+            { body: client.commandList }
+          );
+          console.log(`⚡ [Commands Deploy] Sincronizzazione istantanea (0ms cache) completata per il server: "${guild.name}"`);
+        } catch (guildErr) {
+          // Permessi insufficienti o scope limitato per questo server, ignora silenziosamente
+        }
+      }
+    }
   } catch (error) {
     console.error('[Commands Deploy] Errore durante la registrazione dei comandi slash:', error);
   }

@@ -7,8 +7,10 @@ import { StopwatchManager } from '../modules/stopwatchManager.js';
 import { WebhookReplacerManager } from '../modules/webhookReplacerManager.js';
 import { BoostManager } from '../modules/boostManager.js';
 import { AFKManager } from '../modules/afkManager.js';
+import { createPrefixInteraction } from '../modules/prefixCommandAdapter.js';
 import { DatabaseHelper } from '../../database/db.js';
 import { EmbedBuilder } from 'discord.js';
+import { CONFIG } from '../../config.js';
 
 export default {
   name: 'messageCreate',
@@ -36,6 +38,31 @@ export default {
 
     const violated = await AutoModManager.handleMessage(message);
     if (violated) return;
+
+    // 3. Prefix Command Execution (e.g. !help, !ping, !botinfo, !clear, !autorole)
+    const guildSettings = DatabaseHelper.getGuildSettings(message.guild.id);
+    const prefix = guildSettings?.prefix || CONFIG.DEFAULT_PREFIX || '!';
+
+    if (message.content.startsWith(prefix) && !message.author.bot) {
+      const rawText = message.content.slice(prefix.length).trim();
+      const args = rawText.split(/\s+/);
+      const commandName = args.shift()?.toLowerCase();
+
+      if (commandName) {
+        const command = message.client.commands.get(commandName);
+        if (command) {
+          try {
+            const fakeInteraction = createPrefixInteraction(message, args, command);
+            await command.execute(fakeInteraction);
+            return;
+          } catch (cmdErr) {
+            console.error(`[Prefix Command Error] Errore eseguendo ${prefix}${commandName}:`, cmdErr);
+            await message.reply(`❌ Errore durante l'esecuzione del comando: \`${cmdErr.message}\``).catch(() => {});
+            return;
+          }
+        }
+      }
+    }
 
     // 3. AFK System: restore author status and alert on mentions/replies
     try {

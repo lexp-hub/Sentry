@@ -17,29 +17,57 @@ export default {
     try {
       // 1. Slash Commands & Context Menu Commands
       if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
-      const command = interaction.client.commands.get(interaction.commandName);
-      if (!command) {
-        console.error(`[Commands] Nessun comando trovato per ${interaction.commandName}`);
-        return;
-      }
+        const command = interaction.client.commands.get(interaction.commandName);
+        if (!command) {
+          console.error(`[Commands] Nessun comando trovato per ${interaction.commandName}`);
+          return;
+        }
 
-      try {
-        await command.execute(interaction);
-      } catch (error) {
-        console.error(`[Commands] Errore nell'esecuzione di ${interaction.commandName}:`, error);
-        const replyPayload = {
-          content: `❌ Si è verificato un errore durante l'esecuzione del comando: \`${error.message}\``,
-          ephemeral: true
+        // Timer watchdog: se il comando impiega più di 1500ms, esegue il deferReply per evitare il timeout di Discord (errore 10062)
+        let isHandled = false;
+        const autoDeferTimer = setTimeout(async () => {
+          if (!isHandled && !interaction.replied && !interaction.deferred) {
+            try {
+              await interaction.deferReply({ ephemeral: false });
+            } catch (e) {}
+          }
+        }, 1500);
+
+        // Wrapper sicuro per reply(): se il deferReply è già scattato, reindirizza automaticamente su editReply()
+        const originalReply = interaction.reply.bind(interaction);
+        interaction.reply = async (options) => {
+          isHandled = true;
+          clearTimeout(autoDeferTimer);
+          if (interaction.deferred) {
+            return await interaction.editReply(options);
+          }
+          if (interaction.replied) {
+            return await interaction.followUp(options);
+          }
+          return await originalReply(options);
         };
 
-        if (interaction.replied || interaction.deferred) {
-          await interaction.followUp(replyPayload).catch(() => {});
-        } else {
-          await interaction.reply(replyPayload).catch(() => {});
+        try {
+          await command.execute(interaction);
+          isHandled = true;
+        } catch (error) {
+          isHandled = true;
+          console.error(`[Commands] Errore nell'esecuzione di ${interaction.commandName}:`, error);
+          const replyPayload = {
+            content: `❌ Si è verificato un errore durante l'esecuzione del comando: \`${error.message}\``,
+            ephemeral: true
+          };
+
+          if (interaction.replied || interaction.deferred) {
+            await interaction.followUp(replyPayload).catch(() => {});
+          } else {
+            await interaction.reply(replyPayload).catch(() => {});
+          }
+        } finally {
+          clearTimeout(autoDeferTimer);
         }
+        return;
       }
-      return;
-    }
 
     // 2. Buttons
     if (interaction.isButton()) {
