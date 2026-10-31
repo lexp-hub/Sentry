@@ -1,0 +1,27 @@
+{
+  "name": "sentry-yapin",
+  "version": "1.0.0",
+  "description": "Sentry Bot edition optimized for the Yapin platform (yapin.gg / Yapper)",
+  "main": "bot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node --watch bot.js"
+  },
+  "keywords": [
+    "yapin",
+    "yapin-bot",
+    "sentry",
+    "moderation",
+    "autorole",
+    "welcomer"
+  ],
+  "author": "Sentry Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.22.3",
+    "ws": "^8.22.0"
+  }
+}
+

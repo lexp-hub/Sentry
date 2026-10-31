@@ -47,6 +47,17 @@ async function main() {
     console.log('\x1b[33m[Bot Avviso] DISCORD_BOT_TOKEN non impostato nelle variabili d\'ambiente.\x1b[0m');
     console.log('\x1b[32m[Dashboard] La Dashboard è pienamente accessibile all\'indirizzo: Sentry.wispbyte.app \x1b[0m\n');
   }
+
+  // Avvio simultaneo Sentry per Yapin (se configurato in .env)
+  if (CONFIG.YAPIN_ENABLED && CONFIG.YAPPER_BOT_TOKEN) {
+    try {
+      console.log('[Yapin] Inizializzazione Sentry per Yapin Platform...');
+      const { startYapinBot } = await import('./yapin/bot.js');
+      startYapinBot(CONFIG.YAPPER_BOT_TOKEN);
+    } catch (yapinErr) {
+      console.warn('[Yapin Warning] Impossibile avviare Sentry per Yapin:', yapinErr.message);
+    }
+  }
 }
 
 process.on('unhandledRejection', (reason) => {

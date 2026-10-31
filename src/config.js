@@ -42,6 +42,9 @@ export const CONFIG = {
   MYSQL_DATABASE: process.env.MYSQL_DATABASE || process.env.DB_NAME || 's4724_sentry',
   MYSQL_ENABLED: process.env.MYSQL_ENABLED !== 'false',
   PROMPT_PATH: path.join(__dirname, 'config/prompt.json'),
+
+  YAPPER_BOT_TOKEN: process.env.YAPPER_BOT_TOKEN || '',
+  YAPIN_ENABLED: process.env.YAPIN_ENABLED !== 'false',
   
   DEMO_MODE: process.env.DEMO_MODE === 'true' || (!process.env.DISCORD_BOT_TOKEN && !process.env.DISCORD_TOKEN)
 };

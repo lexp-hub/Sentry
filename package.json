@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js",
-    "deploy-commands": "node src/bot/deployCommands.js"
+    "deploy-commands": "node src/bot/deployCommands.js",
+    "start:yapin": "node yapin/bot.js"
   },
   "keywords": [
     "discord",
