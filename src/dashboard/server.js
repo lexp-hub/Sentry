@@ -136,7 +136,7 @@ export function createDashboardServer(botClient, yapinBot = null) {
 
     ws.send(JSON.stringify({
       type: 'INIT',
-      botOnline: Boolean(botClient?.isReady()),
+      botOnline: Boolean(botClient?.isReady() || yapinBot),
       botName: botClient?.user?.tag || CONFIG.BOT_NAME,
       timestamp: Date.now()
     }));

@@ -73,15 +73,16 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
   router.get('/status', (req, res) => {
     const isReady = Boolean(botClient?.isReady());
     res.json({
-      online: isReady,
-      botName: botClient?.user?.tag || CONFIG.BOT_NAME,
-      avatar: botClient?.user?.displayAvatarURL() || null,
-      guildsCount: isReady ? botClient.guilds.cache.size : 0,
+      online: Boolean(isReady || yapinBot),
+      botName: botClient?.user?.tag || (yapinBot ? 'Sentry (Yapin)' : CONFIG.BOT_NAME),
+      avatar: botClient?.user?.displayAvatarURL() || 'https://www.yapin.gg/favicon.ico',
+      guildsCount: (isReady ? botClient.guilds.cache.size : 0) + (yapinBot ? 1 : 0),
       usersCount: isReady ? botClient.guilds.cache.reduce((acc, g) => acc + (g.memberCount || 0), 0) : 0,
-      ping: isReady ? Math.round(botClient.ws.ping) : 0,
+      ping: isReady ? Math.round(botClient.ws.ping) : 20,
       uptime: process.uptime(),
-      demoMode: !isReady,
-      aiModel: CONFIG.CLOUDFLARE_MODEL
+      demoMode: !isReady && !yapinBot,
+      aiModel: CONFIG.CLOUDFLARE_MODEL,
+      yapinConnected: Boolean(yapinBot)
     });
   });
 
@@ -197,8 +198,15 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { invite, repId, notes, banner } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      const config = DatabaseHelper.getPartnershipConfig(guildId);
+      const saved = DatabaseHelper.addPartnership(guildId, invite, repId || 'yapin_user', req.session?.user?.id || 'admin', banner, notes);
+      notifySync(guildId, 'partnerships', req);
+      return res.json({ success: true, partnership: saved, platform: 'yapin' });
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Il bot non è presente in questo server.' });
+      return res.status(400).json({ error: 'Bot Discord non presente in questo server o offline.' });
     }
 
     const guild = botClient.guilds.cache.get(guildId);
@@ -222,8 +230,21 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, title, description, color, image } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      const config = DatabaseHelper.getPartnershipConfig(guildId);
+      const targetChannelId = channelId || config.channel_id;
+      if (!targetChannelId) return res.status(400).json({ error: 'Nessun canale partnership selezionato o configurato.' });
+      try {
+        await yapinBot.send(targetChannelId, `**[${title || 'Partnership'}]**\n${description || ''}`);
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Il bot non è presente in questo server.' });
+      return res.status(400).json({ error: 'Bot Discord non presente in questo server o offline.' });
     }
 
     try {
@@ -259,8 +280,21 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, title, description, color, image } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      const config = DatabaseHelper.getPresentationConfig(guildId);
+      const targetChannelId = channelId || config.channel_id;
+      if (!targetChannelId) return res.status(400).json({ error: 'Nessun canale presentazioni selezionato.' });
+      try {
+        await yapinBot.send(targetChannelId, `**[${title || 'Presentazioni'}]**\n${description || ''}`);
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Il bot non è presente in questo server.' });
+      return res.status(400).json({ error: 'Bot Discord non presente in questo server o offline.' });
     }
 
     try {
@@ -296,8 +330,21 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, title, description, color, image } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      const config = DatabaseHelper.getSetupShowcaseConfig(guildId);
+      const targetChannelId = channelId || config.channel_id;
+      if (!targetChannelId) return res.status(400).json({ error: 'Nessun canale showcase selezionato.' });
+      try {
+        await yapinBot.send(targetChannelId, `**[${title || 'Setup Showcase'}]**\n${description || ''}`);
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Il bot non è presente in questo server.' });
+      return res.status(400).json({ error: 'Bot Discord non presente in questo server o offline.' });
     }
 
     try {
@@ -368,8 +415,27 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, embedData, componentsData } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      if (!channelId) return res.status(400).json({ error: 'Seleziona un canale prima di inviare.' });
+      try {
+        let content = '';
+        if (embedData?.title) content += `**${embedData.title}**\n`;
+        if (embedData?.description) content += `${embedData.description}\n`;
+        if (Array.isArray(embedData?.fields)) {
+          for (const f of embedData.fields) {
+            if (f.name && f.value) content += `\n**${f.name}**\n${f.value}`;
+          }
+        }
+        await yapinBot.send(channelId, content.trim() || 'Sentry Embed');
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non collegato al server o offline.' });
+      return res.status(400).json({ error: 'Bot Discord non collegato al server o offline.' });
     }
 
     try {
@@ -453,8 +519,23 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, roleId, label, emoji, style, title, description } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      const saved = DatabaseHelper.addReactionRole(
+        guildId,
+        channelId,
+        `yap_rr_${Date.now()}`,
+        'BUTTON',
+        roleId,
+        emoji,
+        label,
+        style
+      );
+      notifySync(guildId, 'reaction_roles', req);
+      return res.json({ success: true, reactionRole: saved, platform: 'yapin' });
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non collegato al server.' });
+      return res.status(400).json({ error: 'Bot Discord non collegato al server o offline.' });
     }
 
     try {
@@ -544,8 +625,26 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
 
   router.post('/guilds/:guildId/autorole/test', requireModAuth, async (req, res) => {
     const guildId = req.params.guildId;
+
+    if (guildId.startsWith('yapin_')) {
+      const config = DatabaseHelper.getAutoroleConfig(guildId);
+      if (!config.user_role_id) {
+        return res.status(400).json({ error: 'Nessun ruolo utenti configurato nell\'Auto-Role.' });
+      }
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      try {
+        const yapinServerId = guildId.replace('yapin_', '');
+        const roles = await yapinBot.roles(yapinServerId).catch(() => []);
+        const role = roles.find(r => r.id === config.user_role_id);
+        if (!role) return res.status(400).json({ error: 'Ruolo non trovato su Yapin.' });
+        return res.json({ success: true, message: `Ruolo "${role.name}" verificato con successo su Yapin!` });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non collegato al server.' });
+      return res.status(400).json({ error: 'Bot Discord non collegato a questo server o offline.' });
     }
     const guild = botClient.guilds.cache.get(guildId);
     const config = DatabaseHelper.getAutoroleConfig(guildId);
@@ -635,8 +734,28 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
 
   router.post('/guilds/:guildId/welcomer/test', requireModAuth, async (req, res) => {
     const guildId = req.params.guildId;
+
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) {
+        return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      }
+      try {
+        const config = DatabaseHelper.getWelcomerConfig(guildId);
+        const channelId = config.welcome_channel_id || req.body?.welcome_channel_id;
+        if (!channelId) {
+          return res.status(400).json({ error: 'Seleziona prima un canale di benvenuto e clicca Salva.' });
+        }
+        const title = config.welcome_embed?.title || 'Welcome to the Realm!';
+        const desc = config.welcome_message || config.welcome_embed?.description || 'Benvenuto nel Reame Yapin!';
+        await yapinBot.send(channelId, `**[Welcomer Test]** ${title}\n${desc}`);
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (e) {
+        return res.status(500).json({ error: `Errore invio Yapin: ${e.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non collegato.' });
+      return res.status(400).json({ error: 'Bot Discord non collegato a questo server o offline.' });
     }
 
     try {
@@ -678,8 +797,22 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
 
   router.post('/guilds/:guildId/boost/test', requireModAuth, async (req, res) => {
     const guildId = req.params.guildId;
+
+    if (guildId.startsWith('yapin_')) {
+      const config = DatabaseHelper.getBoostConfig(guildId);
+      const targetChanId = req.body?.channel_id || config.boost_channel_id;
+      if (!targetChanId) return res.status(400).json({ error: 'Seleziona prima un canale per il test del Boost.' });
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      try {
+        await yapinBot.send(targetChanId, '**[Sentry Boost Test]** Un membro ha potenziato il server!');
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (e) {
+        return res.status(500).json({ error: `Errore invio Yapin: ${e.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non collegato.' });
+      return res.status(400).json({ error: 'Bot Discord non collegato a questo server o offline.' });
     }
 
     try {
@@ -1024,8 +1157,21 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, title, description, image } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      const config = DatabaseHelper.getFishingConfig(guildId);
+      const targetChannelId = channelId || config.channel_id;
+      if (!targetChannelId) return res.status(400).json({ error: 'Seleziona prima il canale in cui inviare il pannello di pesca.' });
+      try {
+        await yapinBot.send(targetChannelId, `**[${title || 'Laghetto di Pesca Sentry'}]**\n${description || 'Usa il comando /pesca per catturare pesci rari e scalare la classifica!'}`);
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non collegato a questo server.' });
+      return res.status(400).json({ error: 'Bot Discord non collegato a questo server o offline.' });
     }
 
     try {
@@ -1060,8 +1206,21 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, title, description, gameType } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      const config = DatabaseHelper.getMinigamesConfig(guildId);
+      const targetChannelId = channelId || config.general_channel_id;
+      if (!targetChannelId) return res.status(400).json({ error: 'Seleziona prima il canale in cui inviare il pannello.' });
+      try {
+        await yapinBot.send(targetChannelId, `**[${title || 'Sala Giochi & Minigames Sentry'}]**\n${description || 'Divertiti con i minigiochi medievali del server!'}`);
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non collegato a questo server.' });
+      return res.status(400).json({ error: 'Bot Discord non collegato a questo server o offline.' });
     }
 
     try {
@@ -1181,8 +1340,21 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const { channelId, title, description, image } = req.body;
     const guildId = req.params.guildId;
 
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      const config = DatabaseHelper.getTempChannelConfig(guildId);
+      const targetChannelId = channelId || config.panel_channel_id;
+      if (!targetChannelId) return res.status(400).json({ error: 'Seleziona prima il canale in cui inviare il pannello.' });
+      try {
+        await yapinBot.send(targetChannelId, `**[${title || 'Stanze Vocali Temporanee'}]**\n${description || 'Entra nella stanza per creare il tuo canale vocale privato!'}`);
+        return res.json({ success: true, platform: 'yapin' });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
+      }
+    }
+
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
-      return res.status(400).json({ error: 'Bot non connesso a questo server.' });
+      return res.status(400).json({ error: 'Bot Discord non connesso a questo server o offline.' });
     }
 
     try {
