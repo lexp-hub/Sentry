@@ -477,7 +477,7 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
 
       const embed = new EmbedBuilder()
         .setColor(CONFIG.EMBED_COLOR)
-        .setTitle(title || '🎭 Selezione Ruolo')
+        .setTitle(title || 'Role Selection')
         .setDescription(description || `Clicca sul pulsante per ricevere o toglierti il ruolo ${role}.`)
         .setFooter({ text: 'Sentry • Reaction Roles' })
         .setTimestamp();
@@ -616,7 +616,7 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
       try {
         const chan = botClient.channels.cache.get(bridge.discord_channel_id) || await botClient.channels.fetch(bridge.discord_channel_id);
         if (chan?.isTextBased()) {
-          await chan.send('🌉 **[Sentry Bridge Test]** Verifica connessione cross-platform completata con successo!');
+          await chan.send('**[Sentry Bridge Test]** Verifica connessione cross-platform completata con successo!');
           discordOk = true;
         }
       } catch (e) {}
@@ -625,7 +625,7 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     // Invia test a Yapin
     if (yapinBot) {
       try {
-        await yapinBot.send(bridge.yapin_channel_id, '🌉 **[Sentry Bridge Test]** Cross-platform connection verified successfully!');
+        await yapinBot.send(bridge.yapin_channel_id, '**[Sentry Bridge Test]** Cross-platform connection verified successfully!');
         yapinOk = true;
       } catch (e) {}
     }
@@ -749,14 +749,14 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
           const btn = new ButtonBuilder()
             .setCustomId(`ticket_open_${panelId}`)
             .setLabel(buttonLabel || 'Apri Ticket')
-            .setEmoji(buttonEmoji || '📩')
+            .setEmoji(buttonEmoji || null)
             .setStyle(ButtonStyle[buttonStyle] || ButtonStyle.Primary);
 
           const row = new ActionRowBuilder().addComponents(btn);
 
           const embed = new EmbedBuilder()
             .setColor(color || CONFIG.EMBED_COLOR || '#ea580c')
-            .setTitle(title || '🎫 Centro Supporto & Assistenza')
+            .setTitle(title || 'Support & Help Center')
             .setDescription(description || 'Clicca sul pulsante sottostante per aprire una richiesta di supporto privata.')
             .setFooter({ text: footer || `${guild.name} • Sistema Ticket`, iconURL: guild.iconURL() })
             .setTimestamp();
@@ -1081,15 +1081,15 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
 
         const embed = new EmbedBuilder()
           .setColor('#eab308')
-          .setTitle(title || '🏰 Sala Giochi & Casinò del Regno')
+          .setTitle(title || 'Gaming & Casino Hub')
           .setDescription(description ||
             `Benvenuto nella **Sala Giochi Ufficiale** di **${guild.name}**!\n\n` +
             `Metti alla prova la tua fortuna e abilità nei minigiochi medievali di Sentry!\n\n` +
-            `🎮 **Attività Disponibili:**\n` +
-            `• 🎣 **Pesca Medievale**: Lancia l'amo nel Lago Sacro per pescare oltre 25 specie e tesori sommersi.\n` +
-            `• 🃏 **Tavolo da Blackjack**: Sfida il Banco a 21 con raddoppio e vincite reali.\n` +
-            `• 🎰 **Slot Machine**: Gira i rulli alla ricerca del Tris Reale (Jackpot x10).\n` +
-            `• 🎁 **Ricompensa Giornaliera**: Riscatta le tue monete quotidiane gratuite ogni 24h!`
+            `**Available Games:**\n` +
+            `• **Medieval Fishing**: Lancia l'amo nel Lago Sacro per pescare oltre 25 specie e tesori sommersi.\n` +
+            `• **Blackjack Table**: Sfida il Banco a 21 con raddoppio e vincite reali.\n` +
+            `• **Slot Machine**: Gira i rulli alla ricerca del Tris Reale (Jackpot x10).\n` +
+            `• **Daily Reward**: Riscatta le tue monete quotidiane gratuite ogni 24h!`
           )
           .setThumbnail(guild.iconURL({ dynamic: true, size: 256 }))
           .setImage('https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=1200&q=80')
@@ -1097,15 +1097,15 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
           .setTimestamp();
 
         const row1 = new ActionRowBuilder().addComponents(
-          new ButtonBuilder().setCustomId('btn_hub_fishing').setLabel('Pesca Medievale').setEmoji('🎣').setStyle(ButtonStyle.Primary),
-          new ButtonBuilder().setCustomId('btn_hub_blackjack').setLabel('Blackjack (50 🪙)').setEmoji('🃏').setStyle(ButtonStyle.Success),
-          new ButtonBuilder().setCustomId('btn_hub_slots').setLabel('Slot Machine (50 🪙)').setEmoji('🎰').setStyle(ButtonStyle.Secondary),
-          new ButtonBuilder().setCustomId('btn_hub_daily').setLabel('Daily Reward').setEmoji('🎁').setStyle(ButtonStyle.Secondary)
+          new ButtonBuilder().setCustomId('btn_hub_fishing').setLabel('Pesca Medievale').setStyle(ButtonStyle.Primary),
+          new ButtonBuilder().setCustomId('btn_hub_blackjack').setLabel('Blackjack (50 Coins)').setStyle(ButtonStyle.Success),
+          new ButtonBuilder().setCustomId('btn_hub_slots').setLabel('Slot Machine (50 Coins)').setStyle(ButtonStyle.Secondary),
+          new ButtonBuilder().setCustomId('btn_hub_daily').setLabel('Daily Reward').setStyle(ButtonStyle.Secondary)
         );
 
         const row2 = new ActionRowBuilder().addComponents(
-          new ButtonBuilder().setCustomId('btn_hub_profile').setLabel('Controlla Saldo & Forziere').setEmoji('🪙').setStyle(ButtonStyle.Primary),
-          new ButtonBuilder().setCustomId('btn_hub_top').setLabel('Classifica Ricchezza').setEmoji('🏆').setStyle(ButtonStyle.Secondary)
+          new ButtonBuilder().setCustomId('btn_hub_profile').setLabel('Controlla Saldo & Forziere').setStyle(ButtonStyle.Primary),
+          new ButtonBuilder().setCustomId('btn_hub_top').setLabel('Classifica Ricchezza').setStyle(ButtonStyle.Secondary)
         );
 
         await channel.send({ embeds: [embed], components: [row1, row2] });

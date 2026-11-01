@@ -97,7 +97,7 @@ export const YapinAutoMod = {
 
       // 3. Notifica di avviso nel canale
       const userMention = `<@${msg.author_id}>`;
-      await bot.send(msg.channel_id, `🛡️ **[Sentry AutoMod]** ${userMention} è stato silenziato per **${timeoutMinutes}m**.\n> **Motivo:** ${reason}`);
+      await bot.send(msg.channel_id, `**[Sentry AutoMod]** ${userMention} was timed out for **${timeoutMinutes}m**.\n> **Reason:** ${reason}`);
     } catch (err) {
       console.warn('[Yapin AutoMod] Errore applicazione sanzione:', err.message);
     }

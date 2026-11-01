@@ -4,11 +4,11 @@ import { Embed } from '../yapper.js';
 export const YapinAI = {
   async handleQuery(ctx, promptText) {
     if (!promptText || promptText.trim().length === 0) {
-      return ctx.reply('💬 Chiedimi qualsiasi cosa! Es: `/ai spiegami come funziona la crittografia E2EE di Yapin`');
+      return ctx.reply('Chiedimi qualsiasi cosa! Es: `/ai spiegami come funziona la crittografia E2EE di Yapin`');
     }
 
     try {
-      const waitMsg = await ctx.reply('🧠 *Sentry Neural Core sta elaborando la risposta...*');
+      const waitMsg = await ctx.reply('*Sentry Neural Core sta elaborando la risposta...*');
 
       const messages = [
         { role: 'user', content: promptText }
@@ -19,7 +19,7 @@ export const YapinAI = {
       const aiReply = await AIManager.getAIResponse(messages, systemPrompt);
 
       const embed = new Embed()
-        .title('🤖 Sentry Neural Core (Llama 70B)')
+        .title('[AI] Sentry Neural Core (Llama 70B)')
         .field('Domanda', `*${promptText.slice(0, 150)}*`)
         .description(aiReply || 'Non sono riuscito a generare una risposta al momento.')
         .color('#6366f1');
@@ -33,7 +33,7 @@ export const YapinAI = {
       ctx.reply('', { embeds: [embed] });
     } catch (err) {
       console.error('[Yapin AI Error]:', err.message);
-      ctx.reply(`❌ Errore durante l'interrogazione dell'AI: ${err.message}`);
+      ctx.reply(`[Error] Errore durante l'interrogazione dell'AI: ${err.message}`);
     }
   }
 };

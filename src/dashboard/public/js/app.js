@@ -221,7 +221,7 @@ function initWebSocket() {
           if (data.guildId === window.AppState.currentGuildId) {
             console.log(`[WebSocket] Received real-time update for module "${data.module}" by ${data.updatedBy}`);
             window.reloadCurrentGuildData(true);
-            window.showToast(`⚡ Live Sync: module "${data.module}" updated by ${data.updatedBy}`);
+            window.showToast(`[Live Sync] Module "${data.module}" updated by ${data.updatedBy}`);
           }
         }
       } catch (e) {}
@@ -304,7 +304,7 @@ window.switchProfile = async function(platform) {
   }).catch(() => {});
 
   await loadGuilds(platform);
-  window.showToast(`Switched to ${platform === 'yapin' ? '🛡️ Yapin Profile' : '🎮 Discord Profile'}!`);
+  window.showToast(`Switched to ${platform === 'yapin' ? 'Yapin Profile' : 'Discord Profile'}!`);
 };
 
 async function loadGuilds(filterPlatform = null) {
@@ -332,15 +332,15 @@ async function loadGuilds(filterPlatform = null) {
     }
 
     const discordGroup = document.createElement('optgroup');
-    discordGroup.label = '🎮 Discord Servers';
+    discordGroup.label = 'Discord Servers';
     const yapinGroup = document.createElement('optgroup');
-    yapinGroup.label = '🛡️ Yapin Realms';
+    yapinGroup.label = 'Yapin Realms';
 
     guilds.forEach(g => {
       const opt = document.createElement('option');
       opt.value = g.id;
       const isYapin = g.platform === 'yapin' || g.id.startsWith('yapin_');
-      opt.textContent = `${isYapin ? '🛡️' : '🎮'} ${g.rawName || g.name} (${g.memberCount} members)`;
+      opt.textContent = `${isYapin ? '[Yapin]' : '[Discord]'} ${g.rawName || g.name} (${g.memberCount} members)`;
       if (isYapin) {
         yapinGroup.appendChild(opt);
       } else {
@@ -409,7 +409,7 @@ window.reloadCurrentGuildData = async function(silent = false) {
     }
 
     if (!silent) {
-      window.showToast('✅ Data successfully synchronized from database!');
+      window.showToast('[Success] Data synchronized from database!');
     }
   } catch (err) {
     console.error('[Sync] Error during synchronization:', err);
@@ -446,7 +446,7 @@ window.forceReloadModulesAndCache = async function(hardReload = false) {
     const guildId = window.AppState.currentGuildId;
     if (!guildId) {
       await loadGuilds();
-      window.showToast('🔄 Server list and cache reloaded!');
+      window.showToast('[Reload] Server list and cache reloaded!');
       return;
     }
 
@@ -500,7 +500,7 @@ window.forceReloadModulesAndCache = async function(hardReload = false) {
         await window.loadCloudStatus();
       }
 
-      window.showToast('🔄 Modules and cache reloaded successfully!');
+      window.showToast('[Reload] Modules and cache reloaded successfully!');
     } else {
       window.showToast('Error during server response.', 'error');
     }
@@ -606,7 +606,7 @@ window.updateUserCoinsDisplay = async function(guildId) {
       const sidebarCoinsEl = document.getElementById('user-sidebar-coins');
       const headerCoinsEl = document.getElementById('user-header-coins');
       if (sidebarCoinsEl) sidebarCoinsEl.textContent = coins;
-      if (headerCoinsEl) headerCoinsEl.textContent = `${coins} 🪙`;
+      if (headerCoinsEl) headerCoinsEl.textContent = `${coins} Coins`;
     }
   } catch (e) {
     console.error('Error updating user coins display:', e);
@@ -672,7 +672,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     voiceChannels.forEach(c => {
       const opt = document.createElement('option');
       opt.value = c.id;
-      opt.textContent = `🔊 ${c.name}`;
+      opt.textContent = `[Voice] ${c.name}`;
       vSelect.appendChild(opt);
     });
 
@@ -701,7 +701,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     categories.forEach(c => {
       const opt = document.createElement('option');
       opt.value = c.id;
-      opt.textContent = `📁 ${c.name}`;
+      opt.textContent = `[Category] ${c.name}`;
       catSelect.appendChild(opt);
     });
 
@@ -762,7 +762,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     allMembers.forEach(m => {
       const opt = document.createElement('option');
       opt.value = m.id;
-      const coinText = m.coins !== undefined ? ` — ${Number(m.coins).toLocaleString()} 🪙` : '';
+      const coinText = m.coins !== undefined ? ` — ${Number(m.coins).toLocaleString()} Coins` : '';
       opt.textContent = `${m.displayName || m.name} (@${m.name})${coinText}`;
       memberSelect.appendChild(opt);
     });

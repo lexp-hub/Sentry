@@ -1025,7 +1025,7 @@ export class Button {
   static link(label, url) { return new Button({ style: 'link', label, url }); }
   style(s) { this.data.style = s; return this; }
   label(t) { this.data.label = String(t); return this; }
-  /** One emoji: '🔥' or a server emoji '<:name:id>'. */
+  /** One emoji name or server emoji '<:name:id>'. */
   emoji(e) { this.data.emoji = String(e); return this; }
   id(customId) { this.data.custom_id = String(customId); return this; }
   url(u) { this.data.style = 'link'; this.data.url = String(u); delete this.data.custom_id; return this; }

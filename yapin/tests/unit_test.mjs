@@ -8,7 +8,7 @@ import { YapinMinigames } from '../src/modules/yapinMinigames.js';
 import { YapinLiveStats } from '../src/modules/yapinLiveStats.js';
 import { DatabaseHelper } from '../../src/database/db.js';
 
-console.log('🧪 Starting Yapin Sentry Test Suite...\n');
+console.log('Starting Yapin Sentry Test Suite...\n');
 
 // Mock helper to build a fake context
 function createMockCtx(userId = 'user_test_999', serverId = 'server_test_888', channelId = 'channel_test_777', argv = [], content = '') {
@@ -54,13 +54,13 @@ async function runTests() {
   const testUser = 'user_test_999';
 
   // 1. TEST ECONOMY
-  console.log('1️⃣ Testing YapinEconomy...');
+  console.log('1. Testing YapinEconomy...');
   {
     const { ctx, getContextData } = createMockCtx(testUser, 'server_test_888', 'channel_test_777');
     await YapinEconomy.handleBalance(ctx, getContextData);
     let reply = ctx.getReply();
     assert(reply.embeds.length > 0, 'Economy handleBalance should produce an embed');
-    assert(reply.embeds[0].data.title.includes('Portafoglio'), 'Embed should mention Portafoglio');
+    assert(reply.embeds[0].data.title.includes('Wallet'), 'Embed should mention Wallet');
 
     // Daily claim
     await YapinEconomy.handleDaily(ctx, getContextData);
@@ -72,11 +72,11 @@ async function runTests() {
     await YapinEconomy.handlePay(payCtx, payData);
     reply = payCtx.getReply();
     assert(reply.embeds.length > 0, 'handlePay should produce an embed');
-    console.log('   ✅ YapinEconomy tests passed!');
+    console.log('   [PASS] YapinEconomy tests passed!');
   }
 
   // 2. TEST FISHING
-  console.log('\n2️⃣ Testing YapinFishing...');
+  console.log('\n2. Testing YapinFishing...');
   {
     const { ctx, getContextData } = createMockCtx(testUser, 'server_test_888', 'channel_test_777');
     await YapinFishing.handleFish(ctx, getContextData);
@@ -90,21 +90,21 @@ async function runTests() {
     await YapinFishing.handleUpgrade(ctx, getContextData);
     reply = ctx.getReply();
     assert(reply.embeds.length > 0 || reply.text.length > 0, 'handleUpgrade should respond');
-    console.log('   ✅ YapinFishing tests passed!');
+    console.log('   [PASS] YapinFishing tests passed!');
   }
 
   // 3. TEST BLACKJACK
-  console.log('\n3️⃣ Testing YapinBlackjack...');
+  console.log('\n3. Testing YapinBlackjack...');
   {
     const { ctx, getContextData } = createMockCtx(testUser, 'server_test_888', 'channel_test_777', ['10']);
     await YapinBlackjack.handleBlackjack(ctx, getContextData);
     let reply = ctx.getReply();
     assert(reply.embeds.length > 0, 'handleBlackjack should produce an embed');
-    console.log('   ✅ YapinBlackjack start passed!');
+    console.log('   [PASS] YapinBlackjack start passed!');
   }
 
   // 4. TEST LEVELING & XP
-  console.log('\n4️⃣ Testing YapinLeveling...');
+  console.log('\n4. Testing YapinLeveling...');
   {
     const mockMsg = {
       author_id: testUser,
@@ -126,11 +126,11 @@ async function runTests() {
     await YapinLeveling.handleLeaderboard(ctx, getContextData);
     reply = ctx.getReply();
     assert(reply.embeds.length > 0, 'handleLeaderboard should produce an embed');
-    console.log('   ✅ YapinLeveling tests passed!');
+    console.log('   [PASS] YapinLeveling tests passed!');
   }
 
   // 5. TEST AUTOMOD
-  console.log('\n5️⃣ Testing YapinAutoMod...');
+  console.log('\n5. Testing YapinAutoMod...');
   {
     const cleanMsg = {
       id: 'msg_clean',
@@ -156,11 +156,11 @@ async function runTests() {
     };
     const flaggedBad = await YapinAutoMod.handleMessage(fakeBot, badMsg);
     assert.strictEqual(flaggedBad, true, 'Discord invite should be flagged');
-    console.log('   ✅ YapinAutoMod tests passed!');
+    console.log('   [PASS] YapinAutoMod tests passed!');
   }
 
   // 6. TEST MINIGAMES
-  console.log('\n6️⃣ Testing YapinMinigames...');
+  console.log('\n6. Testing YapinMinigames...');
   {
     const { ctx: coinCtx, getContextData: coinData } = createMockCtx(testUser, 'server_test_888', 'channel_test_777', ['heads', '10']);
     await YapinMinigames.handleCoinflip(coinCtx, coinData);
@@ -174,11 +174,11 @@ async function runTests() {
 
     const { ctx: countCtx, getContextData: countData } = createMockCtx(testUser, 'server_test_888', 'channel_test_777', ['1']);
     await YapinMinigames.handleCount(countCtx, countData);
-    console.log('   ✅ YapinMinigames tests passed!');
+    console.log('   [PASS] YapinMinigames tests passed!');
   }
 
   // 7. TEST LIVESTATS
-  console.log('\n7️⃣ Testing YapinLiveStats...');
+  console.log('\n7. Testing YapinLiveStats...');
   {
     const fakeBot = {
       memberCounts: async () => ({ member_count: 42, online_count: 15 }),
@@ -197,25 +197,25 @@ async function runTests() {
     await YapinLiveStats.handleRealmOverview(fakeBot, ctx, getContextData);
     reply = ctx.getReply();
     assert(reply.embeds.length > 0, 'handleRealmOverview should return an embed');
-    console.log('   ✅ YapinLiveStats tests passed!');
+    console.log('   [PASS] YapinLiveStats tests passed!');
   }
 
   // 8. TEST AI PROMPT EMPTY
-  console.log('\n8️⃣ Testing YapinAI empty prompt check...');
+  console.log('\n8. Testing YapinAI empty prompt check...');
   {
     const { YapinAI } = await import('../src/modules/yapinAI.js');
     const { ctx } = createMockCtx(testUser, 'server_test_888', 'channel_test_777');
     await YapinAI.handleQuery(ctx, '');
     const reply = ctx.getReply();
     assert(reply.text.includes('Chiedimi qualsiasi cosa'), 'Empty prompt should return advice');
-    console.log('   ✅ YapinAI validation passed!');
+    console.log('   [PASS] YapinAI validation passed!');
   }
 
-  console.log('\n🎉 ALL YAPIN UNIT TESTS PASSED PERFECTLY!\n');
+  console.log('\nALL YAPIN UNIT TESTS PASSED PERFECTLY!\n');
   process.exit(0);
 }
 
 runTests().catch(err => {
-  console.error('❌ Test failed with error:', err);
+  console.error('[FAIL] Test failed with error:', err);
   process.exit(1);
 });

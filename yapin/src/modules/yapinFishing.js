@@ -41,7 +41,7 @@ export const YapinFishing = {
 
   async handleFish(ctx, getContextData) {
     const { serverId, authorId } = getContextData(ctx);
-    if (!serverId) return ctx.reply('❌ Puoi pescare solo all\'interno di un server.');
+    if (!serverId) return ctx.reply('[Error] Puoi pescare solo all\'interno di un server.');
 
     const key = `${serverId}_${authorId}`;
     const now = Date.now();
@@ -50,7 +50,7 @@ export const YapinFishing = {
 
     if (now - last < cooldownMs) {
       const waitSec = Math.ceil((cooldownMs - (now - last)) / 1000);
-      return ctx.reply(`🎣 Stai ancora riavvolgendo la lenza! Attendi **${waitSec}s** prima di lanciare di nuovo.`);
+      return ctx.reply(`Stai ancora riavvolgendo la lenza! Attendi **${waitSec}s** prima di lanciare di nuovo.`);
     }
 
     fishCooldowns.set(key, now);
@@ -63,11 +63,11 @@ export const YapinFishing = {
     YapinEconomy.addCoins(serverId, authorId, coinsEarned);
 
     const embed = new Embed()
-      .title(`🎣 Battuta di Pesca | <@${authorId}>`)
+      .title(`Battuta di Pesca | <@${authorId}>`)
       .description(`Hai lanciato la tua **${rod.name}** nelle acque del Realm...\n\n` +
         `**Hai catturato:** ${catchItem.emoji} **${catchItem.name}**!\n` +
         `• **Rarità:** \`${catchItem.rarity}\`\n` +
-        `• **Valore di Vendita:** \`+${coinsEarned} 🪙 Monete\`\n\n` +
+        `• **Valore di Vendita:** \`+${coinsEarned} Coins Monete\`\n\n` +
         `*Le monete sono state accreditate istantaneamente al tuo portafoglio.*`)
       .color(catchItem.color || '#3b82f6');
 
@@ -82,15 +82,15 @@ export const YapinFishing = {
     const nextRod = FISHING_RODS[rodLevel + 1];
 
     const embed = new Embed()
-      .title(`🎒 Equipaggiamento da Pesca | <@${authorId}>`)
-      .field('Canna Attuale', `${rod.emoji} **${rod.name}** (Livello ${rod.level})\n> ${rod.desc}`, false)
+      .title(`Equipaggiamento da Pesca | <@${authorId}>`)
+      .field('Current Rod', `${rod.emoji} **${rod.name}** (Livello ${rod.level})\n> ${rod.desc}`, false)
       .field('Bonus Fortuna', `\`+${rod.catchBonus}% probabilità oggetti rari e leggendari\``, true)
       .field('Pesci Pescati', `\`${profile.fish_caught || 0}\``, true);
 
     if (nextRod) {
-      embed.field('Prossimo Upgrade', `Compra **${nextRod.name}** per **${nextRod.cost} 🪙** con il comando \`/upgrade-rod\`!`, false);
+      embed.field('Prossimo Upgrade', `Compra **${nextRod.name}** per **${nextRod.cost} Coins** con il comando \`/upgrade-rod\`!`, false);
     } else {
-      embed.field('Stato Canna', `⭐ Possiedi la canna massima celestiale!`, false);
+      embed.field('Stato Canna', `Possiedi la canna massima celestiale!`, false);
     }
 
     embed.color('#06b6d4');
@@ -99,19 +99,19 @@ export const YapinFishing = {
 
   async handleUpgrade(ctx, getContextData) {
     const { serverId, authorId } = getContextData(ctx);
-    if (!serverId) return ctx.reply('❌ Comando disponibile solo nei server.');
+    if (!serverId) return ctx.reply('[Error] Comando disponibile solo nei server.');
 
     const profile = this.getProfile(serverId, authorId);
     const currentLevel = profile.rod_level || 1;
     const nextRod = FISHING_RODS[currentLevel + 1];
 
     if (!nextRod) {
-      return ctx.reply('🌟 Possiedi già la canna di livello massimo! Nessun upgrade disponibile.');
+      return ctx.reply('Possiedi già la canna di livello massimo! Nessun upgrade disponibile.');
     }
 
     const econProfile = YapinEconomy.getProfile(serverId, authorId);
     if ((econProfile.balance || 0) < nextRod.cost) {
-      return ctx.reply(`❌ Ti mancano monete. Il potenziamento a **${nextRod.name}** costa **${nextRod.cost} 🪙** (Hai: ${econProfile.balance || 0} 🪙).`);
+      return ctx.reply(`[Error] Ti mancano monete. Il potenziamento a **${nextRod.name}** costa **${nextRod.cost} Coins** (Hai: ${econProfile.balance || 0} Coins).`);
     }
 
     YapinEconomy.addCoins(serverId, authorId, -nextRod.cost);
@@ -121,10 +121,10 @@ export const YapinFishing = {
     } catch (e) {}
 
     const embed = new Embed()
-      .title('✨ Potenziamento Canna Completato!')
+      .title('Potenziamento Canna Completato!')
       .description(`Congratulazioni <@${authorId}>! La tua canna è stata forgiata a **${nextRod.name}**!\n\n` +
         `• **Nuovo Bonus:** \`+${nextRod.catchBonus}%\` fortuna su creature leggendarie.\n` +
-        `• **Monete Spese:** \`${nextRod.cost} 🪙\``)
+        `• **Monete Spese:** \`${nextRod.cost} Coins\``)
       .color('#10b981');
 
     ctx.reply('', { embeds: [embed] });

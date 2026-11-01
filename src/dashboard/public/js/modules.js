@@ -190,7 +190,7 @@
           lbDiv.innerHTML = '<p class="text-slate-500 text-center py-2">Nessun partner manager attivo.</p>';
         } else {
           lb.forEach((entry, idx) => {
-            const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+            const medal = idx === 0 ? '#1' : idx === 1 ? '#2' : idx === 2 ? '#3' : `#${idx + 1}`;
             const item = document.createElement('div');
             item.className = 'p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 shadow-sm flex items-center justify-between';
             item.innerHTML = `
@@ -246,7 +246,7 @@
     btnSendPartnerPanel.addEventListener('click', async () => {
       const guildId = window.AppState.currentGuildId;
       const channelId = document.getElementById('part-channel')?.value;
-      const title = document.getElementById('part-panel-title')?.value || '🤝 Sistema Partnership & Alleanze';
+      const title = document.getElementById('part-panel-title')?.value || 'Partnerships System & Hub';
       const description = document.getElementById('part-panel-desc')?.value?.trim() || null;
       const image = document.getElementById('part-panel-image')?.value?.trim() || null;
 
@@ -338,7 +338,7 @@
           card.className = 'p-3 rounded-xl bg-slate-900/80 border border-slate-800 shadow-sm flex items-center justify-between';
           card.innerHTML = `
             <div class="flex items-center gap-3">
-              <span class="text-base">${item.emoji || '🔘'}</span>
+              <span class="text-base">${item.emoji || '[*]'}</span>
               <div>
                 <p class="font-bold text-xs text-white">${item.label || 'Ruolo'}</p>
                 <p class="text-[11px] text-slate-400">Ruolo: &lt;@&amp;${item.role_id}&gt; • Canale: &lt;#${item.channel_id}&gt;</p>
@@ -375,8 +375,8 @@
       const roleId = document.getElementById('rr-role')?.value;
       const style = document.getElementById('rr-style')?.value || 'Primary';
       const label = document.getElementById('rr-label')?.value || 'Ruolo';
-      const emoji = document.getElementById('rr-emoji')?.value || '🔘';
-      const title = document.getElementById('rr-title')?.value || '🎭 Selezione Ruolo';
+      const emoji = document.getElementById('rr-emoji')?.value || '[*]';
+      const title = document.getElementById('rr-title')?.value || 'Role Selection';
 
       if (!channelId || !roleId) return window.showToast('Please select channel and role.', 'error');
 
@@ -558,13 +558,13 @@
   }
 
   function updateTicketPreview() {
-    const title = document.getElementById('tk-title')?.value || '🎫 Centro Supporto & Assistenza';
+    const title = document.getElementById('tk-title')?.value || 'Support & Help Center';
     const desc = document.getElementById('tk-description')?.value || 'Clicca sul pulsante sottostante per aprire un ticket.';
     const color = document.getElementById('tk-color')?.value || '#dc2626';
     const image = document.getElementById('tk-image')?.value?.trim();
     const footer = document.getElementById('tk-footer')?.value || 'Sentry • Sistema Ticket';
     const btnLabel = document.getElementById('tk-btn-label')?.value || 'Apri Ticket';
-    const btnEmoji = document.getElementById('tk-btn-emoji')?.value || '📩';
+    const btnEmoji = document.getElementById('tk-btn-emoji')?.value || '[Open]';
     const btnStyle = document.getElementById('tk-btn-style')?.value || 'Primary';
 
     const prevBox = document.getElementById('prev-tk-embed-box');
@@ -947,7 +947,7 @@
       const channelId = document.getElementById('pres-channel')?.value;
       if (!channelId) return window.showToast('Select a channel to send the introductions panel.', 'error');
 
-      const title = document.getElementById('pres-panel-title')?.value || '📜 Benvenuto nella Sala delle Presentazioni';
+      const title = document.getElementById('pres-panel-title')?.value || 'Welcome to Introductions';
       const description = document.getElementById('pres-panel-desc')?.value?.trim() || null;
       const image = document.getElementById('pres-panel-image')?.value?.trim() || null;
 
@@ -1001,11 +1001,11 @@
       if (channelEl && config.channel_id) channelEl.value = config.channel_id;
       if (roleEl && config.reward_role_id) roleEl.value = config.reward_role_id;
       if (xpEl) xpEl.value = config.xp_reward !== undefined ? config.xp_reward : 50;
-      if (titleEl) titleEl.value = config.title || '🖥️ Setup & Postazione';
+      if (titleEl) titleEl.value = config.title || 'Setup Showcase';
       if (colorEl) colorEl.value = config.color || '#dc2626';
       if (pickerEl) pickerEl.value = config.color || '#dc2626';
       if (reactionsEl) {
-        reactionsEl.value = Array.isArray(config.auto_reactions) ? config.auto_reactions.join(', ') : '🔥, ⭐, ❤️';
+        reactionsEl.value = Array.isArray(config.auto_reactions) ? config.auto_reactions.join(', ') : 'up, star, heart';
       }
       if (autoThreadEl) autoThreadEl.checked = config.auto_thread !== false;
       if (deleteInvalidEl) deleteInvalidEl.checked = Boolean(config.delete_invalid);
@@ -1064,9 +1064,9 @@
       const channel_id = document.getElementById('setup-channel')?.value || null;
       const reward_role_id = document.getElementById('setup-role')?.value || null;
       const xp_reward = parseInt(document.getElementById('setup-xp')?.value || '50', 10);
-      const title = document.getElementById('setup-title')?.value || '🖥️ Setup & Postazione';
+      const title = document.getElementById('setup-title')?.value || 'Setup Showcase';
       const color = document.getElementById('setup-color')?.value || '#dc2626';
-      const rawReactions = document.getElementById('setup-reactions')?.value || '🔥, ⭐, ❤️';
+      const rawReactions = document.getElementById('setup-reactions')?.value || 'up, star, heart';
       const auto_reactions = rawReactions.split(',').map(r => r.trim()).filter(Boolean);
       const auto_thread = document.getElementById('setup-auto-thread')?.checked;
       const delete_invalid = document.getElementById('setup-delete-invalid')?.checked;
@@ -1106,7 +1106,7 @@
       const channelId = document.getElementById('setup-channel')?.value;
       if (!channelId) return window.showToast('Seleziona un canale per inviare il pannello regole setup.', 'error');
 
-      const title = document.getElementById('setup-panel-title')?.value || '🖥️ Condividi la Tua Postazione da Battaglia';
+      const title = document.getElementById('setup-panel-title')?.value || 'Share Your Battle Station';
       const description = document.getElementById('setup-panel-desc')?.value?.trim() || null;
       const image = document.getElementById('setup-panel-image')?.value?.trim() || null;
       const color = document.getElementById('setup-color')?.value || '#dc2626';
@@ -1160,7 +1160,7 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast(`✨ Conversione completata! ${data.convertedCount} setup convertiti in Embed.`);
+          window.showToast(`[Success] ${data.convertedCount} setups converted to embeds.`);
           await loadSetupShowcaseData(guildId);
         } else {
           window.showToast(`Error: ${data.error || 'Scan failed'}`, 'error');
@@ -1210,7 +1210,7 @@
             lbList.innerHTML = '<p class="text-slate-400 italic">Nessun punteggio conteggio registrato finora.</p>';
           } else {
             lb.forEach((item, idx) => {
-              const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+              const medal = idx === 0 ? '#1' : idx === 1 ? '#2' : idx === 2 ? '#3' : `#${idx + 1}`;
               const div = document.createElement('div');
               div.className = 'flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs';
               div.innerHTML = `
@@ -1249,7 +1249,7 @@
             lbList.innerHTML = '<p class="text-slate-400 italic">Nessun pescatore registrato finora.</p>';
           } else {
             lb.forEach((item, idx) => {
-              const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+              const medal = idx === 0 ? '#1' : idx === 1 ? '#2' : idx === 2 ? '#3' : `#${idx + 1}`;
               const div = document.createElement('div');
               div.className = 'flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs cursor-pointer transition-colors';
               div.title = 'Click to select this user in treasury management';
@@ -1259,8 +1259,8 @@
                   <span class="font-mono text-white">&lt;@${item.user_id}&gt;</span>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="font-bold text-amber-400">🪙 ${(item.coins || 0).toLocaleString()} Monete</span>
-                  <span class="text-slate-400 text-[10px]">🎣 ${item.total_fish_caught || 0} prede</span>
+                  <span class="font-bold text-amber-400">${(item.coins || 0).toLocaleString()} Coins</span>
+                  <span class="text-slate-400 text-[10px]">${item.total_fish_caught || 0} catches</span>
                 </div>
               `;
               div.addEventListener('click', () => {
@@ -1536,7 +1536,7 @@
 
         if (res.ok) {
           const data = await res.json();
-          window.showToast(`Saldo monete aggiornato con successo! Nuovo saldo: ${data.profile.coins.toLocaleString()} 🪙`);
+          window.showToast(`Balance updated successfully! New balance: ${data.profile.coins.toLocaleString()} Coins`);
           if (isManual) {
             document.getElementById('coin-target-user-manual').value = '';
           }
@@ -1563,7 +1563,7 @@
   if (btnResetServerEconomy) {
     btnResetServerEconomy.addEventListener('click', async () => {
       const guildId = window.AppState.currentGuildId;
-      if (!confirm('⚠️ ATTENZIONE: Sei sicuro di voler azzerare completamente la ricchezza, le monete e le statistiche dei minigiochi di TUTTI i membri del server? L\'operazione non è reversibile.')) {
+      if (!confirm('[WARNING] Sei sicuro di voler azzerare completamente la ricchezza, le monete e le statistiche dei minigiochi di TUTTI i membri del server? L\'operazione non è reversibile.')) {
         return;
       }
 
@@ -1786,7 +1786,7 @@
       });
 
       // 9. Setup Showcase Module Config
-      const rawReactions = document.getElementById('setup-reactions')?.value || '🔥, ⭐, ❤️';
+      const rawReactions = document.getElementById('setup-reactions')?.value || 'up, star, heart';
       const auto_reactions = rawReactions.split(',').map(r => r.trim()).filter(Boolean);
       const p9 = fetch(`/api/guilds/${guildId}/setup-showcase/config`, {
         method: 'POST',
@@ -1796,7 +1796,7 @@
           channel_id: document.getElementById('setup-channel')?.value || null,
           reward_role_id: document.getElementById('setup-role')?.value || null,
           xp_reward: parseInt(document.getElementById('setup-xp')?.value || '50', 10),
-          title: document.getElementById('setup-title')?.value || '🖥️ Setup & Postazione',
+          title: document.getElementById('setup-title')?.value || 'Setup Showcase',
           color: document.getElementById('setup-color')?.value || '#dc2626',
           auto_reactions,
           auto_thread: document.getElementById('setup-auto-thread')?.checked,
@@ -1828,7 +1828,7 @@
       }
 
       if (failures.length === 0) {
-        window.showToast('🛡️ Tutte le impostazioni del server sono state salvate permanentemente nel database!');
+        window.showToast('All server settings saved to database!');
       } else {
         console.warn('[SaveAll] Alcune sezioni hanno riscontrato errori:', failures);
         window.showToast(`Salvataggio completato con ${failures.length} avvisi.`, 'warning');
@@ -1941,8 +1941,8 @@
       if (voiceGenEl && config.voice_generator_id) voiceGenEl.value = config.voice_generator_id;
       if (catEl && config.category_id) catEl.value = config.category_id;
       if (panelEl && config.panel_channel_id) panelEl.value = config.panel_channel_id;
-      if (nameVoiceEl) nameVoiceEl.value = config.naming_scheme_voice || '🔊 Stanza di {user}';
-      if (nameTextEl) nameTextEl.value = config.naming_scheme_text || '💬 chat-{user}';
+      if (nameVoiceEl) nameVoiceEl.value = config.naming_scheme_voice || '{user} room';
+      if (nameTextEl) nameTextEl.value = config.naming_scheme_text || 'chat-{user}';
       if (limitEl) limitEl.value = config.default_user_limit || 0;
       if (bitrateEl) bitrateEl.value = config.default_bitrate || 64000;
 
@@ -1953,8 +1953,8 @@
           roomsContainer.innerHTML = '<p class="text-slate-400 italic text-center py-4">Nessuna stanza temporanea attiva al momento.</p>';
         } else {
           roomsContainer.innerHTML = activeRooms.map(r => {
-            const isLocked = r.is_locked ? '🔒 Bloccata' : '🔓 Aperta';
-            const isHidden = r.is_hidden ? '👁️ Nascosta' : '👁️ Visibile';
+            const isLocked = r.is_locked ? '[Locked]' : '[Open]';
+            const isHidden = r.is_hidden ? '[Hidden]' : '[Visible]';
             return `
               <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-3">
                 <div>
@@ -1965,8 +1965,8 @@
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">${isHidden}</span>
                   </div>
                   <p class="text-[11px] text-slate-500 mt-1">
-                    ${r.voice_channel_id ? `🔊 Vocale: <code>${r.voice_channel_id}</code>` : ''} 
-                    ${r.text_channel_id ? `💬 Testo: <code>${r.text_channel_id}</code>` : ''}
+                    ${r.voice_channel_id ? `Voice: <code>${r.voice_channel_id}</code>` : ''} 
+                    ${r.text_channel_id ? `Text: <code>${r.text_channel_id}</code>` : ''}
                   </p>
                 </div>
                 <button type="button" class="btn-delete-temp-room p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200" data-room-id="${r.id}" title="Elimina forzatamente">
@@ -2017,8 +2017,8 @@
         voice_generator_id: document.getElementById('tc-gen-voice-channel')?.value || null,
         category_id: document.getElementById('tc-category')?.value || null,
         panel_channel_id: document.getElementById('tc-panel-channel')?.value || null,
-        naming_scheme_voice: document.getElementById('tc-name-voice')?.value?.trim() || '🔊 Stanza di {user}',
-        naming_scheme_text: document.getElementById('tc-name-text')?.value?.trim() || '💬 chat-{user}',
+        naming_scheme_voice: document.getElementById('tc-name-voice')?.value?.trim() || '{user} room',
+        naming_scheme_text: document.getElementById('tc-name-text')?.value?.trim() || 'chat-{user}',
         default_user_limit: parseInt(document.getElementById('tc-default-limit')?.value, 10) || 0,
         default_bitrate: parseInt(document.getElementById('tc-bitrate')?.value, 10) || 64000
       };
@@ -2109,7 +2109,7 @@
       voiceChannels.forEach(ch => {
         const opt = document.createElement('option');
         opt.value = ch.id;
-        opt.textContent = `🔊 ${ch.name}`;
+        opt.textContent = `[Voice] ${ch.name}`;
         if (ch.id === currentVal) opt.selected = true;
         voiceSelect.appendChild(opt);
       });
@@ -2150,10 +2150,10 @@
 
       if (statusPill) {
         if (data.isPlaying) {
-          statusPill.textContent = '▶️ In Riproduzione';
+          statusPill.textContent = '[Playing]';
           statusPill.className = 'text-xs px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 font-bold';
         } else if (data.isPaused) {
-          statusPill.textContent = '⏸️ In Pausa';
+          statusPill.textContent = '[Paused]';
           statusPill.className = 'text-xs px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/80 font-bold';
         } else {
           statusPill.textContent = 'Inattivo';
@@ -2175,9 +2175,9 @@
 
         if (titleEl) titleEl.innerHTML = `<a href="${escapeHtml(data.currentTrack.url)}" target="_blank" class="hover:text-pink-400 transition-colors">${escapeHtml(data.currentTrack.title)}</a>`;
         if (authorEl) authorEl.textContent = `Canale: ${data.currentTrack.author || 'YouTube'}`;
-        if (durationEl) durationEl.textContent = `⏱️ ${data.currentTrack.duration || 'Live'}`;
-        if (requesterEl) requesterEl.textContent = `👤 ${data.currentTrack.requestedBy || 'Dashboard'}`;
-        if (channelEl) channelEl.textContent = `🔊 Canale: ${data.voiceChannel?.name || 'Vocale'}`;
+        if (durationEl) durationEl.textContent = `${data.currentTrack.duration || 'Live'}`;
+        if (requesterEl) requesterEl.textContent = `${data.currentTrack.requestedBy || 'Dashboard'}`;
+        if (channelEl) channelEl.textContent = `Voice: ${data.voiceChannel?.name || 'Vocale'}`;
       } else {
         if (thumbImg && thumbPlaceholder) {
           thumbImg.classList.add('hidden');
@@ -2185,9 +2185,9 @@
         }
         if (titleEl) titleEl.textContent = 'Nessun brano in riproduzione';
         if (authorEl) authorEl.innerHTML = 'Usa la barra di ricerca sottostante o il comando <code class="text-pink-400 bg-slate-900 px-1 py-0.5 rounded">/play</code>';
-        if (durationEl) durationEl.textContent = '⏱️ --:--';
-        if (requesterEl) requesterEl.textContent = '👤 --';
-        if (channelEl) channelEl.textContent = '🔊 Canale: --';
+        if (durationEl) durationEl.textContent = '--:--';
+        if (requesterEl) requesterEl.textContent = '--';
+        if (channelEl) channelEl.textContent = 'Voice: --';
       }
 
       if (playPauseBtn) {
@@ -2276,7 +2276,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'skip' })
       });
-      window.showToast('⏭️ Track skipped!');
+      window.showToast('Track skipped!');
       await loadMusicData(guildId);
     });
   }
@@ -2291,7 +2291,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'stop' })
       });
-      window.showToast('⏹️ Playback stopped and disconnected.');
+      window.showToast('Playback stopped and disconnected.');
       await loadMusicData(guildId);
     });
   }
@@ -2309,7 +2309,7 @@
       const data = await res.json();
       if (data.success) {
         const msg = data.loopMode === 'track' ? 'Loop singolo brano' : (data.loopMode === 'queue' ? 'Loop intera coda' : 'Loop disattivato');
-        window.showToast(`🔁 ${msg}`);
+        window.showToast(`[Loop] ${msg}`);
       }
       await loadMusicData(guildId);
     });
@@ -2325,7 +2325,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'shuffle' })
       });
-      window.showToast('🔀 Queue shuffled!');
+      window.showToast('Queue shuffled!');
       await loadMusicData(guildId);
     });
   }
@@ -2379,9 +2379,9 @@
         const data = await res.json();
         if (res.ok && data.success) {
           if (data.isPlaylist) {
-            window.showToast(`📑 Playlist "${data.title}" added (${data.count} tracks)!`);
+            window.showToast(`Playlist "${data.title}" added (${data.count} tracks)!`);
           } else {
-            window.showToast(`▶️ Now Playing: "${data.track?.title}"!`);
+            window.showToast(`[Music] Now Playing: "${data.track?.title}"!`);
           }
           if (queryInput) queryInput.value = '';
           await loadMusicData(guildId);
@@ -2438,7 +2438,7 @@
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('☁️ Database backed up and protected on Wispbyte MySQL Cloud!');
+          window.showToast('[Cloud] Database backed up to Wispbyte MySQL Cloud!');
         } else {
           window.showToast(data.error || 'MySQL Cloud sync error.', 'error');
         }
@@ -2467,7 +2467,7 @@
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast(`💾 Database synchronized and saved to Wispbyte disk!`);
+          window.showToast(`[Save] Database synchronized to Wispbyte disk!`);
         } else {
           window.showToast('Error saving to disk.', 'error');
         }
@@ -2486,7 +2486,7 @@
       const guildId = window.AppState.currentGuildId;
       if (!guildId) return window.showToast('Seleziona prima un server.', 'error');
       window.open(`/api/guilds/${guildId}/backup/export`, '_blank');
-      window.showToast('📥 Configuration backup download started!');
+      window.showToast('[Download] Configuration backup download started!');
     });
   }
 
@@ -2496,7 +2496,7 @@
       const guildId = window.AppState.currentGuildId;
       if (!guildId) return window.showToast('Seleziona prima un server.', 'error');
       window.open(`/api/guilds/${guildId}/export/channels.csv`, '_blank');
-      window.showToast('📥 Channels and categories CSV download started!');
+      window.showToast('[Download] Channels CSV download started!');
     });
   }
 
@@ -2526,7 +2526,7 @@
           });
           const data = await res.json();
           if (res.ok && data.success) {
-            window.showToast('✅ Configuration restored and saved to disk!');
+            window.showToast('[Success] Configuration restored to disk!');
             if (window.reloadCurrentGuildData) {
               await window.reloadCurrentGuildData(false);
             }
@@ -2570,19 +2570,19 @@
         chanEl.value = config.channel_id || '';
         chanEl.dataset.savedValue = config.channel_id || '';
       }
-      if (msgEl) msgEl.value = config.message || 'Grazie per il boost {user.mention}! 🚀';
-      if (titleEl) titleEl.value = embed.title || '🚀 {server.name} è stato Potenziato!';
+      if (msgEl) msgEl.value = config.message || 'Thank you for the boost {user.mention}!';
+      if (titleEl) titleEl.value = embed.title || '{server.name} was Boosted!';
       const color = embed.color || '#f47fff';
       if (colorEl) colorEl.value = color;
       if (pickerEl) pickerEl.value = (color.startsWith('#') && color.length === 7) ? color : '#f47fff';
-      if (descEl) descEl.value = embed.description || 'Un immenso ringraziamento a {user.mention} per aver potenziato il server!\n\nGrazie al tuo supporto, **{server.name}** ha raggiunto **{server.boost_count}** boost (Livello {server.boost_tier})! ✨💖';
+      if (descEl) descEl.value = embed.description || 'Un immenso ringraziamento a {user.mention} per aver potenziato il server!\n\nGrazie al tuo supporto, **{server.name}** ha raggiunto **{server.boost_count}** boost (Livello {server.boost_tier})! ';
       if (imageEl) imageEl.value = embed.image || '';
       if (thumbEl) thumbEl.value = embed.thumbnail || '';
 
       if (badgeEl) {
         const count = data.boostCount || 0;
         const tier = data.boostTier || 0;
-        badgeEl.textContent = `🚀 ${count} Boost (Livello ${tier})`;
+        badgeEl.textContent = `${count} Boosts (Level ${tier})`;
       }
     } catch (e) {
       console.error('Error loading Boost data:', e);
@@ -2726,25 +2726,25 @@
         let diagHtml = '';
 
         if (!diag.botHasManageRoles) {
-          diagHtml += `<div class="flex items-center gap-2 text-xs text-rose-400 font-semibold"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i> ⚠️ Il bot non ha il permesso <strong>"Gestisci Ruoli"</strong> su Discord! Assegnalo nelle impostazioni del server.</div>`;
+          diagHtml += `<div class="flex items-center gap-2 text-xs text-rose-400 font-semibold"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i> [Warning] The bot lacks the permission <strong>"Gestisci Ruoli"</strong> su Discord! Assegnalo nelle impostazioni del server.</div>`;
         } else {
           diagHtml += `<div class="flex items-center gap-2 text-xs text-emerald-400 font-semibold"><i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i> Permesso "Gestisci Ruoli" Discord rilevato e attivo.</div>`;
         }
 
         if (diag.userRoleCheck && !diag.userRoleCheck.valid) {
           diagHtml += `<div class="flex items-center gap-2 text-xs text-amber-300"><i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i> <strong>Avviso Ruolo Utenti:</strong> ${diag.userRoleCheck.error}</div>`;
-          if (userHint) userHint.innerHTML = `<span class="text-rose-400">⚠️ Gerarchia non valida: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
+          if (userHint) userHint.innerHTML = `<span class="text-rose-400">[Warning] Invalid hierarchy: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
         } else if (userHint && config.user_role_id) {
-          userHint.innerHTML = `<span class="text-emerald-400">✓ Gerarchia verificata e pronta all'assegnazione.</span>`;
+          userHint.innerHTML = `<span class="text-emerald-400">Hierarchy verified and ready all'assegnazione.</span>`;
         } else if (userHint) {
           userHint.innerHTML = '';
         }
 
         if (diag.botRoleCheck && !diag.botRoleCheck.valid) {
           diagHtml += `<div class="flex items-center gap-2 text-xs text-amber-300"><i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i> <strong>Avviso Ruolo Bot:</strong> ${diag.botRoleCheck.error}</div>`;
-          if (botHint) botHint.innerHTML = `<span class="text-rose-400">⚠️ Gerarchia non valida: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
+          if (botHint) botHint.innerHTML = `<span class="text-rose-400">[Warning] Invalid hierarchy: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
         } else if (botHint && config.bot_role_id) {
-          botHint.innerHTML = `<span class="text-emerald-400">✓ Gerarchia verificata e pronta all'assegnazione.</span>`;
+          botHint.innerHTML = `<span class="text-emerald-400">Hierarchy verified and ready all'assegnazione.</span>`;
         } else if (botHint) {
           botHint.innerHTML = '';
         }
@@ -2839,9 +2839,9 @@
                   </span>
                 </div>
                 <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
-                  <span class="text-indigo-400">🎮 Discord &lt;#${b.discord_channel_id}&gt;</span>
-                  <span class="text-cyan-400">⟷</span>
-                  <span class="text-amber-400">🛡️ Yapin &lt;#${b.yapin_channel_id}&gt;</span>
+                  <span class="text-indigo-400">Discord &lt;#${b.discord_channel_id}&gt;</span>
+                  <span class="text-cyan-400">&lt;-&gt;</span>
+                  <span class="text-amber-400">Yapin &lt;#${b.yapin_channel_id}&gt;</span>
                 </div>
               </div>
               <div class="flex items-center gap-2">
@@ -2932,7 +2932,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name: name || 'Ponte Discord ⟷ Yapin',
+            name: name || 'Discord <-> Yapin Bridge',
             discord_guild_id: currentGuildId?.startsWith('yapin_') ? '' : currentGuildId,
             discord_channel_id: discordChannel,
             yapin_server_id: currentGuildId?.startsWith('yapin_') ? currentGuildId.replace('yapin_', '') : '',
@@ -2941,7 +2941,7 @@
         });
 
         if (res.ok) {
-          window.showToast('🌉 Cross-platform bridge enabled successfully!');
+          window.showToast('[Bridge] Cross-platform bridge enabled successfully!');
           document.getElementById('bridge-name').value = '';
           document.getElementById('bridge-yapin-channel').value = '';
           await loadBridgeData();

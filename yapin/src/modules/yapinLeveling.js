@@ -35,14 +35,14 @@ export const YapinLeveling = {
 
       // Level up announcement
       if (newLevel > (prevData.level || 0)) {
-        await bot.send(msg.channel_id, `🎉 Bravo <@${msg.author_id}>! Sei salito al **Livello ${newLevel}** su Yapin! 🛡️`);
+        await bot.send(msg.channel_id, `[Level Up] Bravo <@${msg.author_id}>! You reached **Level ${newLevel}** on Yapin!`);
       }
     } catch (e) {}
   },
 
   async handleRank(ctx, getContextData) {
     const { serverId, authorId, argv } = getContextData(ctx);
-    if (!serverId) return ctx.reply('❌ Comando disponibile solo nei server.');
+    if (!serverId) return ctx.reply('[Error] Comando disponibile solo nei server.');
 
     const targetId = argv[0]?.replace(/[<@!>]/g, '') || authorId;
     const guildKey = `yapin_${serverId}`;
@@ -62,7 +62,7 @@ export const YapinLeveling = {
     const bar = '█'.repeat(filled) + '░'.repeat(10 - filled);
 
     const embed = new Embed()
-      .title(`⭐ Scheda Livello | <@${targetId}>`)
+      .title(`[Level Card] <@${targetId}>`)
       .field('Livello Attuale', `\`Livello ${level}\``, true)
       .field('Esperienza XP', `\`${currentXP.toLocaleString()} / ${nextLevelXP.toLocaleString()} XP\``, true)
       .field('Progresso', `\`[${bar}] ${Math.round(progress * 100)}%\``, false)
@@ -73,7 +73,7 @@ export const YapinLeveling = {
 
   async handleLeaderboard(ctx, getContextData) {
     const { serverId } = getContextData(ctx);
-    if (!serverId) return ctx.reply('❌ Comando disponibile solo nei server.');
+    if (!serverId) return ctx.reply('[Error] Comando disponibile solo nei server.');
 
     const guildKey = `yapin_${serverId}`;
     let list = [];
@@ -82,14 +82,14 @@ export const YapinLeveling = {
     } catch (e) {}
 
     const rows = (!list || list.length === 0)
-      ? '*Nessun utente ha ancora guadagnato XP in questo Realm. Sii il primo a chattare!*'
+      ? '*No users have earned XP in this Realm yet. Be the first to chat!*'
       : list.map((item, idx) => {
-          const medal = idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : `#${idx + 1}`));
-          return `${medal} **<@${item.user_id}>** — Livello \`${item.level || 0}\` (\`${(item.xp || 0).toLocaleString()} XP\`)`;
+          const medal = `#${idx + 1}`;
+          return `${medal} **<@${item.user_id}>** — Level \`${item.level || 0}\` (\`${(item.xp || 0).toLocaleString()} XP\`)`;
         }).join('\n');
 
     const embed = new Embed()
-      .title('🏆 Classifica Livelli Realm Yapin')
+      .title('[Leaderboard] Realm Level Rankings')
       .description(rows)
       .color('#eab308');
 

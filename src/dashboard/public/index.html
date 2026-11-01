@@ -380,7 +380,7 @@
       } else if (authError === 'token_exchange_failed') {
         errMsg = 'Authentication failed: Incorrect Client Secret or mismatch on Discord Developer Portal.';
       }
-      alert('🛡️ [Sentry] ' + errMsg);
+      alert(' [Sentry] ' + errMsg);
     }
 
     checkAuthState().then(loadLandingData);

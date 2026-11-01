@@ -12,9 +12,9 @@ export const YapinMinigames = {
     const result = Math.floor(Math.random() * clampedSides) + 1;
 
     const embed = new Embed()
-      .title('🎲 Lancio del Dado')
+      .title('[Dice Roll]')
       .description(`Hai lanciato un dado a **${clampedSides}** facce.`)
-      .field('Risultato', `🎲 \`${result}\``, true)
+      .field('Risultato', `\`${result}\``, true)
       .color('#8b5cf6');
 
     ctx.reply('', { embeds: [embed] });
@@ -26,7 +26,7 @@ export const YapinMinigames = {
     const bet = parseInt(argv[1], 10);
 
     if (!choice || !['testa', 'croce', 'heads', 'tails', 't', 'c', 'h'].includes(choice)) {
-      return ctx.reply('⚠️ Utilizzo: `/coinflip <testa|croce> [puntata opzionale]` (es: `/coinflip testa 50`)');
+      return ctx.reply('[Warning] Utilizzo: `/coinflip <testa|croce> [puntata opzionale]` (es: `/coinflip testa 50`)');
     }
 
     const isHeadsUser = ['testa', 'heads', 't', 'h'].includes(choice);
@@ -37,22 +37,22 @@ export const YapinMinigames = {
     if (!isNaN(bet) && bet > 0 && serverId) {
       const profile = YapinEconomy.getProfile(serverId, authorId);
       if ((profile.balance || 0) < bet) {
-        return ctx.reply(`❌ Saldo insufficiente per puntare **${bet} 🪙** (Hai: ${profile.balance || 0} 🪙).`);
+        return ctx.reply(`[Error] Saldo insufficiente per puntare **${bet} Coins** (Hai: ${profile.balance || 0} Coins).`);
       }
 
       if (isWin) {
         YapinEconomy.addCoins(serverId, authorId, bet);
-        betMsg = `\n🎉 **Hai vinto:** \`+${bet * 2} 🪙 Monete\`!`;
+        betMsg = `\n**Hai vinto:** \`+${bet * 2} Coins Monete\`!`;
       } else {
         YapinEconomy.addCoins(serverId, authorId, -bet);
-        betMsg = `\n💸 **Hai perso:** \`-${bet} 🪙 Monete\`.`;
+        betMsg = `\n**Hai perso:** \`-${bet} Coins Monete\`.`;
       }
     }
 
-    const coinEmoji = flipResult === 'testa' ? '🪙 Testa' : '👑 Croce';
+    const coinEmoji = flipResult === 'testa' ? 'Testa' : 'Croce';
     const embed = new Embed()
-      .title('🪙 Lancio della Moneta')
-      .description(`Esito del lancio: **${coinEmoji}**\n\n${isWin ? '✨ **Hai indovinato!**' : '💀 **Non hai indovinato.**'}${betMsg}`)
+      .title('[Coin Flip]')
+      .description(`Esito del lancio: **${coinEmoji}**\n\n${isWin ? '**Hai indovinato!**' : '**Non hai indovinato.**'}${betMsg}`)
       .color(isWin ? '#10b981' : '#ef4444');
 
     ctx.reply('', { embeds: [embed] });
@@ -63,7 +63,7 @@ export const YapinMinigames = {
     const num = parseInt(argv[0], 10);
 
     if (isNaN(num)) {
-      return ctx.reply('⚠️ Utilizzo: `/count <numero>` (es: `/count 42`)');
+      return ctx.reply('[Warning] Utilizzo: `/count <numero>` (es: `/count 42`)');
     }
 
     const current = countingStates.get(channelId) || 0;
@@ -71,10 +71,10 @@ export const YapinMinigames = {
 
     if (num === expected) {
       countingStates.set(channelId, num);
-      return ctx.reply(`✅ **${num}**! Il conteggio continua (Prossimo numero: **${num + 1}**).`);
+      return ctx.reply(`[Correct] **${num}**! Il conteggio continua (Prossimo numero: **${num + 1}**).`);
     } else {
       countingStates.set(channelId, 0);
-      return ctx.reply(`❌ Errore da parte di <@${authorId}>! Ti aspettavi **${expected}**, non **${num}**! Il conteggio riparte da **1**.`);
+      return ctx.reply(`[Error] Errore da parte di <@${authorId}>! Ti aspettavi **${expected}**, non **${num}**! Il conteggio riparte da **1**.`);
     }
   }
 };

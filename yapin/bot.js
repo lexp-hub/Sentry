@@ -27,7 +27,7 @@ dotenv.config();
 const token = process.env.YAPPER_BOT_TOKEN;
 
 console.log('====================================================');
-console.log('🛡️       SENTRY - YAPIN PLATFORM BOT               🛡️');
+console.log('         SENTRY - YAPIN PLATFORM BOT                ');
 console.log('====================================================');
 
 export const bot = new Bot(token || '', {
@@ -72,9 +72,9 @@ function getContextData(ctx) {
 bot.command('ping', 'Check Sentry response time and operational status', async (ctx) => {
   const { channelId } = getContextData(ctx);
   const start = Date.now();
-  const res = await ctx.reply('🏓 Pinging Yapin Gateway...');
+  const res = await ctx.reply('[Ping] Pinging Yapin Gateway...');
   const latency = Date.now() - start;
-  const content = `🏓 **Pong!** Gateway Latency: \`${latency}ms\` | Status: **Operational** 🛡️`;
+  const content = `[Pong] Gateway Latency: \`${latency}ms\` | Status: **Operational**`;
   if (res?.id && channelId) {
     try {
       await bot.edit(channelId, res.id, content);
@@ -86,13 +86,13 @@ bot.command('ping', 'Check Sentry response time and operational status', async (
 
 bot.command('help', 'Display the complete command list across all modules', (ctx) => {
   const embed = new Embed()
-    .title('🛡️ Sentry Bot - Yapin Command Center')
+    .title('[Sentry] Yapin Command Center')
     .description('Security, moderation, economics, and community features tailored for Yapin.')
-    .field('📊 General & Insights', '`/ping` - Latency check\n`/help` - This menu\n`/botinfo` - System metrics\n`/serverinfo` - Server statistics\n`/realm` - Full Realm Hub overview\n`/livecount` - Live online/total member ratio\n`/bridge` - Cross-Platform Discord ⟷ Yapin bridge')
-    .field('⚔️ Moderation & AutoMod', '`/kick <user> [reason]` - Kick member\n`/ban <user> [reason]` - Ban member\n`/unban <user>` - Unban member\n`/timeout <user> <minutes>` - Timeout user\n`/warn <user> [reason]` - Warn member\n`/clear <1-50>` - Bulk delete messages\n`/say <text>` - Send announcement')
-    .field('🪙 Economy & Shards (Exclusive)', '`/balance` - Check wallet & Yapin Shards\n`/daily` - Claim daily coins & exclusive crystals\n`/pay <user> <amount>` - Transfer coins')
-    .field('🎣 Minigames & Casino', '`/fish` - Cast your rod for fish & treasures\n`/inventory` - View fishing gear\n`/upgrade-rod` - Forge better rods\n`/blackjack <bet>` - Play 21 with buttons\n`/coinflip <heads|tails> [bet]` - Flip a coin\n`/dice [sides]` - Roll a die\n`/count <number>` - Counting channel')
-    .field('🧠 Artificial Intelligence', '`/ai <prompt>` - Ask Llama 3.3 70B neural network\n*Oppure menziona @Sentry in qualsiasi chat!*')
+    .field('General & Insights', '`/ping` - Latency check\n`/help` - This menu\n`/botinfo` - System metrics\n`/serverinfo` - Server statistics\n`/realm` - Full Realm Hub overview\n`/livecount` - Live online/total member ratio\n`/bridge` - Cross-Platform Discord <-> Yapin bridge')
+    .field('Moderation & AutoMod', '`/kick <user> [reason]` - Kick member\n`/ban <user> [reason]` - Ban member\n`/unban <user>` - Unban member\n`/timeout <user> <minutes>` - Timeout user\n`/warn <user> [reason]` - Warn member\n`/clear <1-50>` - Bulk delete messages\n`/say <text>` - Send announcement')
+    .field('Economy & Shards (Exclusive)', '`/balance` - Check wallet & Yapin Shards\n`/daily` - Claim daily coins & exclusive crystals\n`/pay <user> <amount>` - Transfer coins')
+    .field('Minigames & Casino', '`/fish` - Cast your rod for fish & treasures\n`/inventory` - View fishing gear\n`/upgrade-rod` - Forge better rods\n`/blackjack <bet>` - Play 21 with buttons\n`/coinflip <heads|tails> [bet]` - Flip a coin\n`/dice [sides]` - Roll a die\n`/count <number>` - Counting channel')
+    .field('Artificial Intelligence', '`/ai <prompt>` - Ask Llama 3.3 70B neural network\n*Oppure menziona @Sentry in qualsiasi chat!*')
     .color('#10b981');
 
   ctx.reply('', { embeds: [embed] });
@@ -106,13 +106,13 @@ bot.command('botinfo', 'Display technical statistics, memory and uptime', (ctx) 
   const memoryMB = (process.memoryUsage().rss / 1024 / 1024).toFixed(1);
 
   const embed = new Embed()
-    .title('🛡️ Sentry Bot - Technical Specifications')
+    .title('[Sentry] Technical Specifications')
     .field('Uptime', `\`${hours}h ${minutes}m ${seconds}s\``, true)
     .field('Node.js', `\`${process.version}\``, true)
     .field('RAM Usage', `\`${memoryMB} MB\``, true)
     .field('Gateway Mode', '`Real-Time WebSocket (wss://rt.yapper.website/bot)`', false)
     .field('Host Architecture', `\`${os.type()} (${os.arch()})\``, true)
-    .field('Bridge Engine', '`Discord.js v14 ⟷ Yapper SDK`', true)
+    .field('Bridge Engine', '`Discord.js v14 <-> Yapper SDK`', true)
     .color('#6366f1');
 
   ctx.reply('', { embeds: [embed] });
@@ -123,15 +123,15 @@ bot.command('bridge', 'Check Cross-Platform Discord <-> Yapin bridge status', as
     const { BridgeManager } = await import('../src/bot/modules/bridgeManager.js');
     const status = BridgeManager.getStatus();
     const embed = new Embed()
-      .title('🌉 Cross-Platform Bridge Status')
-      .field('Discord Gateway', status.discordConnected ? '`Connected 🟢`' : '`Offline 🔴`', true)
-      .field('Yapin Real-Time WS', status.yapinConnected ? '`Connected 🟢`' : '`Offline 🔴`', true)
+      .title('[Bridge] Cross-Platform Status')
+      .field('Discord Gateway', status.discordConnected ? '`Connected [ONLINE]`' : '`Offline [OFFLINE]`', true)
+      .field('Yapin Real-Time WS', status.yapinConnected ? '`Connected [ONLINE]`' : '`Offline [OFFLINE]`', true)
       .field('Ponti Attivi', `\`${status.activeBridgesCount}\``, true)
       .description('Tutti i messaggi nei canali collegati vengono sincronizzati bidirezionalmente in tempo reale.')
       .color('#06b6d4');
     ctx.reply('', { embeds: [embed] });
   } catch (err) {
-    ctx.reply('🌉 Bridge attivo tra Discord e Yapin.');
+    ctx.reply('[Bridge] Active between Discord and Yapin.');
   }
 });
 
@@ -149,23 +149,23 @@ bot.command('realm', 'Detailed Realm Hub: channels, E2EE voice and population', 
 
 bot.command('serverinfo', 'Show server statistics and details', async (ctx) => {
   const { serverId } = getContextData(ctx);
-  if (!serverId) return ctx.reply('❌ Il comando deve essere eseguito dentro un server.');
+  if (!serverId) return ctx.reply('[Error] Command must be executed inside a server.');
 
   try {
     const server = await bot.server(serverId);
-    if (!server) return ctx.reply('❌ Impossibile recuperare i dettagli del server.');
+    if (!server) return ctx.reply('[Error] Unable to retrieve server details.');
 
     const channels = await bot.channels(serverId).catch(() => []);
     const roles = await bot.roles(serverId).catch(() => []);
     const counts = await bot.memberCounts(serverId).catch(() => null);
 
     const embed = new Embed()
-      .title(`🏰 ${server.name || 'Server Information'}`)
+      .title(`[Server] ${server.name || 'Server Information'}`)
       .description(server.description || '*Nessuna descrizione impostata.*')
       .field('Server ID', `\`${serverId}\``)
-      .field('👥 Membri', `Totale: \`${counts?.member_count ?? server.member_count ?? 1}\` | Online: \`${counts?.online_count ?? 'N/D'}\``)
-      .field('💬 Canali', `\`${channels.length}\` canali`)
-      .field('🎭 Ruoli', `\`${roles.length}\` ruoli`)
+      .field('Members', `Totale: \`${counts?.member_count ?? server.member_count ?? 1}\` | Online: \`${counts?.online_count ?? 'N/D'}\``)
+      .field('Channels', `\`${channels.length}\` canali`)
+      .field('Roles', `\`${roles.length}\` ruoli`)
       .color('#3b82f6');
 
     if (server.icon_url || server.avatar_url) {
@@ -174,7 +174,7 @@ bot.command('serverinfo', 'Show server statistics and details', async (ctx) => {
 
     ctx.reply('', { embeds: [embed] });
   } catch (err) {
-    ctx.reply(`❌ Errore nel caricamento del server: ${err.message}`);
+    ctx.reply(`[Error] Error loading server: ${err.message}`);
   }
 });
 
@@ -184,13 +184,13 @@ bot.command('userinfo', 'Show information about a user', async (ctx) => {
 
   try {
     const user = await bot.user(targetId).catch(() => null);
-    if (!user) return ctx.reply(`❌ Utente \`${targetId}\` non trovato su Yapin.`);
+    if (!user) return ctx.reply(`[Error] User \`${targetId}\` not found on Yapin.`);
 
     const embed = new Embed()
-      .title(`👤 Profilo | ${user.display_name || user.username}`)
+      .title(`[User Profile] ${user.display_name || user.username}`)
       .field('Username', `@${user.username}`)
       .field('User ID', `\`${user.id}\``)
-      .field('Tipo Account', user.bot ? '`Bot 🤖`' : '`Utente 👤`')
+      .field('Tipo Account', user.bot ? '`Bot`' : '`User`')
       .color('#06b6d4');
 
     if (user.avatar_url) {
@@ -199,47 +199,47 @@ bot.command('userinfo', 'Show information about a user', async (ctx) => {
 
     ctx.reply('', { embeds: [embed] });
   } catch (err) {
-    ctx.reply(`❌ Errore ricerca utente: ${err.message}`);
+    ctx.reply(`[Error] User lookup error: ${err.message}`);
   }
 });
 
 bot.command('roles', 'List all configured roles on this server', async (ctx) => {
   const { serverId } = getContextData(ctx);
-  if (!serverId) return ctx.reply('❌ Comando disponibile solo nei server.');
+  if (!serverId) return ctx.reply('[Error] Command available only in servers.');
 
   try {
     const roles = await bot.roles(serverId).catch(() => []);
-    if (roles.length === 0) return ctx.reply('ℹ️ Nessun ruolo personalizzato presente.');
+    if (roles.length === 0) return ctx.reply('[Info] No custom roles found.');
 
     const roleList = roles.map(r => `• **${r.name}** (\`${r.id}\`)`).slice(0, 25).join('\n');
     const embed = new Embed()
-      .title(`🎭 Ruoli del Realm (${roles.length})`)
+      .title(`Roles del Realm (${roles.length})`)
       .description(roleList)
       .color('#8b5cf6');
 
     ctx.reply('', { embeds: [embed] });
   } catch (e) {
-    ctx.reply(`❌ Errore caricamento ruoli: ${e.message}`);
+    ctx.reply(`[Error] Error loading roles: ${e.message}`);
   }
 });
 
 bot.command('channels', 'List all text and voice channels on this server', async (ctx) => {
   const { serverId } = getContextData(ctx);
-  if (!serverId) return ctx.reply('❌ Comando disponibile solo nei server.');
+  if (!serverId) return ctx.reply('[Error] Command available only in servers.');
 
   try {
     const channels = await bot.channels(serverId).catch(() => []);
-    if (channels.length === 0) return ctx.reply('ℹ️ Nessun canale trovato.');
+    if (channels.length === 0) return ctx.reply('[Info] No channels found.');
 
     const channelList = channels.map(c => `• **#${c.name}** (\`${c.id}\`) [${c.kind || c.type || 'text'}]`).slice(0, 25).join('\n');
     const embed = new Embed()
-      .title(`💬 Canali del Realm (${channels.length})`)
+      .title(`Channels del Realm (${channels.length})`)
       .description(channelList)
       .color('#06b6d4');
 
     ctx.reply('', { embeds: [embed] });
   } catch (e) {
-    ctx.reply(`❌ Errore caricamento canali: ${e.message}`);
+    ctx.reply(`[Error] Error loading channels: ${e.message}`);
   }
 });
 
@@ -249,74 +249,74 @@ bot.command('channels', 'List all text and voice channels on this server', async
 
 bot.command('kick', 'Kick a member from the server (requires user ID)', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('❌ Comando utilizzabile solo in un server.');
+  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
   const reason = argv.slice(1).join(' ') || 'Nessun motivo specificato';
 
-  if (!targetId) return ctx.reply('⚠️ Utilizzo: `/kick <user_id> [motivo]`');
+  if (!targetId) return ctx.reply('[Warning] Usage: `/kick <user_id> [motivo]`');
 
   try {
     await bot.kick(serverId, targetId);
-    ctx.reply(`👢 <@${targetId}> è stato espulso dal server. **Motivo:** ${reason}`);
+    ctx.reply(`[Kick] <@${targetId}> was kicked from the server. **Motivo:** ${reason}`);
   } catch (e) {
-    ctx.reply(`❌ Impossibile espellere l'utente: ${e.message}`);
+    ctx.reply(`[Error] Unable to kick user: ${e.message}`);
   }
 });
 
 bot.command('ban', 'Ban a member from the server (requires user ID)', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('❌ Comando utilizzabile solo in un server.');
+  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
   const reason = argv.slice(1).join(' ') || 'Nessun motivo specificato';
 
-  if (!targetId) return ctx.reply('⚠️ Utilizzo: `/ban <user_id> [motivo]`');
+  if (!targetId) return ctx.reply('[Warning] Usage: `/ban <user_id> [motivo]`');
 
   try {
     await bot.ban(serverId, targetId);
-    ctx.reply(`🔨 <@${targetId}> è stato bandito permanentemente. **Motivo:** ${reason}`);
+    ctx.reply(`[Ban] <@${targetId}> was permanently banned. **Motivo:** ${reason}`);
   } catch (e) {
-    ctx.reply(`❌ Impossibile bandire l'utente: ${e.message}`);
+    ctx.reply(`[Error] Unable to ban user: ${e.message}`);
   }
 });
 
 bot.command('unban', 'Unban a member from the server (requires user ID)', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('❌ Comando utilizzabile solo in un server.');
+  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
-  if (!targetId) return ctx.reply('⚠️ Utilizzo: `/unban <user_id>`');
+  if (!targetId) return ctx.reply('[Warning] Usage: `/unban <user_id>`');
 
   try {
     await bot.unban(serverId, targetId);
-    ctx.reply(`🔓 <@${targetId}> è stato sbannato con successo.`);
+    ctx.reply(`[Unban] <@${targetId}> was unbanned successfully.`);
   } catch (e) {
-    ctx.reply(`❌ Errore durante lo sban: ${e.message}`);
+    ctx.reply(`[Error] Error unbanning: ${e.message}`);
   }
 });
 
 bot.command('timeout', 'Time someone out for a duration in minutes', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('❌ Comando utilizzabile solo in un server.');
+  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
   const minutes = parseInt(argv[1], 10);
   const reason = argv.slice(2).join(' ') || 'Timeout applicato da Sentry';
 
   if (!targetId || isNaN(minutes) || minutes < 0) {
-    return ctx.reply('⚠️ Utilizzo: `/timeout <user_id> <minuti> [motivo]` (0 minuti per rimuovere il timeout)');
+    return ctx.reply('[Warning] Usage: `/timeout <user_id> <minuti> [motivo]` (0 minuti per rimuovere il timeout)');
   }
 
   try {
     await bot.timeout(serverId, targetId, minutes, reason);
     if (minutes === 0) {
-      ctx.reply(`🔊 Timeout rimosso per <@${targetId}>.`);
+      ctx.reply(`[Timeout] Timeout removed for <@${targetId}>.`);
     } else {
-      ctx.reply(`🔇 <@${targetId}> è stato silenziato per **${minutes} minuti**. **Motivo:** ${reason}`);
+      ctx.reply(`[Timeout] <@${targetId}> was timed out for **${minutes} minuti**. **Motivo:** ${reason}`);
     }
   } catch (e) {
-    ctx.reply(`❌ Errore nell'applicazione del timeout: ${e.message}`);
+    ctx.reply(`[Error] Timeout error: ${e.message}`);
   }
 });
 
@@ -325,18 +325,18 @@ bot.command('warn', 'Warn a member for misconduct', (ctx) => {
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
   const reason = argv.slice(1).join(' ') || 'Condotta inappropriata';
 
-  if (!targetId) return ctx.reply('⚠️ Utilizzo: `/warn <user_id> [motivo]`');
+  if (!targetId) return ctx.reply('[Warning] Usage: `/warn <user_id> [motivo]`');
 
-  ctx.reply(`⚠️ <@${targetId}> ha ricevuto un **avvertimento ufficiale**. **Motivo:** ${reason}`);
+  ctx.reply(`[Warning] <@${targetId}> received an official warning. **Motivo:** ${reason}`);
 });
 
 bot.command('clear', 'Bulk delete messages in the channel (1-50)', async (ctx) => {
   const { channelId, argv } = getContextData(ctx);
-  if (!channelId) return ctx.reply('❌ Canale non identificato.');
+  if (!channelId) return ctx.reply('[Error] Channel not identified.');
 
   const count = parseInt(argv[0], 10);
   if (isNaN(count) || count < 1 || count > 50) {
-    return ctx.reply('⚠️ Utilizzo: `/clear <1-50>`');
+    return ctx.reply('[Warning] Usage: `/clear <1-50>`');
   }
 
   try {
@@ -359,19 +359,19 @@ bot.command('clear', 'Bulk delete messages in the channel (1-50)', async (ctx) =
       }
     }
 
-    const confirmMsg = await ctx.say(`🧹 Cancellati con successo **${deleted}** messaggi.`);
+    const confirmMsg = await ctx.say(`[Clear] Successfully deleted **${deleted}** messaggi.`);
     setTimeout(async () => {
       try { if (confirmMsg?.id) await bot.delete(channelId, confirmMsg.id); } catch (e) {}
     }, 4000);
   } catch (err) {
-    ctx.reply(`❌ Errore durante la cancellazione dei messaggi: ${err.message}`);
+    ctx.reply(`[Error] Error deleting messages: ${err.message}`);
   }
 });
 
 bot.command('say', 'Send a broadcast message through Sentry', async (ctx) => {
   const { channelId, argv } = getContextData(ctx);
   const text = argv.join(' ');
-  if (!text) return ctx.reply('⚠️ Utilizzo: `/say <testo annuncio>`');
+  if (!text) return ctx.reply('[Warning] Usage: `/say <testo annuncio>`');
 
   await ctx.say(text);
   if (ctx?.id && channelId) {
@@ -471,7 +471,7 @@ bot.command('ai', 'Ask Sentry AI Neural Assistant (Llama 70B)', async (ctx) => {
 bot.onButton(/^bj_hit_/, async (i) => {
   const authorId = i.custom_id.replace('bj_hit_', '');
   if (i.user_id !== authorId) {
-    return i.ephemeral('❌ Non puoi interagire con la partita di un altro utente!');
+    return i.ephemeral("[Error] You cannot interact with another user's game!");
   }
   await YapinBlackjack.handleAction(bot, i, 'hit', authorId);
 });
@@ -479,7 +479,7 @@ bot.onButton(/^bj_hit_/, async (i) => {
 bot.onButton(/^bj_stand_/, async (i) => {
   const authorId = i.custom_id.replace('bj_stand_', '');
   if (i.user_id !== authorId) {
-    return i.ephemeral('❌ Non puoi interagire con la partita di un altro utente!');
+    return i.ephemeral("[Error] You cannot interact with another user's game!");
   }
   await YapinBlackjack.handleAction(bot, i, 'stand', authorId);
 });
@@ -513,7 +513,7 @@ bot.on('message', async (msg) => {
   const content = (msg.content || '').toLowerCase().trim();
   if (content === 'hi bot' || content === 'hello sentry' || content === 'ciao sentry') {
     if (typeof msg.reply === 'function') {
-      msg.reply('Hello! I am Sentry for Yapin 🛡️ (Digita `/help` o `!help` per la lista comandi completa)');
+      msg.reply('Hello! I am Sentry for Yapin (Type `/help` or `!help` for command list)');
     }
   }
 });
@@ -540,9 +540,9 @@ bot.on('member_join', async (ev) => {
     const welcomeChannel = textChannels[0];
     if (welcomeChannel) {
       const embed = new Embed()
-        .title('👋 Benvenuto nel Realm!')
+        .title('[Welcome] Welcome to the Realm!')
         .description(`Diamo un caloroso benvenuto a <@${ev.user_id}> su Yapin!\n\n` +
-          `🛡️ Sentry protegge questa community.\n` +
+          `Sentry protects this community.\n` +
           `• Digita \`/help\` per scoprire tutte le funzionalità integrate.`)
         .color('#10b981');
       await bot.sendEmbed(welcomeChannel.id, embed);
@@ -560,9 +560,9 @@ export function startYapinBot(customToken) {
     return null;
   }
   bot.token = activeToken;
-  console.log('🚀 Starting Sentry for Yapin via Real-time WebSocket...');
+  console.log('Starting Sentry for Yapin via Real-time WebSocket...');
   bot.start().catch((err) => {
-    console.error('❌ Fatal error starting Yapin bot:', err);
+    console.error('[Error] Fatal error starting Yapin bot:', err);
   });
   return bot;
 }

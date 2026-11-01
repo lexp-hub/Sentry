@@ -60,7 +60,7 @@ export class YapinClient extends EventEmitter {
       this.ws = new WebSocket(this.gatewayUrl);
 
       this.ws.on('open', () => {
-        console.log('✅ [Yapin Gateway] Connected to WebSocket!');
+        console.log('[Yapin Gateway] Connected to WebSocket!');
         this.identify();
       });
 

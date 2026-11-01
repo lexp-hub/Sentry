@@ -50,10 +50,10 @@ export const YapinEconomy = {
     const profile = this.getProfile(serverId, targetId);
 
     const embed = new Embed()
-      .title(`💰 Portafoglio & Risorse | <@${targetId}>`)
-      .field('🪙 Monete Sentry', `\`${Number(profile.balance || 0).toLocaleString()} 🪙\``, true)
-      .field('💎 Frammenti Yapin', `\`${Number(profile.shards || 10).toLocaleString()} Shards\``, true)
-      .field('🏦 Riserva Realm', `\`${Number(profile.bank || 0).toLocaleString()} 🪙\``, true)
+      .title(`[Wallet] Resources | <@${targetId}>`)
+      .field('Sentry Coins', `\`${Number(profile.balance || 0).toLocaleString()} Coins\``, true)
+      .field('Yapin Shards', `\`${Number(profile.shards || 10).toLocaleString()} Shards\``, true)
+      .field('Realm Bank', `\`${Number(profile.bank || 0).toLocaleString()} Coins\``, true)
       .color('#eab308');
 
     ctx.reply('', { embeds: [embed] });
@@ -61,18 +61,18 @@ export const YapinEconomy = {
 
   async handleDaily(ctx, getContextData) {
     const { serverId, authorId } = getContextData(ctx);
-    if (!serverId) return ctx.reply('❌ Il bonus giornaliero può essere riscattato solo in un server.');
+    if (!serverId) return ctx.reply('[Error] Daily bonus can only be claimed inside a server.');
 
     const res = this.claimDaily(serverId, authorId);
     if (!res.success) {
-      return ctx.reply(`⏳ Hai già riscattato il tuo bonus giornaliero. Riprova tra **${res.remaining}**!`);
+      return ctx.reply(`[Cooldown] You already claimed your daily bonus. Try again in **${res.remaining}**!`);
     }
 
     const embed = new Embed()
-      .title('🎁 Ricompensa Giornaliera Sentry & Yapin')
-      .description(`Hai riscosso con successo il tuo bottino del giorno!\n\n` +
-        `🪙 **+${res.coins} Monete** aggiunte al tuo saldo.\n` +
-        `💎 **+${res.shards} Frammenti Yapin (Shards)** esclusivi!`)
+      .title('[Daily Reward] Sentry & Yapin')
+      .description(`Daily reward claimed successfully!\n\n` +
+        `• **+${res.coins} Coins** added to your wallet.\n` +
+        `• **+${res.shards} Yapin Shards** exclusive bonus!`)
       .color('#10b981');
 
     ctx.reply('', { embeds: [embed] });
@@ -80,33 +80,33 @@ export const YapinEconomy = {
 
   async handlePay(ctx, getContextData) {
     const { serverId, authorId, argv } = getContextData(ctx);
-    if (!serverId) return ctx.reply('❌ Comando disponibile solo nei server.');
+    if (!serverId) return ctx.reply('[Error] Comando disponibile solo nei server.');
 
     const targetId = argv[0]?.replace(/[<@!>]/g, '');
     const amount = parseInt(argv[1], 10);
 
     if (!targetId || isNaN(amount) || amount <= 0) {
-      return ctx.reply('⚠️ Utilizzo corretto: `/pay <@utente> <quantità>` (es. `/pay @User 50`)');
+      return ctx.reply('[Warning] Usage: `/pay <@utente> <quantità>` (es. `/pay @User 50`)');
     }
 
     if (targetId === authorId) {
-      return ctx.reply('❌ Non puoi trasferire monete a te stesso.');
+      return ctx.reply('[Error] Non puoi trasferire monete a te stesso.');
     }
 
     const senderProfile = this.getProfile(serverId, authorId);
     if ((senderProfile.balance || 0) < amount) {
-      return ctx.reply(`❌ Saldo insufficiente. Possiedi solo **${senderProfile.balance || 0} 🪙**.`);
+      return ctx.reply(`[Error] Saldo insufficiente. Possiedi solo **${senderProfile.balance || 0} Coins**.`);
     }
 
     this.addCoins(serverId, authorId, -amount);
     this.addCoins(serverId, targetId, amount);
 
     const embed = new Embed()
-      .title('💸 Trasferimento Effettuato')
+      .title('[Transfer Completed]')
       .description(`Transazione completata con successo nel Realm.`)
       .field('Mittente', `<@${authorId}>`, true)
       .field('Destinatario', `<@${targetId}>`, true)
-      .field('Importo', `\`${amount} 🪙\``, true)
+      .field('Importo', `\`${amount} Coins\``, true)
       .color('#10b981');
 
     ctx.reply('', { embeds: [embed] });
