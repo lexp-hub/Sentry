@@ -535,21 +535,141 @@ bot.on('member_join', async (ev) => {
       }
     } catch (e) {}
 
-    // 2. Messaggio di Benvenuto
-    const textChannels = await bot.channels(ev.server_id, { type: 'text' }).catch(() => []);
-    const welcomeChannel = textChannels[0];
-    if (welcomeChannel) {
-      const embed = new Embed()
-        .title('[Welcome] Welcome to the Realm!')
-        .description(`Diamo un caloroso benvenuto a <@${ev.user_id}> su Yapin!\n\n` +
-          `Sentry protects this community.\n` +
-          `• Digita \`/help\` per scoprire tutte le funzionalità integrate.`)
-        .color('#10b981');
-      await bot.sendEmbed(welcomeChannel.id, embed);
+    // Recupera informazioni sul server
+    const servers = await bot.servers().catch(() => []);
+    const server = servers.find(s => String(s.id) === String(ev.server_id));
+    const serverName = server?.name || 'Reame Yapin';
+    const memberCount = server?.member_count || ev.member_count || 1;
+    const username = ev.username || ev.user_id;
+
+    const formatText = (template) => {
+      if (!template) return '';
+      return template
+        .replace(/{user}/g, username)
+        .replace(/{user\.tag}/g, username)
+        .replace(/{user\.name}/g, username)
+        .replace(/{user\.id}/g, ev.user_id)
+        .replace(/{user\.mention}/g, `<@${ev.user_id}>`)
+        .replace(/{server\.name}/g, serverName)
+        .replace(/{server\.memberCount}/g, String(memberCount))
+        .replace(/{memberCount}/g, String(memberCount))
+        .replace(/{count}/g, String(memberCount));
+    };
+
+    // 2. Modulo Welcomer Reale (configurato da dashboard)
+    try {
+      const welcomerConfig = DatabaseHelper.getWelcomerConfig(guildKey);
+      if (welcomerConfig && welcomerConfig.welcome_enabled && welcomerConfig.welcome_channel_id) {
+        const embData = welcomerConfig.welcome_embed || {};
+        const embed = new Embed();
+        const rawTitle = embData.title || 'Benvenuto nel Reame, {user}!';
+        embed.title(formatText(rawTitle));
+        const rawDesc = embData.description || welcomerConfig.welcome_message || 'Benvenuto {user.mention} in **{server.name}**! Siamo felici di averti tra noi. Sei il membro **#{memberCount}**!';
+        embed.description(formatText(rawDesc));
+
+        if (embData.color) embed.color(embData.color);
+        else embed.color('#dc2626');
+
+        if (embData.thumbnail?.url || embData.thumbnail) {
+          embed.thumbnail(formatText(embData.thumbnail?.url || embData.thumbnail));
+        }
+        if (embData.image?.url || embData.image) {
+          embed.image(formatText(embData.image?.url || embData.image));
+        }
+        if (embData.footer?.text || embData.footer) {
+          embed.footer(formatText(embData.footer?.text || embData.footer), embData.footer?.icon_url || undefined);
+        } else {
+          embed.footer(formatText('Membro #{memberCount} • {server.name}'));
+        }
+        if (Array.isArray(embData.fields) && embData.fields.length > 0) {
+          embData.fields.forEach(f => {
+            if (f.name && f.value) {
+              embed.field(formatText(f.name), formatText(f.value), Boolean(f.inline));
+            }
+          });
+        }
+        embed.timestamp();
+
+        await bot.sendEmbed(welcomerConfig.welcome_channel_id, embed, `<@${ev.user_id}>`);
+        console.log(`[Yapin Welcomer] Inviato embed di benvenuto nel canale ${welcomerConfig.welcome_channel_id}`);
+
+        // Welcome DM se abilitato
+        if (welcomerConfig.welcome_dm_enabled && welcomerConfig.welcome_dm_message) {
+          const dmText = formatText(welcomerConfig.welcome_dm_message);
+          const dmEmbed = new Embed()
+            .title(formatText('Benvenuto in {server.name}!'))
+            .description(dmText)
+            .color(embData.color || '#dc2626')
+            .timestamp();
+          await bot.dmSend(ev.user_id, '', { embeds: [dmEmbed] }).catch(() => {});
+        }
+      }
+    } catch (e) {
+      console.error('[Yapin Welcomer Error]:', e.message);
     }
+
+    // 3. Canale Audit Log (se configurato in Impostazioni Server)
+    try {
+      const settings = DatabaseHelper.getGuildSettings(guildKey);
+      if (settings && settings.log_channel_id) {
+        const logEmbed = new Embed()
+          .title('[Log] Nuovo Membro Entrato')
+          .description(`Diamo il benvenuto a <@${ev.user_id}> nel server!\n\n` +
+            `• **Membro n°**: \`${memberCount}\`\n` +
+            `• **ID Utente**: \`${ev.user_id}\`\n` +
+            `• **Server**: \`${serverName}\``)
+          .color('#10b981')
+          .timestamp();
+        await bot.sendEmbed(settings.log_channel_id, logEmbed).catch(() => {});
+      }
+    } catch (e) {}
+
   } catch (err) {
     console.error('[Yapin Member Join Error]:', err.message);
   }
+});
+
+// Partenza membri (Member Leave)
+bot.on('member_leave', async (ev) => {
+  if (!ev || !ev.server_id || !ev.user_id) return;
+  const guildKey = `yapin_${ev.server_id}`;
+
+  try {
+    const servers = await bot.servers().catch(() => []);
+    const server = servers.find(s => String(s.id) === String(ev.server_id));
+    const serverName = server?.name || 'Reame Yapin';
+    const memberCount = server?.member_count || ev.member_count || '';
+    const username = ev.username || ev.user_id;
+
+    const welcomerConfig = DatabaseHelper.getWelcomerConfig(guildKey);
+    if (welcomerConfig && welcomerConfig.leave_enabled && welcomerConfig.leave_channel_id) {
+      const rawMsg = welcomerConfig.leave_message || '{user} ha lasciato il server.';
+      const leaveText = rawMsg
+        .replace(/{user}/g, username)
+        .replace(/{user\.tag}/g, username)
+        .replace(/{user\.mention}/g, `<@${ev.user_id}>`)
+        .replace(/{server\.name}/g, serverName)
+        .replace(/{memberCount}/g, String(memberCount));
+
+      const leaveEmbed = new Embed()
+        .title('[Uscita Membro]')
+        .description(leaveText)
+        .color('#ef4444')
+        .timestamp();
+
+      await bot.sendEmbed(welcomerConfig.leave_channel_id, leaveEmbed).catch(() => {});
+    }
+
+    const settings = DatabaseHelper.getGuildSettings(guildKey);
+    if (settings && settings.log_channel_id) {
+      const logEmbed = new Embed()
+        .title('[Log] Membro Uscito')
+        .description(`L'utente <@${ev.user_id}> (${username}) ha lasciato il server.`)
+        .color('#ef4444')
+        .timestamp();
+      await bot.sendEmbed(settings.log_channel_id, logEmbed).catch(() => {});
+    }
+  } catch (e) {}
 });
 
 // Function to start the Yapin bot

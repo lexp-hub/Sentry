@@ -1153,7 +1153,7 @@
         window.showToast(`Errore di connessione: ${err.message}`, 'error');
       } finally {
         btnSendEmbed.disabled = false;
-        btnSendEmbed.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> Invia nel Canale Discord';
+        btnSendEmbed.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> Invia nel Canale';
         if (window.lucide) lucide.createIcons();
       }
     });
@@ -1168,7 +1168,7 @@
   if (btnFetchLive && fetchInput) {
     btnFetchLive.addEventListener('click', async () => {
       const val = fetchInput.value.trim();
-      if (!val) return window.showToast('Inserisci un link del messaggio Discord o il suo ID.', 'error');
+      if (!val) return window.showToast('Inserisci un link del messaggio o il suo ID.', 'error');
       const guildId = window.AppState.currentGuildId;
       if (!guildId) return window.showToast('Seleziona prima un server.', 'error');
 
@@ -1215,7 +1215,7 @@
             btnEditLive.classList.remove('hidden');
           }
 
-          window.showToast('Embed caricato da Discord! Ora puoi modificarlo e cliccare su "Salva Modifica Live".');
+          window.showToast('Embed caricato! Ora puoi modificarlo e cliccare su "Salva Modifica Live".');
         } else {
           window.showToast(`Errore: ${data.error || 'Messaggio non trovato'}`, 'error');
         }
@@ -1252,7 +1252,7 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Messaggio Discord aggiornato con successo in tempo reale!');
+          window.showToast('Messaggio aggiornato con successo in tempo reale!');
         } else {
           window.showToast(`Errore modifica: ${data.error || 'Fallita'}`, 'error');
         }

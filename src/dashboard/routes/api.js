@@ -419,16 +419,32 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
       if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
       if (!channelId) return res.status(400).json({ error: 'Seleziona un canale prima di inviare.' });
       try {
-        let content = '';
-        if (embedData?.title) content += `**${embedData.title}**\n`;
-        if (embedData?.description) content += `${embedData.description}\n`;
-        if (Array.isArray(embedData?.fields)) {
-          for (const f of embedData.fields) {
-            if (f.name && f.value) content += `\n**${f.name}**\n${f.value}`;
-          }
-        }
-        await yapinBot.send(channelId, content.trim() || 'Sentry Embed');
-        return res.json({ success: true, platform: 'yapin' });
+        const yapinEmbed = {
+          title: embedData?.title || undefined,
+          description: embedData?.description || undefined,
+          url: embedData?.url || undefined,
+          color: embedData?.color !== undefined ? (typeof embedData.color === 'string' ? parseInt(embedData.color.replace('#', ''), 16) : embedData.color) : 0xdc2626,
+          author: embedData?.author?.name ? {
+            name: embedData.author.name,
+            icon_url: embedData.author.icon_url || undefined,
+            url: embedData.author.url || undefined
+          } : undefined,
+          image: embedData?.image?.url ? { url: embedData.image.url } : (typeof embedData?.image === 'string' ? { url: embedData.image } : undefined),
+          thumbnail: embedData?.thumbnail?.url ? { url: embedData.thumbnail.url } : (typeof embedData?.thumbnail === 'string' ? { url: embedData.thumbnail } : undefined),
+          footer: embedData?.footer?.text ? {
+            text: embedData.footer.text,
+            icon_url: embedData.footer.icon_url || undefined
+          } : undefined,
+          fields: Array.isArray(embedData?.fields) ? embedData.fields.filter(f => f.name && f.value).map(f => ({
+            name: String(f.name),
+            value: String(f.value),
+            inline: Boolean(f.inline)
+          })) : undefined,
+          timestamp: embedData?.timestamp ? new Date().toISOString() : undefined
+        };
+
+        const sentMsg = await yapinBot.send(channelId, '', { embeds: [yapinEmbed] });
+        return res.json({ success: true, platform: 'yapin', messageId: sentMsg?.id });
       } catch (err) {
         return res.status(500).json({ error: `Errore Yapin: ${err.message}` });
       }
@@ -745,9 +761,50 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
         if (!channelId) {
           return res.status(400).json({ error: 'Seleziona prima un canale di benvenuto e clicca Salva.' });
         }
-        const title = config.welcome_embed?.title || 'Welcome to the Realm!';
-        const desc = config.welcome_message || config.welcome_embed?.description || 'Benvenuto nel Reame Yapin!';
-        await yapinBot.send(channelId, `**[Welcomer Test]** ${title}\n${desc}`);
+
+        const serverId = guildId.replace('yapin_', '');
+        const servers = await yapinBot.servers().catch(() => []);
+        const srv = servers.find(s => String(s.id) === String(serverId));
+        const memberCount = srv?.member_count || 128;
+        const serverName = srv?.name || 'Reame Yapin';
+        const botUser = yapinBot.user || { id: 'sentry', username: 'Sentry' };
+
+        const formatText = (str) => {
+          if (!str) return '';
+          return str
+            .replace(/{user}/g, botUser.username || 'NuovoMembro')
+            .replace(/{user\.tag}/g, botUser.username || 'NuovoMembro')
+            .replace(/{user\.name}/g, botUser.username || 'NuovoMembro')
+            .replace(/{user\.id}/g, botUser.id || '123456')
+            .replace(/{user\.mention}/g, `<@${botUser.id || '123456'}>`)
+            .replace(/{server\.name}/g, serverName)
+            .replace(/{server\.memberCount}/g, String(memberCount))
+            .replace(/{memberCount}/g, String(memberCount))
+            .replace(/{count}/g, String(memberCount));
+        };
+
+        const embData = config.welcome_embed || {};
+        const rawColor = embData.color !== undefined ? (typeof embData.color === 'string' ? parseInt(embData.color.replace('#', ''), 16) : embData.color) : 0xdc2626;
+
+        const yapinEmbed = {
+          title: formatText(embData.title || 'Benvenuto nel Reame, {user}!'),
+          description: formatText(embData.description || config.welcome_message || 'Benvenuto {user.mention} in **{server.name}**! Siamo felici di averti tra noi. Sei il membro **#{memberCount}**!'),
+          color: rawColor,
+          fields: Array.isArray(embData.fields) && embData.fields.length > 0 ? embData.fields.filter(f => f.name && f.value).map(f => ({
+            name: formatText(f.name),
+            value: formatText(f.value),
+            inline: Boolean(f.inline)
+          })) : undefined,
+          footer: embData.footer?.text ? {
+            text: formatText(embData.footer.text),
+            icon_url: embData.footer.icon_url || undefined
+          } : { text: formatText('Membro #{memberCount} • {server.name}') },
+          image: embData.image?.url ? { url: formatText(embData.image.url) } : (typeof embData.image === 'string' ? { url: formatText(embData.image) } : undefined),
+          thumbnail: embData.thumbnail?.url ? { url: formatText(embData.thumbnail.url) } : (typeof embData.thumbnail === 'string' ? { url: formatText(embData.thumbnail) } : undefined),
+          timestamp: new Date().toISOString()
+        };
+
+        await yapinBot.send(channelId, `<@${botUser.id}>`, { embeds: [yapinEmbed] });
         return res.json({ success: true, platform: 'yapin' });
       } catch (e) {
         return res.status(500).json({ error: `Errore invio Yapin: ${e.message}` });
@@ -946,13 +1003,38 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     res.status(400).json({ error: 'Server non raggiungibile.' });
   });
 
-  // Universal Live Embed Message Editor: Edit ANY message previously sent by the bot on Discord
+  // Universal Live Embed Message Editor: Edit ANY message previously sent by the bot on Discord or Yapin
   router.post('/guilds/:guildId/embeds/edit-message', requireModAuth, async (req, res) => {
     const { channelId, messageId, embed, content } = req.body;
     const guildId = req.params.guildId;
 
     if (!channelId || !messageId) {
       return res.status(400).json({ error: 'ID Canale e ID Messaggio sono obbligatori.' });
+    }
+
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      try {
+        const rawColor = embed?.color !== undefined ? (typeof embed.color === 'string' ? parseInt(embed.color.replace('#', ''), 16) : embed.color) : 0xdc2626;
+        const yapinEmbed = embed ? {
+          title: embed.title || undefined,
+          description: embed.description || undefined,
+          color: rawColor,
+          url: embed.url || undefined,
+          image: embed.image ? (typeof embed.image === 'string' ? { url: embed.image } : embed.image) : undefined,
+          thumbnail: embed.thumbnail ? (typeof embed.thumbnail === 'string' ? { url: embed.thumbnail } : embed.thumbnail) : undefined,
+          footer: embed.footer ? (typeof embed.footer === 'string' ? { text: embed.footer } : embed.footer) : undefined,
+          fields: Array.isArray(embed.fields) ? embed.fields.filter(f => f.name && f.value) : undefined,
+          timestamp: embed.timestamp ? new Date().toISOString() : undefined
+        } : undefined;
+
+        await yapinBot.edit(channelId, messageId, content !== undefined ? content : '', {
+          embeds: yapinEmbed ? [yapinEmbed] : undefined
+        });
+        return res.json({ success: true, messageId, channelId });
+      } catch (err) {
+        return res.status(500).json({ error: `Impossibile modificare il messaggio su Yapin: ${err.message}` });
+      }
     }
 
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
@@ -1012,7 +1094,37 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     }
 
     if (!channelId || !messageId) {
-      return res.status(400).json({ error: 'Specifica Canale e Messaggio o un link valido di Discord.' });
+      return res.status(400).json({ error: 'Specifica Canale e Messaggio o un link valido.' });
+    }
+
+    if (guildId.startsWith('yapin_')) {
+      if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
+      try {
+        const msg = await yapinBot.message(channelId, messageId);
+        if (!msg) return res.status(404).json({ error: 'Messaggio non trovato su Yapin.' });
+        const firstEmbed = (msg.embeds && msg.embeds[0]) || null;
+        return res.json({
+          success: true,
+          platform: 'yapin',
+          data: {
+            content: msg.content || '',
+            channelId,
+            messageId,
+            embed: firstEmbed ? {
+              title: firstEmbed.title || '',
+              description: firstEmbed.description || '',
+              color: firstEmbed.color !== undefined ? ('#' + Number(firstEmbed.color).toString(16).padStart(6, '0')) : '#dc2626',
+              url: firstEmbed.url || '',
+              image: firstEmbed.image?.url || firstEmbed.image || '',
+              thumbnail: firstEmbed.thumbnail?.url || firstEmbed.thumbnail || '',
+              footer: firstEmbed.footer?.text || firstEmbed.footer || '',
+              fields: firstEmbed.fields || []
+            } : null
+          }
+        });
+      } catch (err) {
+        return res.status(500).json({ error: `Errore caricamento messaggio Yapin: ${err.message}` });
+      }
     }
 
     if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
