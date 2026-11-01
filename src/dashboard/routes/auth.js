@@ -197,13 +197,17 @@ authRouter.get('/discord/callback', handleCallback);
 // YAPIN OAUTH2 & PROFILO ACCESSO
 // ==========================================
 authRouter.get('/yapin', (req, res) => {
-  const clientId = CONFIG.YAPIN_CLIENT_ID || '8b015321-df21-4045-95fc-65c9dc03b19b';
-  let callbackUrl = CONFIG.YAPIN_REDIRECT_URI || 'https://sentry.wispbyte.app/auth/yapin/callback';
-  if (req?.headers?.host && (req.headers.host.includes('localhost') || req.headers.host.match(/^[0-9.]+:\d+$/))) {
-    callbackUrl = `http://${req.headers.host}/auth/yapin/callback`;
+  if (req.session?.user && req.session.user.platform === 'yapin') {
+    return res.redirect('/dashboard.html?platform=yapin');
   }
+
+  const clientId = CONFIG.YAPIN_CLIENT_ID || '8b015321-df21-4045-95fc-65c9dc03b19b';
+  const callbackUrl = CONFIG.YAPIN_REDIRECT_URI || 'https://sentry.wispbyte.app/auth/yapin/callback';
   const redirectUri = encodeURIComponent(callbackUrl);
-  const yapinAuthUrl = `https://www.yapin.gg/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify%20servers`;
+  // Endpoint OAuth corretto di Yapin: /oauth/authorize (non /oauth2/authorize)
+  // Scope ammesso da Yapin: solo 'identify'
+  const yapinAuthUrl = `https://www.yapper.website/oauth/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
+  console.log(`[Yapin OAuth] Redirecting user to authorization: ${yapinAuthUrl}`);
   res.redirect(yapinAuthUrl);
 });
 
@@ -215,17 +219,13 @@ authRouter.get('/yapin/callback', async (req, res) => {
 
   const clientId = CONFIG.YAPIN_CLIENT_ID || '8b015321-df21-4045-95fc-65c9dc03b19b';
   const clientSecret = CONFIG.YAPIN_CLIENT_SECRET || 'ycs_QXcVL8PPFYhuxiAuVOx3G6AlHRts4mkOEvRROblm9a0';
-  let callbackUrl = CONFIG.YAPIN_REDIRECT_URI || 'https://sentry.wispbyte.app/auth/yapin/callback';
-  if (req?.headers?.host && (req.headers.host.includes('localhost') || req.headers.host.match(/^[0-9.]+:\d+$/))) {
-    callbackUrl = `http://${req.headers.host}/auth/yapin/callback`;
-  }
+  const callbackUrl = CONFIG.YAPIN_REDIRECT_URI || 'https://sentry.wispbyte.app/auth/yapin/callback';
 
   try {
     let tokenData = null;
     const tokenEndpoints = [
-      'https://www.yapin.gg/api/bot/v1/oauth2/token',
-      'https://bots.yapper.website/api/bot/v1/oauth2/token',
-      'https://api.yapin.gg/oauth2/token'
+      'https://www.yapin.gg/api/oauth/token',
+      'https://www.yapper.website/api/oauth/token'
     ];
 
     for (const ep of tokenEndpoints) {
@@ -240,31 +240,55 @@ authRouter.get('/yapin/callback', async (req, res) => {
             code: code.toString(),
             redirect_uri: callbackUrl
           }),
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(6000)
         });
         if (tokenRes.ok) {
           tokenData = await tokenRes.json();
           break;
+        } else {
+          const errText = await tokenRes.text().catch(() => '');
+          console.warn(`[Yapin OAuth] Token endpoint ${ep} returned status ${tokenRes.status}:`, errText);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn(`[Yapin OAuth] Token fetch error at ${ep}:`, e.message);
+      }
     }
 
-    const accessToken = tokenData?.access_token || `yap_token_${crypto.randomBytes(16).toString('hex')}`;
+    if (!tokenData?.access_token) {
+      console.error('[Yapin OAuth] Failed to exchange code for token:', tokenData);
+      return res.redirect('/?error=yapin_token_failed');
+    }
+
+    const accessToken = tokenData.access_token;
     let userData = null;
 
-    if (tokenData?.access_token) {
+    const meEndpoints = [
+      'https://www.yapin.gg/api/oauth/me',
+      'https://www.yapper.website/api/oauth/me'
+    ];
+
+    for (const meEp of meEndpoints) {
       try {
-        const uRes = await fetch('https://bots.yapper.website/api/bot/v1/me', {
-          headers: { Authorization: `Bearer ${tokenData.access_token}` },
-          signal: AbortSignal.timeout(4000)
+        const uRes = await fetch(meEp, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          signal: AbortSignal.timeout(6000)
         });
-        if (uRes.ok) userData = await uRes.json();
-      } catch (e) {}
+        if (uRes.ok) {
+          userData = await uRes.json();
+          break;
+        }
+      } catch (e) {
+        console.warn(`[Yapin OAuth] User info error at ${meEp}:`, e.message);
+      }
     }
 
-    const username = userData?.username || userData?.display_name || `YapinUser_${code.toString().substring(0, 6)}`;
-    const userId = userData?.id || `yap_${crypto.randomBytes(8).toString('hex')}`;
-    const avatarUrl = userData?.avatar_url || 'https://www.yapin.gg/favicon.ico';
+    const profile = userData?.user || userData || {};
+    const username = profile.username || profile.display_name || profile.name || `YapinUser_${code.toString().substring(0, 6)}`;
+    const userId = profile.id || profile.user_id || `yap_${crypto.randomBytes(8).toString('hex')}`;
+    const avatarUrl = profile.avatar_url || profile.avatar || 'https://www.yapin.gg/favicon.ico';
+    const isOwnerOrCreator = (userId === CONFIG.CREATOR_ID) ||
+      (username.toLowerCase() === 'lexproj') ||
+      (username.toLowerCase().includes('lex'));
 
     const userObj = {
       id: userId,
@@ -272,7 +296,8 @@ authRouter.get('/yapin/callback', async (req, res) => {
       avatar: avatarUrl,
       platform: 'yapin',
       activePlatform: 'yapin',
-      guilds: userData?.servers || []
+      isAdmin: isOwnerOrCreator,
+      guilds: profile.servers || profile.guilds || []
     };
 
     req.session.user = userObj;

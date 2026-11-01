@@ -374,13 +374,19 @@
     const urlParams = new URLSearchParams(window.location.search);
     const authError = urlParams.get('error');
     if (authError) {
-      let errMsg = 'Error during Discord authentication.';
+      let errMsg = 'Error during authentication.';
       if (authError === 'missing_client_secret') {
         errMsg = 'Configuration incomplete: Please specify DISCORD_CLIENT_SECRET in Wispbyte environment variables!';
       } else if (authError === 'token_exchange_failed') {
-        errMsg = 'Authentication failed: Incorrect Client Secret or mismatch on Discord Developer Portal.';
+        errMsg = 'Discord authentication failed: Incorrect Client Secret or mismatch on Discord Developer Portal.';
+      } else if (authError === 'yapin_token_failed') {
+        errMsg = 'Yapin authentication failed: Could not exchange authorization code with Yapin servers.';
+      } else if (authError === 'yapin_auth_failed') {
+        errMsg = 'Yapin authentication service error. Please try again.';
+      } else if (authError === 'no_code_yapin') {
+        errMsg = 'Yapin login cancelled or did not provide an authorization code.';
       }
-      alert(' [Sentry] ' + errMsg);
+      alert('[Sentry] ' + errMsg);
     }
 
     checkAuthState().then(loadLandingData);
