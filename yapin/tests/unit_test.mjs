@@ -174,6 +174,52 @@ async function runTests() {
 
     const { ctx: countCtx, getContextData: countData } = createMockCtx(testUser, 'server_test_888', 'channel_test_777', ['1']);
     await YapinMinigames.handleCount(countCtx, countData);
+    assert(countCtx.getReply().embeds.length > 0, 'handleCount should return a status embed');
+
+    // Test automatic counting message handler (1:1 with Discord)
+    const countChannelId = 'channel_count_999';
+    DatabaseHelper.saveCountingConfig('yapin_server_test_888', {
+      channel_id: countChannelId,
+      current_number: 5,
+      highest_streak: 5,
+      allow_consecutive: 1,
+      zen_mode: 1,
+      enabled: 1
+    });
+
+    const reactedEmojis = [];
+    const sentEmbeds = [];
+    const mockCountingBot = {
+      me: { id: 'bot_self' },
+      react: async (ch, msgId, emoji) => { reactedEmojis.push({ ch, msgId, emoji }); return true; },
+      send: async (ch, text, opts) => { sentEmbeds.push({ ch, text, opts }); return true; }
+    };
+
+    // Test correct count: 6
+    const validMsg = {
+      id: 'msg_count_1',
+      author_id: testUser,
+      server_id: 'server_test_888',
+      channel_id: countChannelId,
+      content: '6'
+    };
+    const handledValid = await YapinMinigames.handleCountingMessage(mockCountingBot, validMsg);
+    assert.strictEqual(handledValid, true, 'Valid counting message should be handled');
+    assert.strictEqual(reactedEmojis[reactedEmojis.length - 1]?.emoji, '\u2705', 'Bot should react with checkmark');
+
+    // Test wrong count: 42 (in Zen mode, reacts with red cross and sends Zen embed without resetting streak)
+    const invalidMsg = {
+      id: 'msg_count_2',
+      author_id: testUser,
+      server_id: 'server_test_888',
+      channel_id: countChannelId,
+      content: '42'
+    };
+    const handledInvalid = await YapinMinigames.handleCountingMessage(mockCountingBot, invalidMsg);
+    assert.strictEqual(handledInvalid, true, 'Invalid count should be handled');
+    assert.strictEqual(reactedEmojis[reactedEmojis.length - 1]?.emoji, '\u274C', 'Bot should react with cross mark');
+    assert(sentEmbeds.length > 0, 'Zen mode should send an explanatory embed');
+
     console.log('   [PASS] YapinMinigames tests passed!');
   }
 

@@ -488,12 +488,19 @@ bot.onButton(/^bj_stand_/, async (i) => {
 // 9. AUTOMATED EVENT LISTENERS
 // ==========================================
 
-// Ascolto di tutti i messaggi per AutoMod, XP e Menzioni AI
+// Ascolto di tutti i messaggi per Counting, AutoMod, XP e Menzioni AI
 bot.on('message', async (msg) => {
   if (!msg || !msg.author_id) return;
   if (msg.author_id === bot.me?.id) return;
 
-  // 1. AutoMod Check
+  // 1. Counting Minigame Handler (1:1 con Discord: basta scrivere il numero e il bot reagisce con emoji)
+  try {
+    await YapinMinigames.handleCountingMessage(bot, msg);
+  } catch (err) {
+    console.error('[Yapin Counting Error]:', err.message);
+  }
+
+  // 2. AutoMod Check
   const flagged = await YapinAutoMod.handleMessage(bot, msg);
   if (flagged) return;
 

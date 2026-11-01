@@ -726,21 +726,44 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     let discordOk = false;
     let yapinOk = false;
 
-    // Invia test a Discord
+    // Invia test a Discord in formato Lettera
     if (botClient?.isReady()) {
       try {
         const chan = botClient.channels.cache.get(bridge.discord_channel_id) || await botClient.channels.fetch(bridge.discord_channel_id);
         if (chan?.isTextBased()) {
-          await chan.send('**[Sentry Bridge Test]** Verifica connessione cross-platform completata con successo!');
+          const testEmbedDiscord = new EmbedBuilder()
+            .setTitle('[Lettera di Verifica] Sigillo del Ponte Cross-Platform')
+            .setDescription('> Questa missiva di collaudo conferma che il ponte tra Discord e Yapin \u00e8 pienamente operativo e sincronizzato in tempo reale.')
+            .setColor(0x5865f2)
+            .addFields(
+              { name: 'Mittente', value: '**Pannello di Controllo Sentry**', inline: true },
+              { name: 'Destinatario', value: `**#${chan.name}** (su Discord)`, inline: true }
+            )
+            .setFooter({ text: 'Sigillo Sentry Bridge \u2022 Verifica Connessione' })
+            .setTimestamp();
+
+          await chan.send({ embeds: [testEmbedDiscord] });
           discordOk = true;
         }
       } catch (e) {}
     }
 
-    // Invia test a Yapin
+    // Invia test a Yapin in formato Lettera
     if (yapinBot) {
       try {
-        await yapinBot.send(bridge.yapin_channel_id, '**[Sentry Bridge Test]** Cross-platform connection verified successfully!');
+        const testEmbedYapin = {
+          title: '[Lettera di Verifica] Sigillo del Ponte Cross-Platform',
+          description: '> Questa missiva di collaudo conferma che il ponte tra Discord e Yapin \u00e8 pienamente operativo e sincronizzato in tempo reale.',
+          color: 0x10b981,
+          fields: [
+            { name: 'Mittente', value: '**Pannello di Controllo Sentry**', inline: true },
+            { name: 'Destinatario', value: `**${bridge.name || 'Canale Yapin'}** (su Yapin)`, inline: true }
+          ],
+          footer: { text: 'Sigillo Sentry Bridge \u2022 Verifica Connessione' },
+          timestamp: new Date().toISOString()
+        };
+
+        await yapinBot.send(bridge.yapin_channel_id, '', { embeds: [testEmbedYapin] });
         yapinOk = true;
       } catch (e) {}
     }
