@@ -5,6 +5,51 @@ let discordBot = null;
 let yapinBotInstance = null;
 let isInitialized = false;
 
+const yapinUserCache = new Map(); // userId -> { nick, avatar, timestamp }
+
+async function resolveYapinAuthor(bot, msg, bridge) {
+  const authorId = msg.author_id || msg.id;
+  if (!authorId) return { nick: 'Cavaliere Yapin', avatar: null };
+
+  const cached = yapinUserCache.get(authorId);
+  if (cached && (Date.now() - cached.timestamp < 300000)) {
+    return { nick: cached.nick, avatar: cached.avatar };
+  }
+
+  let nick = msg.member?.nickname || msg.nickname || msg.author?.nickname || msg.author?.display_name || msg.author?.username;
+  let avatar = msg.author?.avatar_url || null;
+
+  // 1. Prova a recuperare il membro del server per nickname locale
+  const serverId = msg.server_id || bridge?.yapin_server_id;
+  if (serverId && bot && typeof bot.member === 'function') {
+    try {
+      const mem = await bot.member(serverId, authorId).catch(() => null);
+      if (mem) {
+        if (mem.nickname) nick = mem.nickname;
+        else if (mem.profile?.display_name) nick = mem.profile.display_name;
+        else if (mem.profile?.username) nick = mem.profile.username;
+        if (mem.profile?.avatar_url) avatar = mem.profile.avatar_url;
+      }
+    } catch (e) {}
+  }
+
+  // 2. Fallback su profilo utente globale
+  if ((!nick || !avatar) && bot && typeof bot.user === 'function') {
+    try {
+      const u = await bot.user(authorId).catch(() => null);
+      if (u) {
+        if (!nick) nick = u.display_name || u.username;
+        if (!avatar && u.avatar_url) avatar = u.avatar_url;
+      }
+    } catch (e) {}
+  }
+
+  if (!nick) nick = msg.username || msg.author_name || 'Cavaliere Yapin';
+
+  yapinUserCache.set(authorId, { nick, avatar, timestamp: Date.now() });
+  return { nick, avatar };
+}
+
 export const BridgeManager = {
   /**
    * Inizializza il Bridge tra Discord e Yapin
@@ -33,6 +78,35 @@ export const BridgeManager = {
           const text = message.cleanContent || message.content || '';
           const quoteText = text ? text.split('\n').map(line => `> ${line}`).join('\n') : '> *(Nessun testo, solo allegato)*';
 
+          // Risoluzione destinatario: se è una risposta a un messaggio o menzione
+          let recipientNick = null;
+          if (message.reference?.messageId) {
+            try {
+              const repliedMsg = message.channel.messages.cache.get(message.reference.messageId) ||
+                                 await message.channel.messages.fetch(message.reference.messageId).catch(() => null);
+              if (repliedMsg) {
+                if (repliedMsg.author?.id === discordBot.user?.id && repliedMsg.embeds?.length > 0) {
+                  const senderField = repliedMsg.embeds[0].fields?.find(f => f.name === 'Mittente');
+                  if (senderField?.value) {
+                    recipientNick = senderField.value.replace(/\*\*/g, '').trim();
+                  }
+                }
+                if (!recipientNick) {
+                  recipientNick = repliedMsg.member?.nickname || repliedMsg.member?.displayName || repliedMsg.author?.globalName || repliedMsg.author?.username;
+                }
+              }
+            } catch (e) {}
+          }
+
+          if (!recipientNick && message.mentions?.members?.size > 0) {
+            const firstMember = message.mentions.members.filter(m => !m.user.bot).first();
+            if (firstMember) {
+              recipientNick = firstMember.nickname || firstMember.displayName || firstMember.user.username;
+            }
+          }
+
+          const destDisplay = recipientNick ? `**${recipientNick}**` : `**#${bridge.name || 'Canale Yapin'}**`;
+
           const yapinEmbed = {
             title: '[Lettera dal Reame] Ponte Cross-Platform',
             description: quoteText,
@@ -45,7 +119,7 @@ export const BridgeManager = {
               },
               {
                 name: 'Destinatario',
-                value: `**#${bridge.name || 'Canale Yapin'}**`,
+                value: destDisplay,
                 inline: true
               }
             ],
@@ -108,21 +182,43 @@ export const BridgeManager = {
                           await discordBot.channels.fetch(bridge.discord_channel_id).catch(() => null);
           if (!channel || !channel.isTextBased()) return;
 
-          let userNick = msg.member?.nickname || msg.nickname || msg.author?.nickname || msg.author?.display_name || msg.author?.username || msg.username || 'Cavaliere Yapin';
-          if (bridge.yapin_server_id && msg.author_id && (!msg.member || !msg.nickname)) {
+          // Risoluzione mittente su Yapin (nickname locale o display name globale)
+          const { nick: userNick, avatar: avatarUrl } = await resolveYapinAuthor(yapinBotInstance, msg, bridge);
+
+          const text = msg.content || '';
+          const quoteText = text ? text.split('\n').map(line => `> ${line}`).join('\n') : '> *(Nessun testo)*';
+
+          // Risoluzione destinatario: se è una risposta a un messaggio o menzione su Yapin
+          let recipientNick = null;
+          if (msg.reply_to && yapinBotInstance.message) {
             try {
-              const mem = await yapinBotInstance.member(bridge.yapin_server_id, msg.author_id).catch(() => null);
-              if (mem?.nickname) {
-                userNick = mem.nickname;
-              } else if (mem?.profile?.display_name) {
-                userNick = mem.profile.display_name;
+              const orig = await yapinBotInstance.message(msg.channel_id, msg.reply_to).catch(() => null);
+              if (orig) {
+                if (orig.embeds && Array.isArray(orig.embeds) && orig.embeds.length > 0) {
+                  const senderField = orig.embeds[0].fields?.find(f => f.name === 'Mittente');
+                  if (senderField?.value) {
+                    recipientNick = senderField.value.replace(/\*\*/g, '').trim();
+                  }
+                }
+                if (!recipientNick && orig.author_id) {
+                  const resolved = await resolveYapinAuthor(yapinBotInstance, orig, bridge);
+                  recipientNick = resolved.nick;
+                }
               }
             } catch (e) {}
           }
 
-          const avatarUrl = msg.author?.avatar_url || null;
-          const text = msg.content || '';
-          const quoteText = text ? text.split('\n').map(line => `> ${line}`).join('\n') : '> *(Nessun testo)*';
+          if (!recipientNick && msg.content) {
+            const mentionMatch = msg.content.match(/<@([a-zA-Z0-9_-]+)>/);
+            if (mentionMatch && mentionMatch[1] !== yapinBotInstance.me?.id) {
+              const resolved = await resolveYapinAuthor(yapinBotInstance, { author_id: mentionMatch[1] }, bridge);
+              if (resolved.nick && resolved.nick !== 'Cavaliere Yapin') {
+                recipientNick = resolved.nick;
+              }
+            }
+          }
+
+          const destDisplay = recipientNick ? `**${recipientNick}**` : `**#${channel.name}**`;
 
           const discordEmbed = new EmbedBuilder()
             .setTitle('[Lettera dal Reame] Ponte Cross-Platform')
@@ -136,7 +232,7 @@ export const BridgeManager = {
               },
               {
                 name: 'Destinatario',
-                value: `**#${channel.name}**`,
+                value: destDisplay,
                 inline: true
               }
             )
