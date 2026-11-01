@@ -49,9 +49,9 @@ export default {
             .setName('preset')
             .setDescription('Scegli uno stile preimpostato')
             .addChoices(
-              { name: '⚔️ Cinico & Spietato (Default)', value: 'cynical' },
-              { name: '🛡️ Nobile Sentinella & Guardiano', value: 'noble' },
-              { name: '🤖 Assistente Tecnico Preciso', value: 'technical' }
+              { name: 'Cinico & Spietato (Default)', value: 'cynical' },
+              { name: 'Nobile Sentinella & Guardiano', value: 'noble' },
+              { name: 'Assistente Tecnico Preciso', value: 'technical' }
             )
             .setRequired(false)
         )
@@ -100,7 +100,7 @@ export default {
         const quota = DatabaseHelper.getAIQuotaStatus(interaction.guild.id);
         if (quota.is_blocked) {
           return interaction.reply({
-            content: `⏳ **Quota AI Esaurita**: Il server ha utilizzato tutte le **${quota.daily_limit}** richieste giornaliere disponibili. Il contatore si resetterà a mezzanotte!`,
+            content: `[Quota AI Esaurita] Il server ha utilizzato tutte le **${quota.daily_limit}** richieste giornaliere disponibili. Il contatore si resetter\u00e0 a mezzanotte!`,
             ephemeral: true
           });
         }
@@ -132,7 +132,7 @@ export default {
       if (interaction.guild) {
         const updatedQuota = DatabaseHelper.incrementAIUsage(interaction.guild.id);
         if (updatedQuota.is_warning) {
-          quotaNotice = `\n\n> ⚠️ *Nota Quota AI: rimangono **${updatedQuota.remaining}** richieste disponibili per oggi (usate ${updatedQuota.used}/${updatedQuota.daily_limit}).*`;
+          quotaNotice = `\n\n> *[Avviso Quota AI]*: rimangono **${updatedQuota.remaining}** richieste disponibili per oggi (usate ${updatedQuota.used}/${updatedQuota.daily_limit}).`;
         }
       }
 
@@ -144,7 +144,7 @@ export default {
         const quota = DatabaseHelper.getAIQuotaStatus(interaction.guild.id);
         if (quota.is_blocked) {
           return interaction.reply({
-            content: `⏳ **Quota AI Esaurita**: Il server ha utilizzato tutte le **${quota.daily_limit}** richieste giornaliere disponibili. Il contatore si resetterà a mezzanotte!`,
+            content: `[Quota AI Esaurita] Il server ha utilizzato tutte le **${quota.daily_limit}** richieste giornaliere disponibili. Il contatore si resetter\u00e0 a mezzanotte!`,
             ephemeral: true
           });
         }
@@ -169,21 +169,15 @@ export default {
       if (interaction.guild) {
         const updatedQuota = DatabaseHelper.incrementAIUsage(interaction.guild.id);
         if (updatedQuota.is_warning) {
-          quotaNotice = `\n\n> ⚠️ *Nota Quota AI: rimangono **${updatedQuota.remaining}** richieste disponibili per oggi.*`;
+          quotaNotice = `\n\n> *[Avviso Quota AI]*: rimangono **${updatedQuota.remaining}** richieste disponibili per oggi.`;
         }
       }
 
-      const embed = new EmbedBuilder()
-        .setColor(CONFIG.EMBED_COLOR)
-        .setTitle(`🔍 Ricerca Web: ${query}`)
-        .setDescription(reply + quotaNotice)
-        .setFooter({ text: 'Sentry AI • Web Intelligence' })
-        .setTimestamp();
-
-      await interaction.editReply({ embeds: [embed] });
+      // Risposta diretta senza embed per l'AI
+      await interaction.editReply({ content: `**[Ricerca Web: ${query}]**\n\n${reply}${quotaNotice}` });
     } else if (subcommand === 'quota') {
       if (!interaction.guild) {
-        return interaction.reply({ content: 'Questo comando può essere eseguito solo all\'interno di un server.', ephemeral: true });
+        return interaction.reply({ content: 'Questo comando pu\u00f2 essere eseguito solo all\'interno di un server.', ephemeral: true });
       }
 
       const quota = DatabaseHelper.getAIQuotaStatus(interaction.guild.id);
@@ -193,28 +187,28 @@ export default {
       const nextMidnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
       const resetEpoch = Math.floor(nextMidnight.getTime() / 1000);
 
-      const statusEmoji = quota.is_blocked ? '🔴' : quota.is_warning ? '⚠️' : '🟢';
+      const statusTag = quota.is_blocked ? '[BLOCCATA]' : quota.is_warning ? '[IN ESAURIMENTO]' : '[DISPONIBILE]';
       const statusText = quota.is_blocked ? 'Quota Giornaliera Esaurita' : quota.is_warning ? 'In Esaurimento (Pre-Avviso Attivo)' : 'Disponibile';
 
       const embed = new EmbedBuilder()
         .setColor(quota.is_blocked ? '#ef4444' : quota.is_warning ? '#f59e0b' : '#10b981')
-        .setTitle('📊 Stato Quota & Utilizzo Sentry AI')
+        .setTitle('[Stato Quota] Monitoraggio Sentry AI')
         .setDescription(`Monitoraggio delle richieste AI effettuate dal server oggi.`)
         .addFields(
-          { name: '📈 Richieste Utilizzate', value: `\`${quota.used}\` / \`${quota.is_unlimited ? 'Illimitate' : quota.daily_limit}\` (${pct}%)`, inline: true },
-          { name: '✨ Richieste Rimanenti', value: `\`${quota.is_unlimited ? 'Illimitate' : quota.remaining}\``, inline: true },
-          { name: '🚦 Stato Attuale', value: `${statusEmoji} **${statusText}**`, inline: true },
-          { name: '🔔 Soglia Pre-Avviso', value: `\`${quota.threshold_pct}%\` (avviso quando mancano ≤ ${quota.is_unlimited ? 0 : Math.max(1, quota.daily_limit - Math.floor(quota.daily_limit * (quota.threshold_pct / 100)))} richieste)`, inline: true },
-          { name: '🔄 Reset Quota', value: `<t:${resetEpoch}:R> (<t:${resetEpoch}:t> UTC)`, inline: true },
-          { name: '📢 Canale Notifiche Staff', value: quota.warning_channel_id ? `<#${quota.warning_channel_id}>` : '`Non impostato`', inline: true }
+          { name: 'Richieste Utilizzate', value: `\`${quota.used}\` / \`${quota.is_unlimited ? 'Illimitate' : quota.daily_limit}\` (${pct}%)`, inline: true },
+          { name: 'Richieste Rimanenti', value: `\`${quota.is_unlimited ? 'Illimitate' : quota.remaining}\``, inline: true },
+          { name: 'Stato Attuale', value: `${statusTag} **${statusText}**`, inline: true },
+          { name: 'Soglia Pre-Avviso', value: `\`${quota.threshold_pct}%\` (avviso quando mancano \u2264 ${quota.is_unlimited ? 0 : Math.max(1, quota.daily_limit - Math.floor(quota.daily_limit * (quota.threshold_pct / 100)))} richieste)`, inline: true },
+          { name: 'Reset Quota', value: `<t:${resetEpoch}:R> (<t:${resetEpoch}:t> UTC)`, inline: true },
+          { name: 'Canale Notifiche Staff', value: quota.warning_channel_id ? `<#${quota.warning_channel_id}>` : '`Non impostato`', inline: true }
         )
-        .setFooter({ text: `${interaction.guild.name} • Sentry AI Monitor`, iconURL: interaction.guild.iconURL() })
+        .setFooter({ text: `${interaction.guild.name} \u2022 Sentry AI Monitor`, iconURL: interaction.guild.iconURL() })
         .setTimestamp();
 
       await interaction.reply({ embeds: [embed] });
     } else if (subcommand === 'config-quota') {
       if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-        return interaction.reply({ content: '❌ Solo gli amministratori possono configurare la quota AI.', ephemeral: true });
+        return interaction.reply({ content: '[Errore] Solo gli amministratori possono configurare la quota AI.', ephemeral: true });
       }
 
       const newLimit = interaction.options.getInteger('limite');
@@ -227,7 +221,7 @@ export default {
       if (newChannel) updates.warning_channel_id = newChannel.id;
 
       if (Object.keys(updates).length === 0) {
-        return interaction.reply({ content: '⚠️ Specifica almeno un parametro da aggiornare (`limite`, `soglia` o `canale_avviso`).', ephemeral: true });
+        return interaction.reply({ content: '[Attenzione] Specifica almeno un parametro da aggiornare (`limite`, `soglia` o `canale_avviso`).', ephemeral: true });
       }
 
       DatabaseHelper.updateAIConfig(interaction.guild.id, updates);
@@ -235,7 +229,7 @@ export default {
 
       const embed = new EmbedBuilder()
         .setColor('#10b981')
-        .setTitle('⚙️ Configurazione Quota AI Aggiornata')
+        .setTitle('[Configurazione] Quota AI Aggiornata')
         .setDescription('I nuovi parametri di monitoraggio per l\'intelligenza artificiale sono stati applicati con successo!')
         .addFields(
           { name: 'Limite Giornaliero', value: quota.daily_limit > 0 ? `\`${quota.daily_limit} richieste/giorno\`` : '`Illimitato`', inline: true },
@@ -248,7 +242,7 @@ export default {
     } else if (subcommand === 'reset') {
       DatabaseHelper.resetChannelMemory(interaction.channel.id);
       await interaction.reply({
-        content: '🧹 Memoria della conversazione azzerata per questo canale. Sentry ha dimenticato i messaggi precedenti.'
+        content: '[Memoria Resettata] Memoria della conversazione azzerata per questo canale. Sentry ha dimenticato i messaggi precedenti.'
       });
     } else if (subcommand === 'prompt') {
       const preset = interaction.options.getString('preset');
@@ -259,7 +253,7 @@ export default {
 
         const embed = new EmbedBuilder()
           .setColor(CONFIG.EMBED_COLOR)
-          .setTitle('🎭 Identità Attuale di Sentry')
+          .setTitle('[Identit\u00e0] Personalit\u00e0 Attuale di Sentry')
           .setDescription(`\`\`\`${currentPrompt.slice(0, 1500)}\`\`\``)
           .setFooter({ text: 'Puoi personalizzare il prompt anche dalla Dashboard Web!' })
           .setTimestamp();
@@ -268,7 +262,7 @@ export default {
       }
 
       if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-        return interaction.reply({ content: '❌ Solo gli amministratori possono modificare il preset dell\'IA.', ephemeral: true });
+        return interaction.reply({ content: '[Errore] Solo gli amministratori possono modificare il preset dell\'IA.', ephemeral: true });
       }
 
       let newPrompt = "";
@@ -281,7 +275,7 @@ export default {
       }
 
       DatabaseHelper.updateAIConfig(interaction.guild.id, { system_prompt: newPrompt });
-      await interaction.reply({ content: `✅ Stile di Sentry aggiornato al preset: **${preset}**!` });
+      await interaction.reply({ content: `[Stile Aggiornato] Stile di Sentry aggiornato al preset: **${preset}**!` });
     }
   }
 };

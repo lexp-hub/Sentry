@@ -1,5 +1,4 @@
 import { AIManager } from '../../../src/bot/modules/aiManager.js';
-import { Embed } from '../yapper.js';
 
 export const YapinAI = {
   async handleQuery(ctx, promptText) {
@@ -17,20 +16,21 @@ export const YapinAI = {
       const systemPrompt = "Sei 'Sentry', la sentinella AI avanzata a guardia delle community di Yapin e Discord. Sei acuto, intelligente, leggermente sarcastico ed estremamente competente sulla sicurezza informatica, moderazione e tecnologia. Rispondi in italiano in modo conciso (massimo 400 caratteri).";
 
       const aiReply = await AIManager.getAIResponse(messages, systemPrompt);
+      const replyText = aiReply || 'Non sono riuscito a generare una risposta al momento.';
 
-      const embed = new Embed()
-        .title('[AI] Sentry Neural Core (Llama 70B)')
-        .field('Domanda', `*${promptText.slice(0, 150)}*`)
-        .description(aiReply || 'Non sono riuscito a generare una risposta al momento.')
-        .color('#6366f1');
-
-      if (waitMsg?.id && ctx.channel_id) {
+      // Modifica il messaggio provvisorio sul posto, oppure invia risposta diretta senza embed
+      if (waitMsg?.id && ctx.bot?.edit && ctx.channel_id) {
         try {
-          await ctx.bot.delete(ctx.channel_id, waitMsg.id);
-        } catch (e) {}
+          await ctx.bot.edit(ctx.channel_id, waitMsg.id, replyText);
+          return;
+        } catch (e) {
+          try { await ctx.bot.delete(ctx.channel_id, waitMsg.id); } catch (_) {}
+        }
+      } else if (waitMsg?.id && ctx.bot?.delete && ctx.channel_id) {
+        try { await ctx.bot.delete(ctx.channel_id, waitMsg.id); } catch (_) {}
       }
 
-      ctx.reply('', { embeds: [embed] });
+      await ctx.reply(replyText);
     } catch (err) {
       console.error('[Yapin AI Error]:', err.message);
       ctx.reply(`[Error] Errore durante l'interrogazione dell'AI: ${err.message}`);
