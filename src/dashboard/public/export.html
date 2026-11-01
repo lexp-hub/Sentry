@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Assets // Sentry</title>
+  <title>Asset // Sentry</title>
   <link rel="icon" href="/logo.svg?v=100" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,10 +20,10 @@
         <span>Sentry // Media Kit</span>
       </div>
       <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-        Official Brand Assets
+        Asset Grafici Ufficiali
       </h1>
       <p class="text-[#81889c] text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
-        Download high-resolution official brand graphics in PNG format for bot profile customization.
+        Scarica gli asset grafici ufficiali in altissima risoluzione PNG per il profilo del bot su Discord e Yapin.
       </p>
     </div>
 
@@ -32,7 +32,7 @@
       <div class="glass-card p-5 flex flex-col items-center justify-between gap-4 text-center">
         <div class="flex items-center gap-2">
           <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i>
-          <h2 class="text-xs font-bold text-white font-medieval">Sentry Bot Avatar (1024x1024)</h2>
+          <h2 class="text-xs font-bold text-white font-medieval">Avatar Bot Sentry (1024x1024)</h2>
         </div>
         <div class="w-36 h-36 rounded-full overflow-hidden border border-slate-700 shadow-sm bg-slate-900 p-1 flex items-center justify-center">
           <div id="logo-svg-wrapper" class="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:rounded-full">
@@ -42,7 +42,7 @@
         <button onclick="downloadPng('/logo.svg', 'sentry-avatar.png', 1024, 1024)" 
                 class="btn-knight w-full py-2.5 px-3 text-xs font-bold shadow-sm">
           <i data-lucide="download" class="w-4 h-4"></i>
-          <span>Download Bot Avatar</span>
+          <span>Scarica Avatar Bot</span>
         </button>
       </div>
 
@@ -50,7 +50,7 @@
       <div class="glass-card p-5 flex flex-col items-center justify-between gap-4 text-center">
         <div class="flex items-center gap-2">
           <i data-lucide="layout" class="w-4 h-4 text-emerald-400"></i>
-          <h2 class="text-xs font-bold text-white font-medieval">Profile Banner (1200x480)</h2>
+          <h2 class="text-xs font-bold text-white font-medieval">Banner Profilo (1200x480)</h2>
         </div>
         <div class="w-full h-36 rounded-xl overflow-hidden border border-slate-700 shadow-sm flex items-center justify-center bg-slate-900 p-1">
           <div id="banner-svg-wrapper" class="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:rounded-lg">
@@ -60,7 +60,7 @@
         <button onclick="downloadPng('/banner.svg', 'sentry-banner.png', 1200, 480)" 
                 class="btn-knight w-full py-2.5 px-3 text-xs font-bold shadow-sm">
           <i data-lucide="download" class="w-4 h-4"></i>
-          <span>Download Banner</span>
+          <span>Scarica Banner</span>
         </button>
       </div>
     </div>
@@ -68,7 +68,7 @@
     <div class="pt-4">
       <a href="/" class="btn-secondary text-xs py-2 px-4 inline-flex items-center gap-2">
         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-        <span>Return to Home</span>
+        <span>Torna alla Home</span>
       </a>
     </div>
   </div>
@@ -130,7 +130,7 @@
         img.src = url;
       } catch (e) {
         console.error('Error generating PNG:', e);
-        alert('Error generating PNG file.');
+        alert('Errore durante la generazione del file PNG.');
       }
     }
 

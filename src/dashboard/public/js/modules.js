@@ -50,7 +50,7 @@
         autorole: { name: 'Auto-Role', desc: 'Assegnazione ruoli per utenti e bot', icon: 'user-check', color: 'text-amber-500' },
         welcomer: { name: 'Welcomer & DM', desc: 'Benvenuto, DM e card grafiche', icon: 'user-plus', color: 'text-red-600' },
         autoresponder: { name: 'Auto-Responder', desc: 'Trigger e auto-reaction', icon: 'zap', color: 'text-red-600' },
-        moderation: { name: 'AutoMod & Sanctions', desc: 'Anti-spam protection & logs', icon: 'shield-alert', color: 'text-rose-600' },
+        moderation: { name: 'AutoMod & Sanzioni', desc: 'Protezione anti-spam e log', icon: 'shield-alert', color: 'text-rose-600' },
         tickets: { name: 'Ticket Support', desc: 'Canali privati di assistenza', icon: 'ticket', color: 'text-red-600' },
         giveaways: { name: 'Giveaways & XP', desc: 'Concorsi e timer automatici', icon: 'trophy', color: 'text-amber-600' },
         leveling: { name: 'XP & Leveling', desc: 'Classifiche e ruoli livello', icon: 'star', color: 'text-amber-500' },
@@ -118,7 +118,7 @@
             headers: { 'Content-Type': 'application/json', 'x-client-id': window.AppState?.clientId },
             body: JSON.stringify({ prefix: prefixEl.value })
           });
-          window.showToast('Command prefix saved!');
+          window.showToast('Prefisso comandi salvato!');
         });
       }
 
@@ -132,7 +132,7 @@
             headers: { 'Content-Type': 'application/json', 'x-client-id': window.AppState?.clientId },
             body: JSON.stringify({ log_channel_id: logEl.value || null })
           });
-          window.showToast('Audit Log channel saved in database!');
+          window.showToast('Canale Audit Log salvato nel database!');
         });
       }
     } catch (e) {
@@ -234,9 +234,9 @@
       });
 
       if (res.ok) {
-        window.showToast('Partnership configuration saved!');
+        window.showToast('Configurazione Partnership salvata!');
       } else {
-        window.showToast('Error saving configuration.', 'error');
+        window.showToast('Errore durante il salvataggio.', 'error');
       }
     });
   }
@@ -246,11 +246,11 @@
     btnSendPartnerPanel.addEventListener('click', async () => {
       const guildId = window.AppState.currentGuildId;
       const channelId = document.getElementById('part-channel')?.value;
-      const title = document.getElementById('part-panel-title')?.value || 'Partnerships System & Hub';
+      const title = document.getElementById('part-panel-title')?.value || 'Sistema Partnership & Alleanze';
       const description = document.getElementById('part-panel-desc')?.value?.trim() || null;
       const image = document.getElementById('part-panel-image')?.value?.trim() || null;
 
-      if (!channelId) return window.showToast('Select a channel to send the partnership panel.', 'error');
+      if (!channelId) return window.showToast('Seleziona un canale per inviare il pannello partnership.', 'error');
 
       try {
         btnSendPartnerPanel.disabled = true;
@@ -265,12 +265,12 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Partnership panel with modal button sent to Discord!');
+          window.showToast('Pannello Partnership con pulsante Form inviato su Discord con successo!');
         } else {
-          window.showToast(`Error sending panel: ${data.error || 'Failed'}`, 'error');
+          window.showToast(`Errore invio pannello: ${data.error || 'Fallito'}`, 'error');
         }
       } catch (err) {
-        window.showToast(`Error: ${err.message}`, 'error');
+        window.showToast(`Errore: ${err.message}`, 'error');
       } finally {
         btnSendPartnerPanel.disabled = false;
         btnSendPartnerPanel.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5 text-red-600"></i> Invia Pannello nel Canale';
@@ -287,7 +287,7 @@
       const banner = document.getElementById('part-quick-banner')?.value?.trim() || null;
       const notes = document.getElementById('part-quick-notes')?.value?.trim();
 
-      if (!invite) return window.showToast('Enter a valid invite link or code.', 'error');
+      if (!invite) return window.showToast('Inserisci un link o codice di invito valido.', 'error');
 
       try {
         btnQuickPart.disabled = true;
@@ -302,16 +302,16 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Partnership published successfully to Discord channel!');
+          window.showToast('Partnership pubblicata con successo sul canale Discord!');
           document.getElementById('part-quick-invite').value = '';
           if (document.getElementById('part-quick-banner')) document.getElementById('part-quick-banner').value = '';
           document.getElementById('part-quick-notes').value = '';
           await loadPartnershipData(guildId);
         } else {
-          window.showToast(data.error || 'Publishing error.', 'error');
+          window.showToast(data.error || 'Errore nella pubblicazione.', 'error');
         }
       } catch (err) {
-        window.showToast(`Error: ${err.message}`, 'error');
+        window.showToast(`Errore: ${err.message}`, 'error');
       } finally {
         btnQuickPart.disabled = false;
         btnQuickPart.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> Pubblica Partnership';
@@ -363,7 +363,7 @@
   window.deleteReactionRole = async function(id) {
     const guildId = window.AppState.currentGuildId;
     await fetch(`/api/guilds/${guildId}/reaction-roles/${id}`, { method: 'DELETE' });
-    window.showToast('Reaction role deleted.');
+    window.showToast('Reaction role eliminato.');
     await loadReactionRoles(guildId);
   };
 
@@ -376,9 +376,9 @@
       const style = document.getElementById('rr-style')?.value || 'Primary';
       const label = document.getElementById('rr-label')?.value || 'Ruolo';
       const emoji = document.getElementById('rr-emoji')?.value || '[*]';
-      const title = document.getElementById('rr-title')?.value || 'Role Selection';
+      const title = document.getElementById('rr-title')?.value || 'Selezione Ruolo';
 
-      if (!channelId || !roleId) return window.showToast('Please select channel and role.', 'error');
+      if (!channelId || !roleId) return window.showToast('Seleziona canale e ruolo.', 'error');
 
       const res = await fetch(`/api/guilds/${guildId}/reaction-roles`, {
         method: 'POST',
@@ -387,10 +387,10 @@
       });
 
       if (res.ok) {
-        window.showToast('Reaction Role panel created!');
+        window.showToast('Pannello Reaction Role creato!');
         await loadReactionRoles(guildId);
       } else {
-        window.showToast('Error creating reaction role.', 'error');
+        window.showToast('Errore creazione reaction role.', 'error');
       }
     });
   }
@@ -436,7 +436,7 @@
   window.deleteAutoresponder = async function(id) {
     const guildId = window.AppState.currentGuildId;
     await fetch(`/api/guilds/${guildId}/autoresponders/${id}`, { method: 'DELETE' });
-    window.showToast('Auto-response deleted.');
+    window.showToast('Risposta automatica eliminata.');
     await loadAutoresponders(guildId);
   };
 
@@ -449,7 +449,7 @@
       const response = document.getElementById('ar-response')?.value?.trim();
       const reactionsRaw = document.getElementById('ar-reactions')?.value?.trim();
 
-      if (!trigger) return window.showToast('Enter a trigger keyword.', 'error');
+      if (!trigger) return window.showToast('Inserisci una parola chiave.', 'error');
       const reactions = reactionsRaw ? reactionsRaw.split(/[, ]+/).filter(Boolean) : [];
 
       const res = await fetch(`/api/guilds/${guildId}/autoresponders`, {
@@ -459,13 +459,13 @@
       });
 
       if (res.ok) {
-        window.showToast('Auto-response added!');
+        window.showToast('Risposta automatica aggiunta!');
         document.getElementById('ar-trigger').value = '';
         document.getElementById('ar-response').value = '';
         document.getElementById('ar-reactions').value = '';
         await loadAutoresponders(guildId);
       } else {
-        window.showToast('Creation error.', 'error');
+        window.showToast('Errore creazione.', 'error');
       }
     });
   }
@@ -552,19 +552,19 @@
         body: JSON.stringify(payload)
       });
 
-      if (res.ok) window.showToast('AutoMod rules saved!');
-      else window.showToast('Error saving AutoMod.', 'error');
+      if (res.ok) window.showToast('Regole AutoMod salvate!');
+      else window.showToast('Errore salvataggio AutoMod.', 'error');
     });
   }
 
   function updateTicketPreview() {
-    const title = document.getElementById('tk-title')?.value || 'Support & Help Center';
+    const title = document.getElementById('tk-title')?.value || 'Centro Supporto & Assistenza';
     const desc = document.getElementById('tk-description')?.value || 'Clicca sul pulsante sottostante per aprire un ticket.';
     const color = document.getElementById('tk-color')?.value || '#dc2626';
     const image = document.getElementById('tk-image')?.value?.trim();
     const footer = document.getElementById('tk-footer')?.value || 'Sentry • Sistema Ticket';
     const btnLabel = document.getElementById('tk-btn-label')?.value || 'Apri Ticket';
-    const btnEmoji = document.getElementById('tk-btn-emoji')?.value || '[Open]';
+    const btnEmoji = document.getElementById('tk-btn-emoji')?.value || '[Apri]';
     const btnStyle = document.getElementById('tk-btn-style')?.value || 'Primary';
 
     const prevBox = document.getElementById('prev-tk-embed-box');
@@ -730,7 +730,7 @@
       const guildId = window.AppState.currentGuildId;
       const payload = getTicketPanelPayload();
 
-      if (!payload.channelId) return window.showToast('Select a target channel to send the panel.', 'error');
+      if (!payload.channelId) return window.showToast('Seleziona un canale per inviare il pannello.', 'error');
 
       const res = await fetch(`/api/guilds/${guildId}/tickets/panel`, {
         method: 'POST',
@@ -739,10 +739,10 @@
       });
 
       if (res.ok) {
-        window.showToast('New Ticket panel sent successfully to channel!');
+        window.showToast('Nuovo Pannello Ticket inviato con successo nel canale!');
         await loadTicketsData(guildId);
       } else {
-        window.showToast('Error sending ticket panel.', 'error');
+        window.showToast('Errore durante l\'invio del pannello.', 'error');
       }
     });
   }
@@ -755,7 +755,7 @@
       const messageId = document.getElementById('tk-active-message-id')?.value;
       const payload = getTicketPanelPayload();
 
-      if (!payload.channelId) return window.showToast('Select a channel.', 'error');
+      if (!payload.channelId) return window.showToast('Seleziona un canale.', 'error');
 
       try {
         btnUpdateTicketPanel.disabled = true;
@@ -770,13 +770,13 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Ticket panel on Discord updated in real time!');
+          window.showToast('Pannello Ticket su Discord aggiornato con successo in tempo reale senza cancellarlo!');
           await loadTicketsData(guildId);
         } else {
-          window.showToast(`Edit error: ${data.error || 'Failed'}`, 'error');
+          window.showToast(`Errore modifica: ${data.error || 'Fallita'}`, 'error');
         }
       } catch (err) {
-        window.showToast(`Error: ${err.message}`, 'error');
+        window.showToast(`Errore: ${err.message}`, 'error');
       } finally {
         btnUpdateTicketPanel.disabled = false;
         btnUpdateTicketPanel.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 text-amber-600"></i> Modifica Pannello Esistente';
@@ -825,9 +825,9 @@
         });
 
         if (res.ok) {
-          window.showToast('Leveling & Coin Rewards configuration saved!');
+          window.showToast('Configurazione Leveling & Ricompense Monete salvata con successo!');
         } else {
-          window.showToast('Error saving configuration.', 'error');
+          window.showToast('Errore durante il salvataggio.', 'error');
         }
       } catch (e) {
         window.showToast(e.message, 'error');
@@ -846,7 +846,7 @@
       const durationStr = document.getElementById('ga-duration')?.value?.trim();
       const winners = parseInt(document.getElementById('ga-winners')?.value || '1', 10);
 
-      if (!channelId || !prize) return window.showToast('Please fill in all fields.', 'error');
+      if (!channelId || !prize) return window.showToast('Compila tutti i campi.', 'error');
 
       const match = durationStr.match(/^(\d+)(s|m|h|d)$/i);
       let durationSec = 3600;
@@ -865,8 +865,8 @@
         body: JSON.stringify({ channelId, prize, durationSeconds: durationSec, winnerCount: winners })
       });
 
-      if (res.ok) window.showToast(`Giveaway for ${prize} started!`);
-      else window.showToast('Error starting giveaway.', 'error');
+      if (res.ok) window.showToast(`Giveaway per ${prize} avviato!`);
+      else window.showToast('Errore avvio giveaway.', 'error');
     });
   }
 
@@ -930,10 +930,10 @@
       });
 
       if (res.ok) {
-        window.showToast('Introductions module settings saved!');
+        window.showToast('Configurazione Modulo Presentazioni salvata con successo!');
         await loadPresentationsData(guildId);
       } else {
-        window.showToast('Error saving configuration.', 'error');
+        window.showToast('Errore durante il salvataggio.', 'error');
       }
     });
   }
@@ -945,9 +945,9 @@
       if (!guildId) return window.showToast('Nessun server selezionato. Seleziona prima un server dal menu in alto.', 'error');
 
       const channelId = document.getElementById('pres-channel')?.value;
-      if (!channelId) return window.showToast('Select a channel to send the introductions panel.', 'error');
+      if (!channelId) return window.showToast('Seleziona un canale per inviare il pannello presentazioni.', 'error');
 
-      const title = document.getElementById('pres-panel-title')?.value || 'Welcome to Introductions';
+      const title = document.getElementById('pres-panel-title')?.value || 'Benvenuto nella Sala delle Presentazioni';
       const description = document.getElementById('pres-panel-desc')?.value?.trim() || null;
       const image = document.getElementById('pres-panel-image')?.value?.trim() || null;
 
@@ -964,12 +964,12 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Introductions panel sent successfully to Discord!');
+          window.showToast('Pannello Presentazioni inviato su Discord con successo!');
         } else {
-          window.showToast(`Send error: ${data.error || 'Failed'}`, 'error');
+          window.showToast(`Errore invio: ${data.error || 'Fallito'}`, 'error');
         }
       } catch (err) {
-        window.showToast(`Error: ${err.message}`, 'error');
+        window.showToast(`Errore: ${err.message}`, 'error');
       } finally {
         btnSendPresPanel.disabled = false;
         btnSendPresPanel.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5 text-indigo-600"></i> Invia Pannello nel Canale';
@@ -1001,7 +1001,7 @@
       if (channelEl && config.channel_id) channelEl.value = config.channel_id;
       if (roleEl && config.reward_role_id) roleEl.value = config.reward_role_id;
       if (xpEl) xpEl.value = config.xp_reward !== undefined ? config.xp_reward : 50;
-      if (titleEl) titleEl.value = config.title || 'Setup Showcase';
+      if (titleEl) titleEl.value = config.title || 'Setup & Postazione';
       if (colorEl) colorEl.value = config.color || '#dc2626';
       if (pickerEl) pickerEl.value = config.color || '#dc2626';
       if (reactionsEl) {
@@ -1064,7 +1064,7 @@
       const channel_id = document.getElementById('setup-channel')?.value || null;
       const reward_role_id = document.getElementById('setup-role')?.value || null;
       const xp_reward = parseInt(document.getElementById('setup-xp')?.value || '50', 10);
-      const title = document.getElementById('setup-title')?.value || 'Setup Showcase';
+      const title = document.getElementById('setup-title')?.value || 'Setup & Postazione';
       const color = document.getElementById('setup-color')?.value || '#dc2626';
       const rawReactions = document.getElementById('setup-reactions')?.value || 'up, star, heart';
       const auto_reactions = rawReactions.split(',').map(r => r.trim()).filter(Boolean);
@@ -1089,10 +1089,10 @@
       });
 
       if (res.ok) {
-        window.showToast('Setup Showcase configuration saved!');
+        window.showToast('Configurazione Showcase Postazioni salvata con successo!');
         await loadSetupShowcaseData(guildId);
       } else {
-        window.showToast('Error saving configuration.', 'error');
+        window.showToast('Errore durante il salvataggio.', 'error');
       }
     });
   }
@@ -1106,7 +1106,7 @@
       const channelId = document.getElementById('setup-channel')?.value;
       if (!channelId) return window.showToast('Seleziona un canale per inviare il pannello regole setup.', 'error');
 
-      const title = document.getElementById('setup-panel-title')?.value || 'Share Your Battle Station';
+      const title = document.getElementById('setup-panel-title')?.value || 'Condividi la Tua Postazione da Battaglia';
       const description = document.getElementById('setup-panel-desc')?.value?.trim() || null;
       const image = document.getElementById('setup-panel-image')?.value?.trim() || null;
       const color = document.getElementById('setup-color')?.value || '#dc2626';
@@ -1124,12 +1124,12 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Setup Rules panel sent to Discord successfully!');
+          window.showToast('Pannello Regole Setup inviato su Discord con successo!');
         } else {
-          window.showToast(`Send error: ${data.error || 'Failed'}`, 'error');
+          window.showToast(`Errore invio: ${data.error || 'Fallito'}`, 'error');
         }
       } catch (err) {
-        window.showToast(`Error: ${err.message}`, 'error');
+        window.showToast(`Errore: ${err.message}`, 'error');
       } finally {
         btnSendSetupPanel.disabled = false;
         btnSendSetupPanel.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5 text-red-600"></i> Invia Pannello nel Canale';
@@ -1160,13 +1160,13 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast(`[Success] ${data.convertedCount} setups converted to embeds.`);
+          window.showToast(`[Success] Conversione completata! ${data.convertedCount} setup convertiti in Embed.`);
           await loadSetupShowcaseData(guildId);
         } else {
-          window.showToast(`Error: ${data.error || 'Scan failed'}`, 'error');
+          window.showToast(`Errore: ${data.error || 'Scansione fallita'}`, 'error');
         }
       } catch (err) {
-        window.showToast(`Error: ${err.message}`, 'error');
+        window.showToast(`Errore: ${err.message}`, 'error');
       } finally {
         btnConvertSetupMsgs.disabled = false;
         btnConvertSetupMsgs.innerHTML = '<i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-red-600"></i> Scansiona e Converti Messaggi del Canale';
@@ -1252,15 +1252,15 @@
               const medal = idx === 0 ? '#1' : idx === 1 ? '#2' : idx === 2 ? '#3' : `#${idx + 1}`;
               const div = document.createElement('div');
               div.className = 'flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs cursor-pointer transition-colors';
-              div.title = 'Click to select this user in treasury management';
+              div.title = 'Clicca per selezionare questo utente nella gestione tesoreria';
               div.innerHTML = `
                 <div class="flex items-center gap-2">
                   <span class="font-bold text-slate-300">${medal}</span>
                   <span class="font-mono text-white">&lt;@${item.user_id}&gt;</span>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="font-bold text-amber-400">${(item.coins || 0).toLocaleString()} Coins</span>
-                  <span class="text-slate-400 text-[10px]">${item.total_fish_caught || 0} catches</span>
+                  <span class="font-bold text-amber-400">${(item.coins || 0).toLocaleString()} Monete</span>
+                  <span class="text-slate-400 text-[10px]">${item.total_fish_caught || 0} prede</span>
                 </div>
               `;
               div.addEventListener('click', () => {
@@ -1268,7 +1268,7 @@
                 if (targetInput) {
                   targetInput.value = item.user_id;
                   targetInput.focus();
-                  window.showToast(`User <@${item.user_id}> selected for balance update!`);
+                  window.showToast(`Utente <@${item.user_id}> selezionato per la modifica monete!`);
                 }
               });
               lbList.appendChild(div);
@@ -1318,10 +1318,10 @@
       });
 
       if (res.ok) {
-        window.showToast('Medieval Fishing configuration saved!');
+        window.showToast('Configurazione Pesca Medievale salvata con successo!');
         await loadMinigamesData(guildId);
       } else {
-        window.showToast('Error saving configuration.', 'error');
+        window.showToast('Errore durante il salvataggio.', 'error');
       }
     });
   }
@@ -1334,7 +1334,7 @@
       const channelId = document.getElementById('fish-channel')?.value;
 
       if (!channelId) {
-        return window.showToast('Select and save the dedicated fishing channel first!', 'error');
+        return window.showToast('Seleziona e salva prima il canale dedicato alla pesca!', 'error');
       }
 
       btnSendFishingPanel.disabled = true;
@@ -1346,10 +1346,10 @@
         });
 
         if (res.ok) {
-          window.showToast('Interactive fishing panel sent to channel!');
+          window.showToast('Pannello di pesca interattivo inviato nel canale!');
         } else {
           const err = await res.json();
-          window.showToast(err.error || 'Error sending panel.', 'error');
+          window.showToast(err.error || 'Errore durante l\'invio.', 'error');
         }
       } catch (e) {
         window.showToast(e.message, 'error');
@@ -1387,10 +1387,10 @@
       });
 
       if (res.ok) {
-        window.showToast('Casino & Minigames configuration saved!');
+        window.showToast('Configurazione Casinò e Minigiochi salvata con successo!');
         await loadMinigamesData(guildId);
       } else {
-        window.showToast('Error saving configuration.', 'error');
+        window.showToast('Errore durante il salvataggio.', 'error');
       }
     });
   }
@@ -1418,7 +1418,7 @@
           window.showToast('Tavolo interattivo di Blackjack inviato con successo!');
         } else {
           const err = await res.json();
-          window.showToast(err.error || 'Error sending panel.', 'error');
+          window.showToast(err.error || 'Errore durante l\'invio.', 'error');
         }
       } catch (e) {
         window.showToast(e.message, 'error');
@@ -1451,7 +1451,7 @@
           window.showToast('Hub dei Minigiochi inviato nel canale!');
         } else {
           const err = await res.json();
-          window.showToast(err.error || 'Error sending panel.', 'error');
+          window.showToast(err.error || 'Errore durante l\'invio.', 'error');
         }
       } catch (e) {
         window.showToast(e.message, 'error');
@@ -1536,7 +1536,7 @@
 
         if (res.ok) {
           const data = await res.json();
-          window.showToast(`Balance updated successfully! New balance: ${data.profile.coins.toLocaleString()} Coins`);
+          window.showToast(`Saldo monete aggiornato con successo! Nuovo saldo: ${data.profile.coins.toLocaleString()} Monete`);
           if (isManual) {
             document.getElementById('coin-target-user-manual').value = '';
           }
@@ -1563,7 +1563,7 @@
   if (btnResetServerEconomy) {
     btnResetServerEconomy.addEventListener('click', async () => {
       const guildId = window.AppState.currentGuildId;
-      if (!confirm('[WARNING] Sei sicuro di voler azzerare completamente la ricchezza, le monete e le statistiche dei minigiochi di TUTTI i membri del server? L\'operazione non è reversibile.')) {
+      if (!confirm('[ATTENZIONE]: Sei sicuro di voler azzerare completamente la ricchezza, le monete e le statistiche dei minigiochi di TUTTI i membri del server? L\'operazione non è reversibile.')) {
         return;
       }
 
@@ -1612,7 +1612,7 @@
         window.showToast('Configurazione Minigioco Counting salvata!');
         await loadMinigamesData(guildId);
       } else {
-        window.showToast('Error saving configuration.', 'error');
+        window.showToast('Errore durante il salvataggio.', 'error');
       }
     });
   }
@@ -1796,7 +1796,7 @@
           channel_id: document.getElementById('setup-channel')?.value || null,
           reward_role_id: document.getElementById('setup-role')?.value || null,
           xp_reward: parseInt(document.getElementById('setup-xp')?.value || '50', 10),
-          title: document.getElementById('setup-title')?.value || 'Setup Showcase',
+          title: document.getElementById('setup-title')?.value || 'Setup & Postazione',
           color: document.getElementById('setup-color')?.value || '#dc2626',
           auto_reactions,
           auto_thread: document.getElementById('setup-auto-thread')?.checked,
@@ -1828,14 +1828,14 @@
       }
 
       if (failures.length === 0) {
-        window.showToast('All server settings saved to database!');
+        window.showToast('Tutte le impostazioni del server sono state salvate permanentemente nel database!');
       } else {
         console.warn('[SaveAll] Alcune sezioni hanno riscontrato errori:', failures);
         window.showToast(`Salvataggio completato con ${failures.length} avvisi.`, 'warning');
       }
     } catch (err) {
       console.error('[SaveAll Error]:', err);
-      window.showToast('Unexpected error during save.', 'error');
+      window.showToast('Errore imprevisto durante il salvataggio.', 'error');
     } finally {
       if (btn) btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> Salva Modifiche';
       if (btnMob) btnMob.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> Salva';
@@ -1941,7 +1941,7 @@
       if (voiceGenEl && config.voice_generator_id) voiceGenEl.value = config.voice_generator_id;
       if (catEl && config.category_id) catEl.value = config.category_id;
       if (panelEl && config.panel_channel_id) panelEl.value = config.panel_channel_id;
-      if (nameVoiceEl) nameVoiceEl.value = config.naming_scheme_voice || '{user} room';
+      if (nameVoiceEl) nameVoiceEl.value = config.naming_scheme_voice || 'Stanza di {user}';
       if (nameTextEl) nameTextEl.value = config.naming_scheme_text || 'chat-{user}';
       if (limitEl) limitEl.value = config.default_user_limit || 0;
       if (bitrateEl) bitrateEl.value = config.default_bitrate || 64000;
@@ -1953,8 +1953,8 @@
           roomsContainer.innerHTML = '<p class="text-slate-400 italic text-center py-4">Nessuna stanza temporanea attiva al momento.</p>';
         } else {
           roomsContainer.innerHTML = activeRooms.map(r => {
-            const isLocked = r.is_locked ? '[Locked]' : '[Open]';
-            const isHidden = r.is_hidden ? '[Hidden]' : '[Visible]';
+            const isLocked = r.is_locked ? '[Bloccata]' : '[Aperta]';
+            const isHidden = r.is_hidden ? '[Nascosta]' : '[Visibile]';
             return `
               <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-3">
                 <div>
@@ -1965,8 +1965,8 @@
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">${isHidden}</span>
                   </div>
                   <p class="text-[11px] text-slate-500 mt-1">
-                    ${r.voice_channel_id ? `Voice: <code>${r.voice_channel_id}</code>` : ''} 
-                    ${r.text_channel_id ? `Text: <code>${r.text_channel_id}</code>` : ''}
+                    ${r.voice_channel_id ? `Vocale: <code>${r.voice_channel_id}</code>` : ''} 
+                    ${r.text_channel_id ? `Testo: <code>${r.text_channel_id}</code>` : ''}
                   </p>
                 </div>
                 <button type="button" class="btn-delete-temp-room p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200" data-room-id="${r.id}" title="Elimina forzatamente">
@@ -1979,15 +1979,15 @@
           document.querySelectorAll('.btn-delete-temp-room').forEach(btn => {
             btn.addEventListener('click', async (e) => {
               const roomId = e.currentTarget.getAttribute('data-room-id');
-              if (!confirm(`Are you sure you want to force-delete room #${roomId}?`)) return;
+              if (!confirm(`Sei sicuro di voler eliminare forzatamente la stanza #${roomId}?`)) return;
               try {
                 const delRes = await fetch(`/api/guilds/${guildId}/tempchannels/${roomId}`, { method: 'DELETE' });
                 if (delRes.ok) {
-                  window.showToast('Room deleted successfully!');
+                  window.showToast('Stanza eliminata con successo!');
                   await loadTempChannelsData(guildId);
                 } else {
                   const err = await delRes.json();
-                  window.showToast(err.error || 'Delete error.', 'error');
+                  window.showToast(err.error || 'Errore eliminazione.', 'error');
                 }
               } catch (err) {
                 window.showToast(err.message, 'error');
@@ -2017,7 +2017,7 @@
         voice_generator_id: document.getElementById('tc-gen-voice-channel')?.value || null,
         category_id: document.getElementById('tc-category')?.value || null,
         panel_channel_id: document.getElementById('tc-panel-channel')?.value || null,
-        naming_scheme_voice: document.getElementById('tc-name-voice')?.value?.trim() || '{user} room',
+        naming_scheme_voice: document.getElementById('tc-name-voice')?.value?.trim() || 'Stanza di {user}',
         naming_scheme_text: document.getElementById('tc-name-text')?.value?.trim() || 'chat-{user}',
         default_user_limit: parseInt(document.getElementById('tc-default-limit')?.value, 10) || 0,
         default_bitrate: parseInt(document.getElementById('tc-bitrate')?.value, 10) || 64000
@@ -2032,10 +2032,10 @@
         });
 
         if (res.ok) {
-          window.showToast('Private Channels configuration saved!');
+          window.showToast('Configurazione Canali Privati salvata con successo!');
         } else {
           const err = await res.json();
-          window.showToast(err.error || 'Error saving configuration.', 'error');
+          window.showToast(err.error || 'Errore durante il salvataggio.', 'error');
         }
       } catch (err) {
         window.showToast(err.message, 'error');
@@ -2053,7 +2053,7 @@
 
       const channelId = document.getElementById('tc-panel-channel')?.value;
       if (!channelId) {
-        return window.showToast('Select the channel to send the creation hub first!', 'error');
+        return window.showToast('Seleziona prima il canale per inviare il pannello!', 'error');
       }
 
       btnSendTempChannelsPanel.disabled = true;
@@ -2065,10 +2065,10 @@
         });
 
         if (res.ok) {
-          window.showToast('Private Channels Creation Hub sent to channel!');
+          window.showToast('Hub Creazione Canali Privati inviato nel canale!');
         } else {
           const err = await res.json();
-          window.showToast(err.error || 'Error sending ticket panel.', 'error');
+          window.showToast(err.error || 'Errore durante l\'invio del pannello.', 'error');
         }
       } catch (err) {
         window.showToast(err.message, 'error');
@@ -2109,7 +2109,7 @@
       voiceChannels.forEach(ch => {
         const opt = document.createElement('option');
         opt.value = ch.id;
-        opt.textContent = `[Voice] ${ch.name}`;
+        opt.textContent = `[Vocale] ${ch.name}`;
         if (ch.id === currentVal) opt.selected = true;
         voiceSelect.appendChild(opt);
       });
@@ -2150,10 +2150,10 @@
 
       if (statusPill) {
         if (data.isPlaying) {
-          statusPill.textContent = '[Playing]';
+          statusPill.textContent = '[In Riproduzione]';
           statusPill.className = 'text-xs px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 font-bold';
         } else if (data.isPaused) {
-          statusPill.textContent = '[Paused]';
+          statusPill.textContent = '[In Pausa]';
           statusPill.className = 'text-xs px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/80 font-bold';
         } else {
           statusPill.textContent = 'Inattivo';
@@ -2177,7 +2177,7 @@
         if (authorEl) authorEl.textContent = `Canale: ${data.currentTrack.author || 'YouTube'}`;
         if (durationEl) durationEl.textContent = `${data.currentTrack.duration || 'Live'}`;
         if (requesterEl) requesterEl.textContent = `${data.currentTrack.requestedBy || 'Dashboard'}`;
-        if (channelEl) channelEl.textContent = `Voice: ${data.voiceChannel?.name || 'Vocale'}`;
+        if (channelEl) channelEl.textContent = `Canale: ${data.voiceChannel?.name || 'Vocale'}`;
       } else {
         if (thumbImg && thumbPlaceholder) {
           thumbImg.classList.add('hidden');
@@ -2187,7 +2187,7 @@
         if (authorEl) authorEl.innerHTML = 'Usa la barra di ricerca sottostante o il comando <code class="text-pink-400 bg-slate-900 px-1 py-0.5 rounded">/play</code>';
         if (durationEl) durationEl.textContent = '--:--';
         if (requesterEl) requesterEl.textContent = '--';
-        if (channelEl) channelEl.textContent = 'Voice: --';
+        if (channelEl) channelEl.textContent = 'Canale: --';
       }
 
       if (playPauseBtn) {
@@ -2276,7 +2276,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'skip' })
       });
-      window.showToast('Track skipped!');
+      window.showToast('Brano saltato!');
       await loadMusicData(guildId);
     });
   }
@@ -2291,7 +2291,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'stop' })
       });
-      window.showToast('Playback stopped and disconnected.');
+      window.showToast('Riproduzione fermata e disconnessione.');
       await loadMusicData(guildId);
     });
   }
@@ -2325,7 +2325,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'shuffle' })
       });
-      window.showToast('Queue shuffled!');
+      window.showToast('Coda mescolata!');
       await loadMusicData(guildId);
     });
   }
@@ -2352,7 +2352,7 @@
   if (btnWebMusicSearchPlay) {
     btnWebMusicSearchPlay.addEventListener('click', async () => {
       const guildId = window.AppState.currentGuildId;
-      if (!guildId) return window.showToast('Please select a Discord server first.', 'error');
+      if (!guildId) return window.showToast('Seleziona prima un server Discord.', 'error');
 
       const voiceSelect = document.getElementById('music-target-voice');
       const voiceChannelId = voiceSelect ? voiceSelect.value : '';
@@ -2361,7 +2361,7 @@
       const query = queryInput ? queryInput.value.trim() : '';
 
       if (!query) {
-        return window.showToast('Enter a track title or URL to play.', 'error');
+        return window.showToast('Inserisci un titolo o link da riprodurre.', 'error');
       }
 
       const origHtml = btnWebMusicSearchPlay.innerHTML;
@@ -2379,14 +2379,14 @@
         const data = await res.json();
         if (res.ok && data.success) {
           if (data.isPlaylist) {
-            window.showToast(`Playlist "${data.title}" added (${data.count} tracks)!`);
+            window.showToast(`Playlist "${data.title}" aggiunta (${data.count} brani)!`);
           } else {
-            window.showToast(`[Music] Now Playing: "${data.track?.title}"!`);
+            window.showToast(`▶️ In riproduzione: "${data.track?.title}"!`);
           }
           if (queryInput) queryInput.value = '';
           await loadMusicData(guildId);
         } else {
-          window.showToast(data.error || 'Unable to play track.', 'error');
+          window.showToast(data.error || 'Impossibile riprodurre il brano.', 'error');
         }
       } catch (err) {
         window.showToast(err.message, 'error');
@@ -2438,9 +2438,9 @@
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('[Cloud] Database backed up to Wispbyte MySQL Cloud!');
+          window.showToast('[Cloud] Database caricato e protetto sul Cloud MySQL di Wispbyte!');
         } else {
-          window.showToast(data.error || 'MySQL Cloud sync error.', 'error');
+          window.showToast(data.error || 'Errore sincronizzazione Cloud MySQL.', 'error');
         }
       } catch (err) {
         window.showToast(err.message, 'error');
@@ -2467,9 +2467,9 @@
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast(`[Save] Database synchronized to Wispbyte disk!`);
+          window.showToast(`[Salvataggio] Database sincronizzato e salvato su disco Wispbyte!`);
         } else {
-          window.showToast('Error saving to disk.', 'error');
+          window.showToast('Errore durante il salvataggio su disco.', 'error');
         }
       } catch (err) {
         window.showToast(err.message, 'error');
@@ -2486,7 +2486,7 @@
       const guildId = window.AppState.currentGuildId;
       if (!guildId) return window.showToast('Seleziona prima un server.', 'error');
       window.open(`/api/guilds/${guildId}/backup/export`, '_blank');
-      window.showToast('[Download] Configuration backup download started!');
+      window.showToast('[Download] Download del backup di configurazione avviato!');
     });
   }
 
@@ -2496,7 +2496,7 @@
       const guildId = window.AppState.currentGuildId;
       if (!guildId) return window.showToast('Seleziona prima un server.', 'error');
       window.open(`/api/guilds/${guildId}/export/channels.csv`, '_blank');
-      window.showToast('[Download] Channels CSV download started!');
+      window.showToast('[Download] Download del file CSV canali e categorie avviato!');
     });
   }
 
@@ -2526,15 +2526,15 @@
           });
           const data = await res.json();
           if (res.ok && data.success) {
-            window.showToast('[Success] Configuration restored to disk!');
+            window.showToast('[Success] Configurazione ripristinata e salvata su disco con successo!');
             if (window.reloadCurrentGuildData) {
               await window.reloadCurrentGuildData(false);
             }
           } else {
-            window.showToast(data.error || 'Error restoring backup.', 'error');
+            window.showToast(data.error || 'Errore durante il ripristino del backup.', 'error');
           }
         } catch (err) {
-          window.showToast('The selected file is not a valid JSON backup.', 'error');
+          window.showToast('Il file selezionato non è un JSON di backup valido.', 'error');
         } finally {
           inputBackupImportFile.value = '';
         }
@@ -2570,19 +2570,19 @@
         chanEl.value = config.channel_id || '';
         chanEl.dataset.savedValue = config.channel_id || '';
       }
-      if (msgEl) msgEl.value = config.message || 'Thank you for the boost {user.mention}!';
-      if (titleEl) titleEl.value = embed.title || '{server.name} was Boosted!';
+      if (msgEl) msgEl.value = config.message || 'Grazie per il boost {user.mention}!';
+      if (titleEl) titleEl.value = embed.title || '{server.name} è stato Potenziato!';
       const color = embed.color || '#f47fff';
       if (colorEl) colorEl.value = color;
       if (pickerEl) pickerEl.value = (color.startsWith('#') && color.length === 7) ? color : '#f47fff';
-      if (descEl) descEl.value = embed.description || 'Un immenso ringraziamento a {user.mention} per aver potenziato il server!\n\nGrazie al tuo supporto, **{server.name}** ha raggiunto **{server.boost_count}** boost (Livello {server.boost_tier})! ';
+      if (descEl) descEl.value = embed.description || 'Un immenso ringraziamento a {user.mention} per aver potenziato il server!\n\nGrazie al tuo supporto, **{server.name}** ha raggiunto **{server.boost_count}** boost (Livello {server.boost_tier})!';
       if (imageEl) imageEl.value = embed.image || '';
       if (thumbEl) thumbEl.value = embed.thumbnail || '';
 
       if (badgeEl) {
         const count = data.boostCount || 0;
         const tier = data.boostTier || 0;
-        badgeEl.textContent = `${count} Boosts (Level ${tier})`;
+        badgeEl.textContent = `${count} Boost (Livello ${tier})`;
       }
     } catch (e) {
       console.error('Error loading Boost data:', e);
@@ -2633,13 +2633,13 @@
         });
 
         if (res.ok) {
-          window.showToast('Nitro Boost settings saved successfully!');
+          window.showToast('Impostazioni Boost Nitro salvate con successo!');
           await loadBoostData(guildId);
         } else {
-          window.showToast('Error saving Boost module.', 'error');
+          window.showToast('Errore nel salvataggio del modulo Boost.', 'error');
         }
       } catch (err) {
-        window.showToast('Connection error during save.', 'error');
+        window.showToast('Errore di connessione durante il salvataggio.', 'error');
       } finally {
         btnSaveBoost.disabled = false;
       }
@@ -2665,12 +2665,12 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Test Boost embed sent successfully to channel!');
+          window.showToast('Embed di prova Boost inviato con successo nel canale!');
         } else {
-          window.showToast(data.error || 'Unable to send test message.', 'error');
+          window.showToast(data.error || 'Impossibile inviare il messaggio di prova.', 'error');
         }
       } catch (err) {
-        window.showToast('Error sending test.', 'error');
+        window.showToast('Errore durante l\'invio del test.', 'error');
       } finally {
         btnTestBoost.disabled = false;
       }
@@ -2726,25 +2726,25 @@
         let diagHtml = '';
 
         if (!diag.botHasManageRoles) {
-          diagHtml += `<div class="flex items-center gap-2 text-xs text-rose-400 font-semibold"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i> [Warning] The bot lacks the permission <strong>"Gestisci Ruoli"</strong> su Discord! Assegnalo nelle impostazioni del server.</div>`;
+          diagHtml += `<div class="flex items-center gap-2 text-xs text-rose-400 font-semibold"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i> [Attenzione] Il bot non ha il permesso <strong>"Gestisci Ruoli"</strong> su Discord! Assegnalo nelle impostazioni del server.</div>`;
         } else {
           diagHtml += `<div class="flex items-center gap-2 text-xs text-emerald-400 font-semibold"><i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i> Permesso "Gestisci Ruoli" Discord rilevato e attivo.</div>`;
         }
 
         if (diag.userRoleCheck && !diag.userRoleCheck.valid) {
           diagHtml += `<div class="flex items-center gap-2 text-xs text-amber-300"><i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i> <strong>Avviso Ruolo Utenti:</strong> ${diag.userRoleCheck.error}</div>`;
-          if (userHint) userHint.innerHTML = `<span class="text-rose-400">[Warning] Invalid hierarchy: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
+          if (userHint) userHint.innerHTML = `<span class="text-rose-400">[Attenzione] Gerarchia non valida: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
         } else if (userHint && config.user_role_id) {
-          userHint.innerHTML = `<span class="text-emerald-400">Hierarchy verified and ready all'assegnazione.</span>`;
+          userHint.innerHTML = `<span class="text-emerald-400">Gerarchia verificata e pronta all'assegnazione.</span>`;
         } else if (userHint) {
           userHint.innerHTML = '';
         }
 
         if (diag.botRoleCheck && !diag.botRoleCheck.valid) {
           diagHtml += `<div class="flex items-center gap-2 text-xs text-amber-300"><i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i> <strong>Avviso Ruolo Bot:</strong> ${diag.botRoleCheck.error}</div>`;
-          if (botHint) botHint.innerHTML = `<span class="text-rose-400">[Warning] Invalid hierarchy: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
+          if (botHint) botHint.innerHTML = `<span class="text-rose-400">[Attenzione] Gerarchia non valida: sposta il ruolo del bot sopra questo ruolo in Discord.</span>`;
         } else if (botHint && config.bot_role_id) {
-          botHint.innerHTML = `<span class="text-emerald-400">Hierarchy verified and ready all'assegnazione.</span>`;
+          botHint.innerHTML = `<span class="text-emerald-400">Gerarchia verificata e pronta all'assegnazione.</span>`;
         } else if (botHint) {
           botHint.innerHTML = '';
         }
@@ -2775,13 +2775,13 @@
         });
 
         if (res.ok) {
-          window.showToast('Auto-Role module saved successfully!');
+          window.showToast('Modulo Auto-Role salvato con successo!');
           await loadAutoroleData(guildId);
         } else {
-          window.showToast('Error saving Auto-Role module.', 'error');
+          window.showToast('Errore durante il salvataggio di Auto-Role.', 'error');
         }
       } catch (err) {
-        window.showToast('Connection error during save.', 'error');
+        window.showToast('Errore di connessione durante il salvataggio.', 'error');
       } finally {
         btnSaveAutorole.disabled = false;
       }
@@ -2840,7 +2840,7 @@
                 </div>
                 <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
                   <span class="text-indigo-400">Discord &lt;#${b.discord_channel_id}&gt;</span>
-                  <span class="text-cyan-400">&lt;-&gt;</span>
+                  <span class="text-cyan-400"><-></span>
                   <span class="text-amber-400">Yapin &lt;#${b.yapin_channel_id}&gt;</span>
                 </div>
               </div>
@@ -2874,20 +2874,20 @@
         body: JSON.stringify({ enabled: enable })
       });
       if (res.ok) {
-        window.showToast(`Bridge ${enable ? 'enabled' : 'disabled'}!`);
+        window.showToast(`Ponte ${enable ? 'attivato' : 'disattivato'}!`);
         await loadBridgeData();
       }
     } catch (e) {
-      window.showToast('Error updating bridge.', 'error');
+      window.showToast('Errore durante la modifica del ponte.', 'error');
     }
   };
 
   window.deleteBridge = async function(id) {
-    if (!confirm('Are you sure you want to delete this cross-platform bridge?')) return;
+    if (!confirm('Sei sicuro di voler rimuovere questo ponte cross-platform?')) return;
     try {
       const res = await fetch(`/api/bridges/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        window.showToast('Bridge removed successfully.');
+        window.showToast('Ponte rimosso con successo.');
         await loadBridgeData();
       }
     } catch (e) {
@@ -2897,16 +2897,16 @@
 
   window.testBridge = async function(id) {
     try {
-      window.showToast('Dispatching test message...');
+      window.showToast('Invio messaggio di test in corso...');
       const res = await fetch(`/api/bridges/${id}/test`, { method: 'POST' });
       const data = await res.json();
       if (res.ok && data.success) {
-        window.showToast('Bridge test completed! Check channels on Discord and Yapin.');
+        window.showToast('Test ponte completato! Verifica i canali su Discord e Yapin.');
       } else {
-        window.showToast(data.error || 'Test failed.', 'error');
+        window.showToast(data.error || 'Test fallito.', 'error');
       }
     } catch (e) {
-      window.showToast('Error testing bridge.', 'error');
+      window.showToast('Errore durante il test del ponte.', 'error');
     }
   };
 
@@ -2920,10 +2920,10 @@
       const currentGuildId = window.AppState.currentGuildId;
 
       if (!discordChannel) {
-        return window.showToast('Select the source Discord channel.', 'error');
+        return window.showToast('Seleziona il canale Discord di partenza.', 'error');
       }
       if (!yapinChannel) {
-        return window.showToast('Enter destination Yapin channel ID.', 'error');
+        return window.showToast('Inserisci l\'ID del canale Yapin di destinazione.', 'error');
       }
 
       try {
@@ -2932,7 +2932,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name: name || 'Discord <-> Yapin Bridge',
+            name: name || 'Ponte Discord <-> Yapin',
             discord_guild_id: currentGuildId?.startsWith('yapin_') ? '' : currentGuildId,
             discord_channel_id: discordChannel,
             yapin_server_id: currentGuildId?.startsWith('yapin_') ? currentGuildId.replace('yapin_', '') : '',
@@ -2941,16 +2941,16 @@
         });
 
         if (res.ok) {
-          window.showToast('[Bridge] Cross-platform bridge enabled successfully!');
+          window.showToast('[Ponte] Ponte cross-platform attivato con successo!');
           document.getElementById('bridge-name').value = '';
           document.getElementById('bridge-yapin-channel').value = '';
           await loadBridgeData();
         } else {
           const err = await res.json();
-          window.showToast(err.error || 'Error creating bridge.', 'error');
+          window.showToast(err.error || 'Errore creazione ponte.', 'error');
         }
       } catch (e) {
-        window.showToast('Connection error creating bridge.', 'error');
+        window.showToast('Errore di connessione durante la creazione del ponte.', 'error');
       } finally {
         btnCreateBridge.disabled = false;
       }

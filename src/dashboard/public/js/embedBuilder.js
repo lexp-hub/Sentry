@@ -218,7 +218,7 @@
             <span class="text-red-400 font-extrabold text-xs">#</span> Inserisci Canale
           </button>
           <div class="ch-pick-dropdown hidden absolute right-0 mt-1 w-64 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-2 space-y-2">
-            <input type="text" class="ch-pick-search form-input text-xs py-1 px-2" placeholder="Search channel...">
+            <input type="text" class="ch-pick-search form-input text-xs py-1 px-2" placeholder="Cerca canale...">
             <div class="ch-pick-list max-h-48 overflow-y-auto space-y-0.5 text-xs"></div>
           </div>
         </div>
@@ -229,7 +229,7 @@
             <span class="text-slate-400 font-extrabold text-xs">@</span> Ruolo
           </button>
           <div class="role-pick-dropdown hidden absolute right-0 mt-1 w-64 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-2 space-y-2">
-            <input type="text" class="role-pick-search form-input text-xs py-1 px-2" placeholder="Search role...">
+            <input type="text" class="role-pick-search form-input text-xs py-1 px-2" placeholder="Cerca ruolo...">
             <div class="role-pick-list max-h-48 overflow-y-auto space-y-0.5 text-xs"></div>
           </div>
         </div>
@@ -277,7 +277,7 @@
           insertTextAtCursor(textarea, `<#${c.id}>`);
           ddCh.classList.add('hidden');
           triggerUpdate();
-          window.showToast(`Inserted channel #${c.name}`);
+          window.showToast(`Canale #${c.name} inserito`);
         });
         listCh.appendChild(item);
       });
@@ -301,7 +301,7 @@
           insertTextAtCursor(textarea, `<@&${r.id}>`);
           ddRole.classList.add('hidden');
           triggerUpdate();
-          window.showToast(`Inserted role @${r.name}`);
+          window.showToast(`Ruolo @${r.name} inserito`);
         });
         listRole.appendChild(item);
       });
@@ -361,13 +361,13 @@
         prefix = '@ ';
       } else if (filterType === 'category') {
         items = (window.AppState?.channels || []).filter(c => c.type === 'category' || c.type === 4);
-        prefix = '[Category] ';
+        prefix = '[Categoria] ';
       } else if (filterType === 'voice') {
         items = (window.AppState?.channels || []).filter(c => c.type === 'voice' || c.rawType === 2 || c.rawType === 13 || c.isVoice);
-        prefix = '[Voice] ';
+        prefix = '[Vocale] ';
       } else if (filterType === 'member' || filterType === 'user') {
         items = window.AppState?.members || [];
-        prefix = '[User] ';
+        prefix = '[Utente] ';
       } else {
         items = (window.AppState?.channels || []).filter(c => (c.type === 'text' || c.type === 0 || c.type === 5) && c.type !== 'voice' && c.rawType !== 2 && c.rawType !== 13);
         prefix = '# ';
@@ -408,7 +408,7 @@
       insertTextAtCursor(targetEl, varText);
       if (window.updateWelcomerPreview) window.updateWelcomerPreview();
       if (window.updateEmbedPreview) window.updateEmbedPreview();
-      window.showToast(`Inserted ${varText}`);
+      window.showToast(`Inserito ${varText}`);
     }
   });
 
@@ -461,7 +461,7 @@
           item.addEventListener('click', () => {
             insertTextAtCursor(descInput, `<#${c.id}>`);
             channelPickerDropdown.classList.add('hidden');
-            window.showToast(`Inserted channel #${c.name}`);
+            window.showToast(`Canale #${c.name} inserito`);
           });
           pickerChannelsList.appendChild(item);
         });
@@ -501,7 +501,7 @@
           item.addEventListener('click', () => {
             insertTextAtCursor(descInput, `<@&${r.id}>`);
             rolePickerDropdown.classList.add('hidden');
-            window.showToast(`Inserted role @${r.name}`);
+            window.showToast(`Ruolo @${r.name} inserito`);
           });
           pickerRolesList.appendChild(item);
         });
@@ -786,7 +786,7 @@
   if (btnAddField) {
     btnAddField.addEventListener('click', () => {
       if (fields.length >= 25) {
-        return window.showToast('Maximum limit of 25 fields reached.', 'error');
+        return window.showToast('Limite massimo di 25 campi raggiunto.', 'error');
       }
       fields.push({ name: `Riquadro #${fields.length + 1}`, value: 'Testo del riquadro...', inline: false });
       renderFieldsList();
@@ -797,7 +797,7 @@
   if (btnAddFieldPair) {
     btnAddFieldPair.addEventListener('click', () => {
       if (fields.length >= 24) {
-        return window.showToast('Maximum limit of 25 fields reached.', 'error');
+        return window.showToast('Limite massimo di 25 campi raggiunto.', 'error');
       }
       fields.push(
         { name: `Colonna 1`, value: 'Informazioni...', inline: true },
@@ -811,7 +811,7 @@
   if (btnAddFieldTrio) {
     btnAddFieldTrio.addEventListener('click', () => {
       if (fields.length >= 23) {
-        return window.showToast('Maximum limit of 25 fields reached.', 'error');
+        return window.showToast('Limite massimo di 25 campi raggiunto.', 'error');
       }
       fields.push(
         { name: `Colonna 1`, value: 'Info...', inline: true },
@@ -958,13 +958,13 @@
 
   if (btnResetEmbed) {
     btnResetEmbed.addEventListener('click', () => {
-      if (!confirm('Are you sure you want to reset the embed editor?')) return;
+      if (!confirm('Sei sicuro di voler resettare l\'editor dell\'embed?')) return;
       const guildId = window.AppState?.currentGuildId;
       if (guildId) localStorage.removeItem(`cavaliere_draft_embed_${guildId}`);
 
-      if (titleInput) titleInput.value = 'Official Announcement | Sentry';
+      if (titleInput) titleInput.value = 'Annuncio Ufficiale | Sentry';
       if (titleUrlInput) titleUrlInput.value = '';
-      if (descInput) descInput.value = 'Welcome to the server! This is a message generated by the *Sentry* **Live Embed Builder**.';
+      if (descInput) descInput.value = 'Benvenuti nel server! Questo è un messaggio generato dal Live Embed Builder di Sentry.';
       if (authorNameInput) authorNameInput.value = '';
       if (authorIconInput) authorIconInput.value = '';
       if (imageInput) imageInput.value = '';
@@ -977,7 +977,7 @@
       fields = [];
       renderFieldsList();
       updatePreview();
-      window.showToast('Editor reset.');
+      window.showToast('Editor resettato.');
     });
   }
 
@@ -1003,7 +1003,7 @@
         savedTemplatesContainer.innerHTML = `
           <div class="col-span-full text-center py-8 border border-dashed border-slate-300 rounded-xl p-6 bg-slate-900/40">
             <i data-lucide="bookmark" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
-            <p class="text-sm font-bold text-slate-700 mb-1">No saved templates for this server</p>
+            <p class="text-sm font-bold text-slate-700 mb-1">Nessun template salvato per questo server</p>
             <p class="text-xs text-slate-500">Crea il tuo messaggio personalizzato e clicca su "Salva Embed Corrente" per ritrovarlo sempre qui.</p>
           </div>
         `;
@@ -1025,7 +1025,7 @@
               <span class="w-3 h-3 rounded-full shrink-0 shadow-sm" style="background-color: ${hexColor};" title="Colore: ${hexColor}"></span>
             </div>
             <div class="text-[11px] text-slate-500 flex items-center gap-2">
-              <span>${tpl.created_by || 'Moderator'}</span>
+              <span>${tpl.created_by || 'Moderatore'}</span>
               <span>•</span>
               <span>${dateStr}</span>
             </div>
@@ -1046,20 +1046,20 @@
 
         card.querySelector('.btn-load-tpl').addEventListener('click', () => {
           loadEmbedDataIntoForm(emb);
-          window.showToast(`Template "${tpl.name}" loaded in editor!`);
+          window.showToast(`Template "${tpl.name}" caricato nell'editor!`);
           window.scrollTo({ top: document.getElementById('tab-embeds')?.offsetTop || 0, behavior: 'smooth' });
         });
 
         card.querySelector('.btn-delete-tpl').addEventListener('click', async () => {
-          if (!confirm(`Are you sure you want to delete template "${tpl.name}"?`)) return;
+          if (!confirm(`Sei sicuro di voler eliminare il template "${tpl.name}"?`)) return;
           try {
             const delRes = await fetch(`/api/guilds/${guildId}/embeds/${tpl.id}`, { method: 'DELETE' });
             if (delRes.ok) {
-              window.showToast(`Template "${tpl.name}" deleted.`);
+              window.showToast(`Template "${tpl.name}" eliminato.`);
               loadSavedTemplates(guildId);
             }
           } catch (err) {
-            window.showToast('Error deleting template.', 'error');
+            window.showToast('Errore durante l\'eliminazione.', 'error');
           }
         });
 
@@ -1074,7 +1074,7 @@
 
   async function handleSaveTemplate() {
     const guildId = window.AppState?.currentGuildId;
-    if (!guildId) return window.showToast('No server selected.', 'error');
+    if (!guildId) return window.showToast('Nessun server selezionato.', 'error');
 
     const defaultName = titleInput?.value?.trim() || `Embed ${new Date().toLocaleDateString('it-IT')}`;
     const name = prompt('Inserisci un nome per questo template embed:', defaultName);
@@ -1095,13 +1095,13 @@
 
       const data = await res.json();
       if (res.ok && data.success) {
-        window.showToast(`Template "${name.trim()}" saved successfully in database!`);
+        window.showToast(`Template "${name.trim()}" salvato con successo nel database!`);
         loadSavedTemplates(guildId);
       } else {
-        window.showToast(`Error saving template: ${data.error || 'Failed'}`, 'error');
+        window.showToast(`Errore durante il salvataggio: ${data.error || 'Fallito'}`, 'error');
       }
     } catch (err) {
-      window.showToast(`Connection error: ${err.message}`, 'error');
+      window.showToast(`Errore di connessione: ${err.message}`, 'error');
     }
   }
 
@@ -1113,7 +1113,7 @@
     btnCopyJson.addEventListener('click', () => {
       const payload = getEmbedPayload();
       navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      window.showToast('Embed JSON copied to clipboard!');
+      window.showToast('JSON dell\'embed copiato negli appunti!');
     });
   }
 
@@ -1123,8 +1123,8 @@
       const guildId = window.AppState.currentGuildId;
       const channelId = channelSelect?.value;
 
-      if (!guildId) return window.showToast('No server selected.', 'error');
-      if (!channelId) return window.showToast('Select a target channel from the dropdown or search.', 'error');
+      if (!guildId) return window.showToast('Nessun server selezionato.', 'error');
+      if (!channelId) return window.showToast('Seleziona un canale di invio dal menu a tendina o cerca il canale.', 'error');
 
       const payload = getEmbedPayload();
 
@@ -1145,12 +1145,12 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Embed message sent successfully to Discord channel!');
+          window.showToast('Messaggio embed inviato con successo nel canale!');
         } else {
-          window.showToast(`Error: ${data.error || 'Send failed'}`, 'error');
+          window.showToast(`Errore: ${data.error || 'Invio fallito'}`, 'error');
         }
       } catch (err) {
-        window.showToast(`Connection error: ${err.message}`, 'error');
+        window.showToast(`Errore di connessione: ${err.message}`, 'error');
       } finally {
         btnSendEmbed.disabled = false;
         btnSendEmbed.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> Invia nel Canale Discord';
@@ -1168,9 +1168,9 @@
   if (btnFetchLive && fetchInput) {
     btnFetchLive.addEventListener('click', async () => {
       const val = fetchInput.value.trim();
-      if (!val) return window.showToast('Enter a Discord message link or its ID.', 'error');
+      if (!val) return window.showToast('Inserisci un link del messaggio Discord o il suo ID.', 'error');
       const guildId = window.AppState.currentGuildId;
-      if (!guildId) return window.showToast('Please select a server first.', 'error');
+      if (!guildId) return window.showToast('Seleziona prima un server.', 'error');
 
       const channelId = channelSelect?.value;
 
@@ -1215,12 +1215,12 @@
             btnEditLive.classList.remove('hidden');
           }
 
-          window.showToast('Embed loaded from Discord! You can now edit it and click "Save Live Edit".');
+          window.showToast('Embed caricato da Discord! Ora puoi modificarlo e cliccare su "Salva Modifica Live".');
         } else {
-          window.showToast(`Error: ${data.error || 'Message not found'}`, 'error');
+          window.showToast(`Errore: ${data.error || 'Messaggio non trovato'}`, 'error');
         }
       } catch (err) {
-        window.showToast(`Connection error: ${err.message}`, 'error');
+        window.showToast(`Errore di connessione: ${err.message}`, 'error');
       } finally {
         btnFetchLive.disabled = false;
         btnFetchLive.innerHTML = '<i data-lucide="download" class="w-3.5 h-3.5 text-amber-700"></i> Carica';
@@ -1231,7 +1231,7 @@
 
   if (btnEditLive) {
     btnEditLive.addEventListener('click', async () => {
-      if (!currentEditingMessage) return window.showToast('No live message loaded.', 'error');
+      if (!currentEditingMessage) return window.showToast('Nessun messaggio live caricato.', 'error');
       const guildId = window.AppState.currentGuildId;
       const payload = getEmbedPayload();
 
@@ -1252,9 +1252,9 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Discord message updated in real time!');
+          window.showToast('Messaggio Discord aggiornato con successo in tempo reale!');
         } else {
-          window.showToast(`Edit error: ${data.error || 'Failed'}`, 'error');
+          window.showToast(`Errore modifica: ${data.error || 'Fallita'}`, 'error');
         }
       } catch (err) {
         window.showToast(`Errore: ${err.message}`, 'error');
@@ -1528,7 +1528,7 @@
   if (btnWelAddField) {
     btnWelAddField.addEventListener('click', () => {
       if (welFields.length >= 25) {
-        return window.showToast('Maximum limit of 25 fields reached.', 'error');
+        return window.showToast('Limite massimo di 25 campi raggiunto.', 'error');
       }
       welFields.push({ name: `Riquadro #${welFields.length + 1}`, value: '{user.mention}', inline: false });
       renderWelFieldsList();
@@ -1539,7 +1539,7 @@
   if (btnWelAddFieldPair) {
     btnWelAddFieldPair.addEventListener('click', () => {
       if (welFields.length >= 24) {
-        return window.showToast('Maximum limit of 25 fields reached.', 'error');
+        return window.showToast('Limite massimo di 25 campi raggiunto.', 'error');
       }
       welFields.push(
         { name: `Regole`, value: 'Rispetta tutti i membri del server.', inline: true },
@@ -1553,7 +1553,7 @@
   if (btnWelAddFieldTrio) {
     btnWelAddFieldTrio.addEventListener('click', () => {
       if (welFields.length >= 23) {
-        return window.showToast('Maximum limit of 25 fields reached.', 'error');
+        return window.showToast('Limite massimo di 25 campi raggiunto.', 'error');
       }
       welFields.push(
         { name: `Regole`, value: 'Leggi le linee guida.', inline: true },
@@ -1597,7 +1597,7 @@
           icon_url: welAuthorIconInput?.value?.trim() || null,
           url: welTitleUrlInput?.value?.trim() || null
         },
-        title: welTitleInput?.value?.trim() || 'Welcome to the Realm, {user}!',
+        title: welTitleInput?.value?.trim() || 'Benvenuto nel Reame, {user}!',
         url: welTitleUrlInput?.value?.trim() || null,
         color: welColorHexInput?.value || welColorInput?.value || '#dc2626',
         description: welDescInput?.value || '',
@@ -1605,7 +1605,7 @@
         image: welImageInput?.value?.trim() || null,
         fields: welFields.filter(f => f.name && f.value),
         footer: {
-          text: welFooterTextInput?.value?.trim() || 'Member #{memberCount} • {server.name}',
+          text: welFooterTextInput?.value?.trim() || 'Membro #{memberCount} • {server.name}',
           icon_url: welFooterIconInput?.value?.trim() || null
         },
         timestamp: true
@@ -1645,9 +1645,9 @@
 
       if (welAuthorNameInput) welAuthorNameInput.value = emb.author?.name || emb.author_name || '';
       if (welAuthorIconInput) welAuthorIconInput.value = emb.author?.icon_url || emb.author_icon || '';
-      if (welTitleInput) welTitleInput.value = emb.title || 'Welcome to the Realm, {user}!';
+      if (welTitleInput) welTitleInput.value = emb.title || 'Benvenuto nel Reame, {user}!';
       if (welTitleUrlInput) welTitleUrlInput.value = emb.url || '';
-      if (welDescInput) welDescInput.value = emb.description || config.welcome_message || 'Welcome {user.mention} to **{server.name}**! We are glad to have you with us. You are member **#{memberCount}**!';
+      if (welDescInput) welDescInput.value = emb.description || config.welcome_message || 'Benvenuto {user.mention} in **{server.name}**! Siamo felici di averti tra noi. Sei il membro **#{memberCount}**!';
       
       const col = emb.color || '#DC2626';
       if (welColorInput) welColorInput.value = col;
@@ -1655,7 +1655,7 @@
 
       if (welThumbInput) welThumbInput.value = emb.thumbnail?.url || emb.thumbnail || '{user.avatar}';
       if (welImageInput) welImageInput.value = emb.image?.url || emb.image || '';
-      if (welFooterTextInput) welFooterTextInput.value = emb.footer?.text || emb.footer || 'Member #{memberCount} • {server.name}';
+      if (welFooterTextInput) welFooterTextInput.value = emb.footer?.text || emb.footer || 'Membro #{memberCount} • {server.name}';
       if (welFooterIconInput) welFooterIconInput.value = emb.footer?.icon_url || emb.footer_icon || '';
 
       welFields = emb.fields && Array.isArray(emb.fields) ? [...emb.fields] : [];
@@ -1686,7 +1686,7 @@
   if (btnSaveWel) {
     btnSaveWel.addEventListener('click', async () => {
       const guildId = window.AppState.currentGuildId;
-      if (!guildId) return window.showToast('No server selected.', 'error');
+      if (!guildId) return window.showToast('Nessun server selezionato.', 'error');
       const payload = getWelcomerPayload();
 
       try {
@@ -1701,9 +1701,9 @@
         });
 
         if (res.ok) {
-          window.showToast('Welcomer Embed settings saved successfully!');
+          window.showToast('Impostazioni Welcomer Embed salvate con successo!');
         } else {
-          window.showToast('Error saving settings.', 'error');
+          window.showToast('Errore durante il salvataggio.', 'error');
         }
       } catch (err) {
         window.showToast(`Errore: ${err.message}`, 'error');
@@ -1719,7 +1719,7 @@
   if (btnTestWel) {
     btnTestWel.addEventListener('click', async () => {
       const guildId = window.AppState.currentGuildId;
-      if (!guildId) return window.showToast('No server selected.', 'error');
+      if (!guildId) return window.showToast('Nessun server selezionato.', 'error');
       const payload = getWelcomerPayload();
 
       try {
@@ -1738,9 +1738,9 @@
         const res = await fetch(`/api/guilds/${guildId}/welcomer/test`, { method: 'POST' });
         const data = await res.json();
         if (res.ok && data.success) {
-          window.showToast('Welcome embed sent successfully to Discord channel!');
+          window.showToast('Embed di benvenuto inviato con successo nel canale!');
         } else {
-          window.showToast(data.error || 'Test send error.', 'error');
+          window.showToast(data.error || 'Errore invio test.', 'error');
         }
       } catch (err) {
         window.showToast(`Errore: ${err.message}`, 'error');
@@ -1755,22 +1755,22 @@
   const btnResetWel = document.getElementById('btn-reset-welcomer');
   if (btnResetWel) {
     btnResetWel.addEventListener('click', () => {
-      if (!confirm('Reset Welcomer to default values?')) return;
+      if (!confirm('Reimpostare il Welcomer con i valori predefiniti?')) return;
       if (welAuthorNameInput) welAuthorNameInput.value = '';
       if (welAuthorIconInput) welAuthorIconInput.value = '';
-      if (welTitleInput) welTitleInput.value = 'Welcome to the Realm, {user}!';
+      if (welTitleInput) welTitleInput.value = 'Benvenuto nel Reame, {user}!';
       if (welTitleUrlInput) welTitleUrlInput.value = '';
       if (welColorInput) welColorInput.value = '#dc2626';
       if (welColorHexInput) welColorHexInput.value = '#DC2626';
-      if (welDescInput) welDescInput.value = 'Welcome {user.mention} to **{server.name}**! We are glad to have you with us. You are member **#{memberCount}**!';
+      if (welDescInput) welDescInput.value = 'Benvenuto {user.mention} in **{server.name}**! Siamo felici di averti tra noi. Sei il membro **#{memberCount}**!';
       if (welImageInput) welImageInput.value = '';
       if (welThumbInput) welThumbInput.value = '{user.avatar}';
-      if (welFooterTextInput) welFooterTextInput.value = 'Member #{memberCount} • {server.name}';
+      if (welFooterTextInput) welFooterTextInput.value = 'Membro #{memberCount} • {server.name}';
       if (welFooterIconInput) welFooterIconInput.value = '';
       welFields = [];
       renderWelFieldsList();
       updateWelcomerPreview();
-      window.showToast('Welcomer reset.');
+      window.showToast('Welcomer reimpostato.');
     });
   }
 
@@ -1779,8 +1779,8 @@
     btnCopyWel.addEventListener('click', () => {
       const payload = getWelcomerPayload();
       navigator.clipboard.writeText(JSON.stringify(payload.welcome_embed, null, 2))
-        .then(() => window.showToast('Embed JSON copied to clipboard!'))
-        .catch(() => window.showToast('Unable to copy to clipboard.', 'error'));
+        .then(() => window.showToast('JSON Embed copiato negli appunti!'))
+        .catch(() => window.showToast('Impossibile copiare negli appunti.', 'error'));
     });
   }
 

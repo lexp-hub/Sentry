@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="it" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sentry // Moderation Dashboard</title>
+  <title>Sentry // Dashboard Moderazione</title>
   <link rel="icon" href="/logo.svg?v=25" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,14 +21,14 @@
         <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
           Sentry <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#181a24] text-emerald-400 border border-[#242735] font-bold">v2.0</span>
         </h1>
-        <p class="text-[11px] text-[#81889c] hidden sm:block">Unified Moderation Dashboard</p>
+        <p class="text-[11px] text-[#81889c] hidden sm:block">Dashboard di Moderazione Universale</p>
       </div>
     </div>
 
     <div class="hidden md:flex items-center gap-5 text-xs font-semibold text-[#81889c]">
-      <a href="#servers" class="hover:text-emerald-400 transition-colors">Servers</a>
-      <a href="#moduli" class="hover:text-emerald-400 transition-colors">Modules</a>
-      <a href="/export.html" class="hover:text-emerald-400 transition-colors">Assets</a>
+      <a href="#servers" class="hover:text-emerald-400 transition-colors">Server</a>
+      <a href="#moduli" class="hover:text-emerald-400 transition-colors">Moduli</a>
+      <a href="/export.html" class="hover:text-emerald-400 transition-colors">Asset</a>
       <a id="nav-dash-link" href="/dashboard.html" class="hover:text-emerald-400 transition-colors font-bold text-emerald-400">Dashboard</a>
     </div>
 
@@ -39,7 +39,7 @@
       </div>
       <a id="btn-nav-auth" href="/dashboard.html" class="btn-knight text-xs px-3 py-1.5 flex items-center gap-1.5">
         <i data-lucide="shield" class="w-3.5 h-3.5"></i>
-        <span>Moderator Panel</span>
+        <span>Pannello Moderatori</span>
       </a>
     </div>
   </header>
@@ -47,48 +47,48 @@
   <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-20 text-center">
     <div id="hero-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#181a24] border border-[#242735] text-[#81889c] text-xs font-medium mb-5">
       <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
-      <span>Sentry // Security &amp; Moderation</span>
+      <span>Sentry // Sicurezza &amp; Moderazione</span>
     </div>
 
     <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-4 leading-tight text-white">
-      Real-Time Security &amp; Control for Discord &amp; Yapin
+      Sicurezza &amp; Controllo in Tempo Reale per Discord e Yapin
     </h1>
 
     <p class="max-w-2xl mx-auto text-xs sm:text-sm text-[#81889c] mb-8 leading-relaxed px-2">
-      High-density community studio: interactive partnerships, live embed builder, reactive AutoMod, leveling, economy, and AI intelligence.
+      Pannello di controllo ad alta densità: gestione partnership con form modale, live embed builder, automod reattivo, livelli, economia e intelligenza artificiale.
     </p>
 
     <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
       <a id="btn-hero-auth" href="/dashboard.html" class="btn-knight text-xs py-2 px-5 flex items-center gap-2">
         <i data-lucide="layout-dashboard" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-        <span>Open Dashboard</span>
+        <span>Accedi alla Dashboard</span>
       </a>
       <a href="/auth/login" class="text-xs py-2 px-4 rounded-xl font-bold flex items-center gap-2 bg-[#5865f2]/20 hover:bg-[#5865f2]/30 text-indigo-300 border border-[#5865f2]/40 transition-all shadow-sm">
         <i data-lucide="message-square" class="w-4 h-4 text-indigo-400"></i>
-        <span>Sign in with Discord</span>
+        <span>Accedi con Discord</span>
       </a>
       <a href="/auth/yapin" class="text-xs py-2 px-4 rounded-xl font-bold flex items-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all shadow-sm">
         <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-        <span>Sign in with Yapin</span>
+        <span>Accedi con Yapin</span>
       </a>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto mb-16">
       <div class="glass-card p-4 text-center">
         <div class="text-xl sm:text-2xl font-bold text-white mb-1" id="stat-servers">0</div>
-        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Connected Servers</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Server Connessi</div>
       </div>
       <div class="glass-card p-4 text-center">
         <div class="text-xl sm:text-2xl font-bold text-emerald-400 mb-1" id="stat-users">0</div>
-        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Total Members</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Membri Totali</div>
       </div>
       <div class="glass-card p-4 text-center">
         <div class="text-xl sm:text-2xl font-bold text-white mb-1" id="stat-ai">Llama 70B</div>
-        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Inference Model</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Modello di Inferenza</div>
       </div>
       <div class="glass-card p-4 text-center">
         <div class="text-xl sm:text-2xl font-bold text-emerald-400 mb-1" id="stat-ping">0ms</div>
-        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">API Latency</div>
+        <div class="text-[10px] uppercase tracking-wider text-[#81889c] font-semibold">Latenza API</div>
       </div>
     </div>
 
@@ -96,12 +96,12 @@
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-            <i data-lucide="server" class="w-4 h-4 text-emerald-400"></i> Managed Servers
+            <i data-lucide="server" class="w-4 h-4 text-emerald-400"></i> Server Gestiti
           </h2>
-          <p class="text-xs text-[#81889c]">Select a server or realm to configure parameters</p>
+          <p class="text-xs text-[#81889c]">Seleziona un server o reame per configurare i parametri</p>
         </div>
         <a id="btn-servers-dash" href="/dashboard.html" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
-          Open Dashboard <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          Apri Dashboard <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </a>
       </div>
 
@@ -111,10 +111,10 @@
     <section id="moduli" class="max-w-6xl mx-auto text-left pt-6">
       <div class="text-center max-w-2xl mx-auto mb-10">
         <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">
-          Management Modules
+          Moduli di Gestione
         </h2>
         <p class="text-[#81889c] text-xs sm:text-sm font-medium">
-          All integrated modules configurable in real time.
+          Tutti i moduli integrati configurabili in tempo reale.
         </p>
       </div>
 
@@ -125,7 +125,7 @@
           </div>
           <h3 class="text-sm font-bold text-white mb-1.5">Sentry AI</h3>
           <p class="text-xs text-[#81889c] leading-relaxed">
-            Conversational AI powered by Llama 3.3 70B with real-time web search and mention triggers.
+            Intelligenza artificiale conversazionale basata su Llama 3.3 70B con ricerca web in tempo reale e risposte alle menzioni.
           </p>
         </div>
 
@@ -135,7 +135,7 @@
           </div>
           <h3 class="text-sm font-bold text-white mb-1.5">Live Embed Builder</h3>
           <p class="text-xs text-[#81889c] leading-relaxed">
-            Create announcements and rich embeds with live interactive preview, multi-column grids, and custom styling.
+            Crea annunci ed embed interattivi con anteprima dal vivo, griglie multicolonna e formattazione personalizzata.
           </p>
         </div>
 
@@ -143,9 +143,9 @@
           <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
             <i data-lucide="handshake" class="w-4 h-4"></i>
           </div>
-          <h3 class="text-sm font-bold text-white mb-1.5">Partnership System</h3>
+          <h3 class="text-sm font-bold text-white mb-1.5">Sistema Partnership</h3>
           <p class="text-xs text-[#81889c] leading-relaxed">
-            Rapid modal application form, automatic invite validation, minimum requirements check, and partner metrics.
+            Modulo di candidatura rapido, verifica automatica dei link di invito, requisiti minimi e statistiche manager.
           </p>
         </div>
 
@@ -153,9 +153,9 @@
           <div class="w-8 h-8 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center mb-3 text-emerald-400">
             <i data-lucide="shield-alert" class="w-4 h-4"></i>
           </div>
-          <h3 class="text-sm font-bold text-white mb-1.5">AutoMod &amp; Security</h3>
+          <h3 class="text-sm font-bold text-white mb-1.5">AutoMod &amp; Sicurezza</h3>
           <p class="text-xs text-[#81889c] leading-relaxed">
-            Anti-link, anti-invite, anti-spam, blacklisted words filter, and automated disciplinary timeouts.
+            Filtri anti-link, anti-inviti, anti-spam, parole vietate e timeout disciplinari automatizzati.
           </p>
         </div>
 
@@ -165,7 +165,7 @@
           </div>
           <h3 class="text-sm font-bold text-white mb-1.5">Reaction Roles</h3>
           <p class="text-xs text-[#81889c] leading-relaxed">
-            Assign self-roles with interactive buttons and emoji reactions for all community members.
+            Assegna ruoli automatici con pulsanti interattivi e reazioni per tutti i membri della community.
           </p>
         </div>
 
@@ -175,7 +175,7 @@
           </div>
           <h3 class="text-sm font-bold text-white mb-1.5">Welcomer &amp; Auto-Role</h3>
           <p class="text-xs text-[#81889c] leading-relaxed">
-            Customizable greeting embeds in designated channels and direct messages with immediate role assignment.
+            Messaggi ed embed di benvenuto personalizzati nei canali dedicati o nei messaggi privati con assegnazione automatica dei ruoli.
           </p>
         </div>
       </div>
@@ -186,14 +186,14 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-2">
         <img src="/logo.svg?v=25" class="w-5 h-5 rounded-full" alt="Sentry">
-        <span class="font-bold text-white font-medieval">Sentry</span> — Cross-Platform Moderation Dashboard
+        <span class="font-bold text-white font-medieval">Sentry</span> — Dashboard di Moderazione Multipiattaforma
       </div>
       <div class="flex items-center gap-3">
-        <a href="/terms" class="hover:text-emerald-400 transition-colors underline">Terms of Service</a>
+        <a href="/terms" class="hover:text-emerald-400 transition-colors underline">Termini di Servizio</a>
         <span>•</span>
-        <a href="/privacy" class="hover:text-emerald-400 transition-colors underline">Privacy Policy</a>
+        <a href="/privacy" class="hover:text-emerald-400 transition-colors underline">Informativa Privacy</a>
         <span>•</span>
-        <span>Access restricted to authorized Moderators and Administrators</span>
+        <span>Accesso riservato a Moderatori e Amministratori autorizzati</span>
       </div>
     </div>
   </footer>
@@ -235,10 +235,12 @@
       const msg = urlParams.get('msg');
       if (err) {
         localStorage.removeItem('cavaliere_auth_token');
-        let errDesc = 'Sign-in failed or session expired.';
-        if (err === 'missing_client_secret') errDesc = 'DISCORD_CLIENT_SECRET not configured in environment variables.';
-        if (err === 'token_exchange_failed') errDesc = `Discord token exchange error: ${msg || 'verify redirect_uri'}`;
-        if (err === 'no_code') errDesc = 'Discord authorization was canceled.';
+        let errDesc = 'Accesso non riuscito o sessione scaduta.';
+        if (err === 'missing_client_secret') errDesc = 'DISCORD_CLIENT_SECRET non configurato nelle variabili d\'ambiente.';
+        if (err === 'token_exchange_failed') errDesc = `Errore di scambio token: ${msg || 'verifica redirect_uri'}`;
+        if (err === 'no_code') errDesc = 'Autorizzazione annullata.';
+        if (err === 'yapin_token_failed') errDesc = 'Autenticazione Yapin non riuscita nello scambio del codice.';
+        if (err === 'yapin_auth_failed') errDesc = 'Errore durante l\'autenticazione con Yapin.';
         
         const heroBadge = document.getElementById('hero-badge');
         if (heroBadge) {
@@ -269,7 +271,7 @@
               heroAuthBtn.href = '/dashboard.html';
               heroAuthBtn.innerHTML = `
                 <i data-lucide="layout-dashboard" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                <span>Open Dashboard</span>
+                <span>Accedi alla Dashboard</span>
               `;
             }
 
@@ -283,7 +285,7 @@
               badge.className = 'inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-6 shadow-sm';
               badge.innerHTML = `
                 <i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400"></i>
-                <span>Signed in as @${user.username}</span>
+                <span>Connesso come @${user.username}</span>
               `;
               if (window.lucide) lucide.createIcons();
             }
@@ -309,7 +311,7 @@
           if (statServers) statServers.textContent = data.guildsCount;
           if (statUsers) statUsers.textContent = data.usersCount.toLocaleString();
           if (statPing) statPing.textContent = data.ping + 'ms';
-          if (botStatusText) botStatusText.textContent = data.online ? 'Bot Online' : 'Connecting';
+          if (botStatusText) botStatusText.textContent = data.online ? 'Bot Online' : 'In connessione';
         }
 
         const guildsRes = await fetch('/api/guilds');
@@ -332,14 +334,14 @@
                   ${iconHtml}
                   <div class="overflow-hidden">
                     <h3 class="font-bold text-white text-xs truncate">${g.name}</h3>
-                    <p class="text-[11px] text-[#81889c]">${g.memberCount} Members • ${g.activeModulesCount || 8} Modules</p>
+                    <p class="text-[11px] text-[#81889c]">${g.memberCount} Membri • ${g.activeModulesCount || 8} Moduli</p>
                   </div>
                 </div>
                 <div class="flex items-center justify-between pt-3 border-t border-[#242735]">
                   <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#13151c] text-emerald-400 border border-[#242735]">
-                    Moderator
+                    Moderatore
                   </span>
-                  <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1">Manage <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                  <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1">Gestisci <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
                 </div>
               `;
               grid.appendChild(card);
@@ -351,13 +353,13 @@
               grid.innerHTML = `
                 <div class="col-span-full text-center py-10 glass-card border-slate-700 bg-slate-900/40">
                   <i data-lucide="lock" class="w-8 h-8 text-cyan-400 mx-auto mb-2"></i>
-                  <p class="text-sm font-semibold text-slate-300">Sign in with Discord or Yapin to manage servers and realms where you hold Administrator permissions.</p>
+                  <p class="text-sm font-semibold text-slate-300">Effettua l'accesso con Discord o Yapin per gestire i server in cui possiedi permessi Amministratore.</p>
                   <div class="flex flex-wrap items-center justify-center gap-3 mt-4">
                     <a href="/auth/login" class="btn-knight text-xs px-4 py-2 inline-flex items-center gap-1.5">
-                      <i data-lucide="message-square" class="w-3.5 h-3.5 text-indigo-400"></i> Sign in with Discord
+                      <i data-lucide="message-square" class="w-3.5 h-3.5 text-indigo-400"></i> Accedi con Discord
                     </a>
                     <a href="/auth/yapin" class="text-xs px-4 py-2 rounded-xl font-bold inline-flex items-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all">
-                      <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Sign in with Yapin
+                      <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Accedi con Yapin
                     </a>
                   </div>
                 </div>
@@ -374,17 +376,17 @@
     const urlParams = new URLSearchParams(window.location.search);
     const authError = urlParams.get('error');
     if (authError) {
-      let errMsg = 'Error during authentication.';
+      let errMsg = 'Errore durante l\'autenticazione.';
       if (authError === 'missing_client_secret') {
-        errMsg = 'Configuration incomplete: Please specify DISCORD_CLIENT_SECRET in Wispbyte environment variables!';
+        errMsg = 'Configurazione incompleta: Inserisci DISCORD_CLIENT_SECRET nelle variabili d\'ambiente di Wispbyte!';
       } else if (authError === 'token_exchange_failed') {
-        errMsg = 'Discord authentication failed: Incorrect Client Secret or mismatch on Discord Developer Portal.';
+        errMsg = 'Autenticazione Discord fallita: Client Secret errato o non corrispondente sul Discord Developer Portal.';
       } else if (authError === 'yapin_token_failed') {
-        errMsg = 'Yapin authentication failed: Could not exchange authorization code with Yapin servers.';
+        errMsg = 'Autenticazione Yapin fallita: Impossibile scambiare il codice di autorizzazione con i server Yapin.';
       } else if (authError === 'yapin_auth_failed') {
-        errMsg = 'Yapin authentication service error. Please try again.';
+        errMsg = 'Errore del servizio di autenticazione Yapin. Riprova.';
       } else if (authError === 'no_code_yapin') {
-        errMsg = 'Yapin login cancelled or did not provide an authorization code.';
+        errMsg = 'Accesso con Yapin annullato o codice non ricevuto.';
       }
       alert('[Sentry] ' + errMsg);
     }
