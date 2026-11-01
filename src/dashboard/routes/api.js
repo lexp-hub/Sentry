@@ -21,6 +21,48 @@ import { CONFIG } from '../../config.js';
 export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot = null) {
   const router = express.Router();
 
+  /**
+   * Valida che un URL sia un link HTTPS approvato da Yapin (upload o CDN whitelisted).
+   * Evita il rigetto API di Yapin (errore 400 su thumbnail/image non autorizzati).
+   */
+  const cleanYapinImageUrl = (url) => {
+    if (!url || typeof url !== 'string') return null;
+    const trimmed = url.trim();
+    if (!trimmed.startsWith('https://')) return null;
+    if (trimmed.includes('{') || trimmed.includes('}')) return null;
+
+    try {
+      const parsed = new URL(trimmed);
+      const host = parsed.hostname.toLowerCase();
+      const allowedDomains = [
+        'yapper.website',
+        'yapin.gg',
+        'yapin.me',
+        'yapper.fun',
+        'imgur.com',
+        'tenor.com',
+        'giphy.com',
+        'githubusercontent.com',
+        'github.com',
+        'wikimedia.org',
+        'myanimelist.net',
+        'anilist.co',
+        'tmdb.org',
+        'pinimg.com',
+        'roblox.com',
+        'rbxcdn.com',
+        'ytimg.com',
+        'googleusercontent.com',
+        'gravatar.com'
+      ];
+
+      const isAllowed = allowedDomains.some(d => host === d || host.endsWith('.' + d));
+      return isAllowed ? trimmed : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
   const notifySync = (guildId, module, req, extraData = {}) => {
     try {
       const user = req?.user || req?.session?.user;
@@ -419,6 +461,11 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
       if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
       if (!channelId) return res.status(400).json({ error: 'Seleziona un canale prima di inviare.' });
       try {
+        const cleanThumb = cleanYapinImageUrl(embedData?.thumbnail?.url || (typeof embedData?.thumbnail === 'string' ? embedData.thumbnail : null));
+        const cleanImg = cleanYapinImageUrl(embedData?.image?.url || (typeof embedData?.image === 'string' ? embedData.image : null));
+        const cleanAuthorIcon = cleanYapinImageUrl(embedData?.author?.icon_url);
+        const cleanFooterIcon = cleanYapinImageUrl(embedData?.footer?.icon_url);
+
         const yapinEmbed = {
           title: embedData?.title || undefined,
           description: embedData?.description || undefined,
@@ -426,14 +473,14 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
           color: embedData?.color !== undefined ? (typeof embedData.color === 'string' ? parseInt(embedData.color.replace('#', ''), 16) : embedData.color) : 0xdc2626,
           author: embedData?.author?.name ? {
             name: embedData.author.name,
-            icon_url: embedData.author.icon_url || undefined,
+            icon_url: cleanAuthorIcon || undefined,
             url: embedData.author.url || undefined
           } : undefined,
-          image: embedData?.image?.url ? { url: embedData.image.url } : (typeof embedData?.image === 'string' ? { url: embedData.image } : undefined),
-          thumbnail: embedData?.thumbnail?.url ? { url: embedData.thumbnail.url } : (typeof embedData?.thumbnail === 'string' ? { url: embedData.thumbnail } : undefined),
+          image: cleanImg ? { url: cleanImg } : undefined,
+          thumbnail: cleanThumb ? { url: cleanThumb } : undefined,
           footer: embedData?.footer?.text ? {
             text: embedData.footer.text,
-            icon_url: embedData.footer.icon_url || undefined
+            icon_url: cleanFooterIcon || undefined
           } : undefined,
           fields: Array.isArray(embedData?.fields) ? embedData.fields.filter(f => f.name && f.value).map(f => ({
             name: String(f.name),
@@ -793,7 +840,11 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
         const srv = servers.find(s => String(s.id) === String(serverId));
         const memberCount = srv?.member_count || 128;
         const serverName = srv?.name || 'Reame Yapin';
-        const botUser = yapinBot.user || { id: 'sentry', username: 'Sentry' };
+        const botUser = yapinBot.me || yapinBot.user || { id: 'sentry', username: 'Sentry' };
+        let botAvatar = botUser?.avatar_url || null;
+        if (botAvatar && !cleanYapinImageUrl(botAvatar)) botAvatar = null;
+        let srvIcon = srv?.icon_url || srv?.avatar_url || null;
+        if (srvIcon && !cleanYapinImageUrl(srvIcon)) srvIcon = null;
 
         const formatText = (str) => {
           if (!str) return '';
@@ -803,6 +854,9 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
             .replace(/{user\.name}/g, botUser.username || 'NuovoMembro')
             .replace(/{user\.id}/g, botUser.id || '123456')
             .replace(/{user\.mention}/g, `<@${botUser.id || '123456'}>`)
+            .replace(/{user\.avatar}/g, botAvatar || '')
+            .replace(/{avatar}/g, botAvatar || '')
+            .replace(/{server\.icon}/g, srvIcon || '')
             .replace(/{server\.name}/g, serverName)
             .replace(/{server\.memberCount}/g, String(memberCount))
             .replace(/{memberCount}/g, String(memberCount))
@@ -811,6 +865,12 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
 
         const embData = config.welcome_embed || {};
         const rawColor = embData.color !== undefined ? (typeof embData.color === 'string' ? parseInt(embData.color.replace('#', ''), 16) : embData.color) : 0xdc2626;
+
+        const cleanFooterIcon = cleanYapinImageUrl(formatText(embData.footer?.icon_url));
+        const rawThumb = embData.thumbnail?.url || (typeof embData.thumbnail === 'string' ? embData.thumbnail : null);
+        const cleanThumb = cleanYapinImageUrl(formatText(rawThumb));
+        const rawImg = embData.image?.url || (typeof embData.image === 'string' ? embData.image : null);
+        const cleanImg = cleanYapinImageUrl(formatText(rawImg));
 
         const yapinEmbed = {
           title: formatText(embData.title || 'Benvenuto nel Reame, {user}!'),
@@ -823,10 +883,10 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
           })) : undefined,
           footer: embData.footer?.text ? {
             text: formatText(embData.footer.text),
-            icon_url: embData.footer.icon_url || undefined
+            icon_url: cleanFooterIcon || undefined
           } : { text: formatText('Membro #{memberCount} • {server.name}') },
-          image: embData.image?.url ? { url: formatText(embData.image.url) } : (typeof embData.image === 'string' ? { url: formatText(embData.image) } : undefined),
-          thumbnail: embData.thumbnail?.url ? { url: formatText(embData.thumbnail.url) } : (typeof embData.thumbnail === 'string' ? { url: formatText(embData.thumbnail) } : undefined),
+          image: cleanImg ? { url: cleanImg } : undefined,
+          thumbnail: cleanThumb ? { url: cleanThumb } : undefined,
           timestamp: new Date().toISOString()
         };
 
@@ -1042,14 +1102,21 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
       if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
       try {
         const rawColor = embed?.color !== undefined ? (typeof embed.color === 'string' ? parseInt(embed.color.replace('#', ''), 16) : embed.color) : 0xdc2626;
+        const cleanThumb = cleanYapinImageUrl(embed?.thumbnail?.url || (typeof embed?.thumbnail === 'string' ? embed.thumbnail : null));
+        const cleanImg = cleanYapinImageUrl(embed?.image?.url || (typeof embed?.image === 'string' ? embed.image : null));
+        const cleanFooterIcon = cleanYapinImageUrl(embed?.footer?.icon_url);
+
         const yapinEmbed = embed ? {
           title: embed.title || undefined,
           description: embed.description || undefined,
           color: rawColor,
           url: embed.url || undefined,
-          image: embed.image ? (typeof embed.image === 'string' ? { url: embed.image } : embed.image) : undefined,
-          thumbnail: embed.thumbnail ? (typeof embed.thumbnail === 'string' ? { url: embed.thumbnail } : embed.thumbnail) : undefined,
-          footer: embed.footer ? (typeof embed.footer === 'string' ? { text: embed.footer } : embed.footer) : undefined,
+          image: cleanImg ? { url: cleanImg } : undefined,
+          thumbnail: cleanThumb ? { url: cleanThumb } : undefined,
+          footer: embed.footer ? (typeof embed.footer === 'string' ? { text: embed.footer } : {
+            text: embed.footer.text,
+            icon_url: cleanFooterIcon || undefined
+          }) : undefined,
           fields: Array.isArray(embed.fields) ? embed.fields.filter(f => f.name && f.value) : undefined,
           timestamp: embed.timestamp ? new Date().toISOString() : undefined
         } : undefined;

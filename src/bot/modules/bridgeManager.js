@@ -1,5 +1,6 @@
 import { DatabaseHelper } from '../../database/db.js';
 import { EmbedBuilder } from 'discord.js';
+import { cleanYapinImageUrl } from '../../../yapin/src/yapper.js';
 
 let discordBot = null;
 let yapinBotInstance = null;
@@ -129,12 +130,11 @@ export const BridgeManager = {
             timestamp: new Date().toISOString()
           };
 
-          if (avatarUrl) {
-            yapinEmbed.author = {
-              name: userNick,
-              icon_url: avatarUrl
-            };
-          }
+          const cleanAvatar = cleanYapinImageUrl(avatarUrl);
+          yapinEmbed.author = {
+            name: userNick,
+            icon_url: cleanAvatar || undefined
+          };
 
           if (message.attachments?.size > 0) {
             const images = [];
@@ -147,15 +147,23 @@ export const BridgeManager = {
               }
             }
             if (images.length > 0) {
-              yapinEmbed.image = { url: images[0] };
+              const cleanFirst = cleanYapinImageUrl(images[0]);
+              if (cleanFirst) {
+                yapinEmbed.image = { url: cleanFirst };
+              } else {
+                otherFiles.unshift(`[Immagine](${images[0]})`);
+              }
             }
-            if (otherFiles.length > 0 || images.length > 1) {
-              const extra = [...images.slice(1).map(u => `[Immagine](${u})`), ...otherFiles].join(' \u2022 ');
-              yapinEmbed.fields.push({
-                name: 'Allegati Sigillati',
-                value: extra,
-                inline: false
-              });
+            if (otherFiles.length > 0 || (images.length > 1 && yapinEmbed.image)) {
+              const extraImgs = yapinEmbed.image ? images.slice(1) : images;
+              const extra = [...extraImgs.map(u => `[Immagine](${u})`), ...otherFiles].join(' \u2022 ');
+              if (extra) {
+                yapinEmbed.fields.push({
+                  name: 'Allegati Sigillati',
+                  value: extra,
+                  inline: false
+                });
+              }
             }
           }
 

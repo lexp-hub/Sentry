@@ -25,6 +25,48 @@ export const IS_COMPONENTS_V2 = 1 << 15;
 const plain = (x) => (x && typeof x.toJSON === 'function' ? x.toJSON() : x);
 const list = (v) => (v === undefined ? undefined : v === null ? null : [].concat(v).map(plain));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Validates that an image URL is a valid https URL from a Yapin-approved image host.
+ * Prevents API rejection errors on embed thumbnails/images.
+ */
+export function cleanYapinImageUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed.startsWith('https://')) return null;
+  if (trimmed.includes('{') || trimmed.includes('}')) return null;
+
+  try {
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.toLowerCase();
+    const allowedDomains = [
+      'yapper.website',
+      'yapin.gg',
+      'yapin.me',
+      'yapper.fun',
+      'imgur.com',
+      'tenor.com',
+      'giphy.com',
+      'githubusercontent.com',
+      'github.com',
+      'wikimedia.org',
+      'myanimelist.net',
+      'anilist.co',
+      'tmdb.org',
+      'pinimg.com',
+      'roblox.com',
+      'rbxcdn.com',
+      'ytimg.com',
+      'googleusercontent.com',
+      'gravatar.com'
+    ];
+
+    const isAllowed = allowedDomains.some(d => host === d || host.endsWith('.' + d));
+    return isAllowed ? trimmed : null;
+  } catch (e) {
+    return null;
+  }
+}
 /** `{ messages, authors }` from the API → the messages, each with its `author` (null if the account is gone). */
 const withAuthors = (out) => {
   const by = new Map((out.authors || []).map((a) => [a.id, a]));

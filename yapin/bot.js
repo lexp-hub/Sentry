@@ -7,7 +7,7 @@ if (!globalThis.WebSocket) {
   globalThis.WebSocket = WebSocket;
 }
 
-import { Bot, Embed, Row, Button } from './yapper.js';
+import { Bot, Embed, Row, Button, cleanYapinImageUrl } from './yapper.js';
 import dotenv from 'dotenv';
 import os from 'os';
 
@@ -557,6 +557,9 @@ bot.on('member_join', async (ev) => {
         .replace(/{user\.name}/g, username)
         .replace(/{user\.id}/g, ev.user_id)
         .replace(/{user\.mention}/g, `<@${ev.user_id}>`)
+        .replace(/{user\.avatar}/g, ev.avatar_url || '')
+        .replace(/{avatar}/g, ev.avatar_url || '')
+        .replace(/{server\.icon}/g, server?.icon_url || server?.avatar_url || '')
         .replace(/{server\.name}/g, serverName)
         .replace(/{server\.memberCount}/g, String(memberCount))
         .replace(/{memberCount}/g, String(memberCount))
@@ -577,17 +580,23 @@ bot.on('member_join', async (ev) => {
         if (embData.color) embed.color(embData.color);
         else embed.color('#dc2626');
 
-        if (embData.thumbnail?.url || embData.thumbnail) {
-          embed.thumbnail(formatText(embData.thumbnail?.url || embData.thumbnail));
+        const rawThumb = embData.thumbnail?.url || (typeof embData.thumbnail === 'string' ? embData.thumbnail : null);
+        const cleanThumb = cleanYapinImageUrl(formatText(rawThumb));
+        if (cleanThumb) {
+          embed.thumbnail(cleanThumb);
         }
-        if (embData.image?.url || embData.image) {
-          embed.image(formatText(embData.image?.url || embData.image));
+
+        const rawImg = embData.image?.url || (typeof embData.image === 'string' ? embData.image : null);
+        const cleanImg = cleanYapinImageUrl(formatText(rawImg));
+        if (cleanImg) {
+          embed.image(cleanImg);
         }
-        if (embData.footer?.text || embData.footer) {
-          embed.footer(formatText(embData.footer?.text || embData.footer), embData.footer?.icon_url || undefined);
-        } else {
-          embed.footer(formatText('Membro #{memberCount} • {server.name}'));
-        }
+
+        const footerText = embData.footer?.text || embData.footer || 'Membro #{memberCount} • {server.name}';
+        const rawFooterIcon = embData.footer?.icon_url || null;
+        const cleanFooterIcon = cleanYapinImageUrl(formatText(rawFooterIcon));
+        embed.footer(formatText(footerText), cleanFooterIcon || undefined);
+
         if (Array.isArray(embData.fields) && embData.fields.length > 0) {
           embData.fields.forEach(f => {
             if (f.name && f.value) {
