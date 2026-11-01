@@ -191,10 +191,10 @@ function initWebSocket() {
     activeWs = ws;
 
     ws.onopen = () => {
-      console.log('[WebSocket] Connesso al server di sincronizzazione Sentry.');
+      console.log('[WebSocket] Connected to Sentry synchronization server.');
       const statusEl = document.getElementById('bot-ws-status');
-      if (statusEl && !statusEl.textContent.includes('Modalità Demo')) {
-        statusEl.textContent = 'Bot Online • Live Sync Attivo';
+      if (statusEl && !statusEl.textContent.includes('Demo')) {
+        statusEl.textContent = 'Bot Online • Live Sync Active';
       }
       if (window.AppState.currentGuildId) {
         ws.send(JSON.stringify({ type: 'SUBSCRIBE_GUILD', guildId: window.AppState.currentGuildId }));
@@ -212,17 +212,16 @@ function initWebSocket() {
         if (data.type === 'INIT') {
           const statusEl = document.getElementById('bot-ws-status');
           if (statusEl) {
-            statusEl.textContent = data.botOnline ? 'Bot Online • Live Sync Attivo' : 'Modalità Demo Attiva';
+            statusEl.textContent = data.botOnline ? 'Bot Online • Live Sync Active' : 'Demo Mode Active';
           }
         } else if (data.type === 'GUILD_UPDATED') {
           if (data.senderClientId && data.senderClientId === window.AppState.clientId) {
-            // Ignora l'evento di sync generato da noi stessi per evitare il reset degli input
             return;
           }
           if (data.guildId === window.AppState.currentGuildId) {
-            console.log(`[WebSocket] Ricevuto aggiornamento in tempo reale per modulo "${data.module}" da ${data.updatedBy}`);
+            console.log(`[WebSocket] Received real-time update for module "${data.module}" by ${data.updatedBy}`);
             window.reloadCurrentGuildData(true);
-            window.showToast(`⚡ Sincronizzazione Live: modulo "${data.module}" aggiornato da ${data.updatedBy}`);
+            window.showToast(`⚡ Live Sync: module "${data.module}" updated by ${data.updatedBy}`);
           }
         }
       } catch (e) {}
@@ -231,7 +230,7 @@ function initWebSocket() {
     ws.onclose = () => {
       clearInterval(wsPingInterval);
       wsReconnectTimer = setTimeout(() => {
-        console.log('[WebSocket] Tentativo di riconnessione automatica...');
+        console.log('[WebSocket] Reconnecting to gateway...');
         initWebSocket();
       }, 3000);
     };
@@ -305,7 +304,7 @@ window.switchProfile = async function(platform) {
   }).catch(() => {});
 
   await loadGuilds(platform);
-  window.showToast(`Passato a ${platform === 'yapin' ? '🛡️ Profilo Yapin' : '🎮 Profilo Discord'}!`);
+  window.showToast(`Switched to ${platform === 'yapin' ? '🛡️ Yapin Profile' : '🎮 Discord Profile'}!`);
 };
 
 async function loadGuilds(filterPlatform = null) {
@@ -327,21 +326,21 @@ async function loadGuilds(filterPlatform = null) {
 
     selector.innerHTML = '';
     if (guilds.length === 0) {
-      selector.innerHTML = `<option value="">Nessun Server ${platform === 'yapin' ? 'Yapin' : 'Discord'} Trovato</option>`;
-      window.showToast(`Nessun server ${platform === 'yapin' ? 'Yapin' : 'Discord'} trovato in cui possiedi permessi amministratore.`, 'error');
+      selector.innerHTML = `<option value="">No ${platform === 'yapin' ? 'Yapin' : 'Discord'} Servers Found</option>`;
+      window.showToast(`No ${platform === 'yapin' ? 'Yapin' : 'Discord'} servers found where you hold Administrator permissions.`, 'error');
       return;
     }
 
     const discordGroup = document.createElement('optgroup');
-    discordGroup.label = '🎮 Server Discord';
+    discordGroup.label = '🎮 Discord Servers';
     const yapinGroup = document.createElement('optgroup');
-    yapinGroup.label = '🛡️ Realm Yapin';
+    yapinGroup.label = '🛡️ Yapin Realms';
 
     guilds.forEach(g => {
       const opt = document.createElement('option');
       opt.value = g.id;
       const isYapin = g.platform === 'yapin' || g.id.startsWith('yapin_');
-      opt.textContent = `${isYapin ? '🛡️' : '🎮'} ${g.rawName || g.name} (${g.memberCount} membri)`;
+      opt.textContent = `${isYapin ? '🛡️' : '🎮'} ${g.rawName || g.name} (${g.memberCount} members)`;
       if (isYapin) {
         yapinGroup.appendChild(opt);
       } else {
@@ -410,11 +409,11 @@ window.reloadCurrentGuildData = async function(silent = false) {
     }
 
     if (!silent) {
-      window.showToast('✅ Dati sincronizzati con successo dal database!');
+      window.showToast('✅ Data successfully synchronized from database!');
     }
   } catch (err) {
-    console.error('[Sync] Errore durante la sincronizzazione:', err);
-    if (!silent) window.showToast('Errore durante la sincronizzazione.', 'error');
+    console.error('[Sync] Error during synchronization:', err);
+    if (!silent) window.showToast('Error during synchronization.', 'error');
   } finally {
     if (syncIcon) syncIcon.classList.remove('animate-spin');
   }
@@ -447,7 +446,7 @@ window.forceReloadModulesAndCache = async function(hardReload = false) {
     const guildId = window.AppState.currentGuildId;
     if (!guildId) {
       await loadGuilds();
-      window.showToast('🔄 Lista server e cache ricaricate!');
+      window.showToast('🔄 Server list and cache reloaded!');
       return;
     }
 
@@ -501,13 +500,13 @@ window.forceReloadModulesAndCache = async function(hardReload = false) {
         await window.loadCloudStatus();
       }
 
-      window.showToast('🔄 Moduli e cache ricaricati con successo!');
+      window.showToast('🔄 Modules and cache reloaded successfully!');
     } else {
-      window.showToast('Errore durante la risposta dal server.', 'error');
+      window.showToast('Error during server response.', 'error');
     }
   } catch (err) {
-    console.error('[ReloadModules] Errore:', err);
-    window.showToast('Errore durante la ricarica dei moduli: ' + err.message, 'error');
+    console.error('[ReloadModules] Error:', err);
+    window.showToast('Error reloading modules: ' + err.message, 'error');
   } finally {
     if (iconDesktop) iconDesktop.classList.remove('animate-spin');
     if (iconMobile) iconMobile.classList.remove('animate-spin');
@@ -637,7 +636,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     if (!select) return;
 
     const currentVal = select.value || select.dataset.savedValue || (id === 'gen-log-channel' ? window.AppState?.settings?.log_channel_id : null);
-    select.innerHTML = '<option value="">-- Seleziona un Canale --</option>';
+    select.innerHTML = '<option value="">-- Select a Channel --</option>';
 
     textChannels.forEach(c => {
       const opt = document.createElement('option');
@@ -668,7 +667,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     if (!vSelect) return;
 
     const currentVal = vSelect.value || vSelect.dataset.savedValue;
-    vSelect.innerHTML = '<option value="">-- Seleziona un Canale Vocale --</option>';
+    vSelect.innerHTML = '<option value="">-- Select a Voice Channel --</option>';
 
     voiceChannels.forEach(c => {
       const opt = document.createElement('option');
@@ -697,7 +696,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     if (!catSelect) return;
 
     const currentCat = catSelect.value || catSelect.dataset.savedValue;
-    catSelect.innerHTML = '<option value="">-- Seleziona Categoria --</option>';
+    catSelect.innerHTML = '<option value="">-- Select Category --</option>';
 
     categories.forEach(c => {
       const opt = document.createElement('option');
@@ -730,7 +729,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     if (!select) return;
 
     const currentVal = select.value || select.dataset.savedValue;
-    select.innerHTML = '<option value="">-- Nessun Ruolo --</option>';
+    select.innerHTML = '<option value="">-- No Role --</option>';
 
     allRoles.forEach(r => {
       const opt = document.createElement('option');
@@ -759,7 +758,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     if (!memberSelect) return;
 
     const currentMember = memberSelect.value || memberSelect.dataset.savedValue;
-    memberSelect.innerHTML = '<option value="">-- Seleziona un Membro --</option>';
+    memberSelect.innerHTML = '<option value="">-- Select a Member --</option>';
     allMembers.forEach(m => {
       const opt = document.createElement('option');
       opt.value = m.id;
