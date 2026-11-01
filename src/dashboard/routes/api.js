@@ -723,6 +723,9 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
     const bridge = DatabaseHelper.getAllBridges().find(b => b.id == req.params.id);
     if (!bridge) return res.status(404).json({ error: 'Ponte non trovato.' });
 
+    const sessionUser = req.user || req.session?.user;
+    const userNick = sessionUser?.global_name || sessionUser?.username || 'Moderatore';
+
     let discordOk = false;
     let yapinOk = false;
 
@@ -736,8 +739,8 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
             .setDescription('> Questa missiva di collaudo conferma che il ponte tra Discord e Yapin \u00e8 pienamente operativo e sincronizzato in tempo reale.')
             .setColor(0x5865f2)
             .addFields(
-              { name: 'Mittente', value: '**Pannello di Controllo Sentry**', inline: true },
-              { name: 'Destinatario', value: `**#${chan.name}** (su Discord)`, inline: true }
+              { name: 'Mittente', value: `**${userNick}**`, inline: true },
+              { name: 'Destinatario', value: `**#${chan.name}**`, inline: true }
             )
             .setFooter({ text: 'Sigillo Sentry Bridge \u2022 Verifica Connessione' })
             .setTimestamp();
@@ -756,8 +759,8 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
           description: '> Questa missiva di collaudo conferma che il ponte tra Discord e Yapin \u00e8 pienamente operativo e sincronizzato in tempo reale.',
           color: 0x10b981,
           fields: [
-            { name: 'Mittente', value: '**Pannello di Controllo Sentry**', inline: true },
-            { name: 'Destinatario', value: `**${bridge.name || 'Canale Yapin'}** (su Yapin)`, inline: true }
+            { name: 'Mittente', value: `**${userNick}**`, inline: true },
+            { name: 'Destinatario', value: `**#${bridge.name || 'Canale Yapin'}**`, inline: true }
           ],
           footer: { text: 'Sigillo Sentry Bridge \u2022 Verifica Connessione' },
           timestamp: new Date().toISOString()

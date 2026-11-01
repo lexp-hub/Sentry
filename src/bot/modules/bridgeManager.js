@@ -28,7 +28,7 @@ export const BridgeManager = {
         if (!yapinBotInstance) return;
 
         try {
-          const authorName = message.member?.displayName || message.author.username;
+          const userNick = message.member?.nickname || message.member?.displayName || message.author.globalName || message.author.username;
           const avatarUrl = message.author.displayAvatarURL ? message.author.displayAvatarURL({ extension: 'png', size: 128 }) : null;
           const text = message.cleanContent || message.content || '';
           const quoteText = text ? text.split('\n').map(line => `> ${line}`).join('\n') : '> *(Nessun testo, solo allegato)*';
@@ -40,12 +40,12 @@ export const BridgeManager = {
             fields: [
               {
                 name: 'Mittente',
-                value: `**${authorName}** (#${message.channel.name} su Discord)`,
+                value: `**${userNick}**`,
                 inline: true
               },
               {
                 name: 'Destinatario',
-                value: `**${bridge.name || 'Canale Yapin'}** (su Yapin)`,
+                value: `**#${bridge.name || 'Canale Yapin'}**`,
                 inline: true
               }
             ],
@@ -57,7 +57,7 @@ export const BridgeManager = {
 
           if (avatarUrl) {
             yapinEmbed.author = {
-              name: `Da: ${authorName}`,
+              name: userNick,
               icon_url: avatarUrl
             };
           }
@@ -108,7 +108,18 @@ export const BridgeManager = {
                           await discordBot.channels.fetch(bridge.discord_channel_id).catch(() => null);
           if (!channel || !channel.isTextBased()) return;
 
-          const authorName = msg.author?.display_name || msg.author?.username || 'Cavaliere Yapin';
+          let userNick = msg.member?.nickname || msg.nickname || msg.author?.nickname || msg.author?.display_name || msg.author?.username || msg.username || 'Cavaliere Yapin';
+          if (bridge.yapin_server_id && msg.author_id && (!msg.member || !msg.nickname)) {
+            try {
+              const mem = await yapinBotInstance.member(bridge.yapin_server_id, msg.author_id).catch(() => null);
+              if (mem?.nickname) {
+                userNick = mem.nickname;
+              } else if (mem?.profile?.display_name) {
+                userNick = mem.profile.display_name;
+              }
+            } catch (e) {}
+          }
+
           const avatarUrl = msg.author?.avatar_url || null;
           const text = msg.content || '';
           const quoteText = text ? text.split('\n').map(line => `> ${line}`).join('\n') : '> *(Nessun testo)*';
@@ -120,12 +131,12 @@ export const BridgeManager = {
             .addFields(
               {
                 name: 'Mittente',
-                value: `**${authorName}** (${bridge.name || 'Canale Yapin'} su Yapin)`,
+                value: `**${userNick}**`,
                 inline: true
               },
               {
                 name: 'Destinatario',
-                value: `**#${channel.name}** (su Discord)`,
+                value: `**#${channel.name}**`,
                 inline: true
               }
             )
@@ -134,7 +145,7 @@ export const BridgeManager = {
 
           if (avatarUrl) {
             discordEmbed.setAuthor({
-              name: `Da: ${authorName}`,
+              name: userNick,
               iconURL: avatarUrl
             });
           }
