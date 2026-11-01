@@ -89,51 +89,74 @@ Welcomer Architecture:
 ================================================================================
 6. COMMANDS REFERENCE
 ================================================================================
-General & Utility:
-- !ping                              : Check Sentry latency and gateway responsiveness
-- !help                              : Display the list of available commands and modules
-- !serverinfo                        : Display server metadata, channel count, and stats
+All commands support both `/` slash command format and `!` / `sentry ` prefix format.
 
-Moderation:
-- !kick <user_id>                    : Kick a member from the current server
-- !ban <user_id>                     : Ban a member from the current server
+General & Diagnostics:
+- /ping                              : Check Sentry latency and WebSocket responsiveness
+- /help                              : Display interactive command center and categories
+- /botinfo                           : Technical metrics (RAM, Node.js, Host OS, Uptime)
+- /serverinfo                        : Server metadata, member counts, and statistics
+- /userinfo [@user|id]               : Inspect user profile, account type and avatar
+- /roles                             : List all configured roles in the realm
+- /channels                          : List all text and voice channels in the realm
+- /bridge                            : Cross-Platform Discord <-> Yapin bridge status
 
-Automated Event Triggers:
-- hi bot / hello sentry              : Automated greeting response trigger
+Realm Insights (Yapin Exclusive):
+- /livecount                         : Real-time online/total member ratio in the Realm
+- /realm                             : Complete Realm Hub overview (channels, E2EE voice, population)
+
+Moderation & AutoMod:
+- /kick <user_id> [reason]           : Kick a member from the server
+- /ban <user_id> [reason]            : Ban a member permanently
+- /unban <user_id>                   : Remove a ban for a member
+- /timeout <user_id> <min> [reason]  : Mute/timeout a member (0 min to remove)
+- /warn <user_id> [reason]           : Issue an official disciplinary warning
+- /clear <1-50>                      : Bulk purge messages in the channel
+- /say <text>                        : Broadcast an announcement through Sentry
+
+Economy & Yapin Shards:
+- /balance (or /bal)                 : Check wallet coins and exclusive Yapin Shards
+- /daily                             : Claim daily coin rewards and crystal bonuses
+- /pay <@user> <amount>              : Transfer coins to another member
+
+Minigames & Casino:
+- /fish                              : Cast fishing rod for 16 fish types and sunken chests
+- /inventory (or /inv)               : View rod tier, caught fish and statistics
+- /upgrade-rod                       : Forge a higher tier rod (up to Mythic Rod)
+- /blackjack <bet> (or /bj)          : Play 21 with interactive [Hit] and [Stand] buttons
+- /coinflip <heads|tails> [bet]      : Flip a coin with optional coin wagering
+- /dice [sides]                      : Roll a customizable die (default 6 sides)
+- /count <number>                    : Counting game in designated channel
+
+Leveling & XP:
+- /rank [@user]                      : Check level card with ASCII progress bar
+- /leaderboard (or /top)             : Top 10 ranked users in the server
+
+Artificial Intelligence:
+- /ai <question>                     : Query Llama 3.3 70B neural model
+- @Sentry <question>                 : Mention Sentry in any channel for AI response
 
 ================================================================================
-7. REST API ENDPOINTS & GATEWAY EVENTS
+7. UNIVERSAL DASHBOARD & AUTHENTICATION
 ================================================================================
-Gateway Events Handled:
-- READY                              : Bot session initialized, cached `me` user object
-- message                            : New message published in a subscribed channel
-- member_join                        : New member entered the server (triggers Welcomer/Autorole)
-- member_leave                       : Member departed or was removed from the server
-
-Yapin REST Endpoints:
-- GET    /me                         : Current authenticated bot identity
-- GET    /servers                    : List of servers where the bot is installed
-- GET    /servers/:id                : Fetch specific server metadata
-- GET    /servers/:id/channels       : Fetch all channels and categories
-- POST   /channels/:id/messages      : Dispatch text, embeds, or interactive buttons
-- DELETE /channels/:id/messages/:id  : Delete a targeted message
-- POST   /servers/:id/kick           : Kick a member from the server
-- POST   /servers/:id/bans           : Ban a user ID from the server
-- PUT    /servers/:id/members/:uid/roles/:rid : Assign a role to a member
+The Sentry dashboard at https://sentry.wispbyte.app provides a universal bridge:
+- Instagram-Style Profile Switcher: Easily switch between Discord and Yapin servers.
+- Yapin OAuth2 & Direct ID Sign-In: Authenticate with Yapin credentials or user ID.
+- Permission Verification: Only realm owners or administrators can configure settings.
+- Real-Time Synchronization: Updates configured on the dashboard take effect immediately.
 
 ================================================================================
 8. DEPLOYMENT & ENVIRONMENT VARIABLES
 ================================================================================
-Required configuration variables in `yapin/.env`:
-
-YAPPER_BOT_TOKEN : Bot token obtained from Yapin (Settings -> Developer)
-DEFAULT_PREFIX   : Command trigger prefix (default: '!')
+Required configuration variables in `.env`:
+- YAPPER_BOT_TOKEN                   : Bot token starting with yb_...
+- YAPIN_CLIENT_ID                    : OAuth2 Client ID from Yapin Developer settings
+- YAPIN_CLIENT_SECRET                : OAuth2 Client Secret
+- YAPIN_REDIRECT_URI                 : https://sentry.wispbyte.app/auth/yapin/callback
+- DISCORD_TOKEN                      : Token for Discord bot instance
+- CLOUDFLARE_API_KEY & ACCOUNT_ID    : Workers AI neural assistant credentials
 
 Start locally:
-$ cd yapin
-$ npm install
-$ npm start
-
-Development mode (auto-reload on code change):
-$ npm run dev
+$ npm start               # Starts Discord bot & Dashboard
+$ cd yapin && npm start   # Starts Yapin bot instance
 

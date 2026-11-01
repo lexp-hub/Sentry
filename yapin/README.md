@@ -21,11 +21,16 @@ Sentry (Yapin Edition) is an open-source, privacy-first security and moderation 
 
 ### Features
 
-- **Automated moderation**: Anti-invite, forbidden keyword triggers, spam protection, and server audit logging.
-- **Dedicated Auto-Role**: Configurable role provisioning for human members and invited bots with custom assignment delay.
-- **Welcomer system**: Customizable greetings, server leave notifications, and member milestone tracking.
-- **Native Gateway connection**: Low-latency WebSocket event handling with automatic heartbeat and reconnection recovery.
-- **Dashboard ready**: Extensible REST endpoints and shared database synchronization with the Sentry web dashboard.
+- **Automated moderation**: Anti-invite, forbidden keyword triggers, spam protection, caps limiter, and automated timeout discipline.
+- **Dedicated Auto-Role & Welcomer**: Configurable role provisioning for human members and invited bots with welcoming cards.
+- **Economy & Yapin Shards (Exclusive)**: Daily streaks, wallet management, peer coin transfers, and Yapin Shard crystals.
+- **Minigames & Casino**: 5-tier fishing simulator with 16 catches, rod upgrades, 21 Blackjack with interactive buttons, coinflip, dice, and counting channel.
+- **Leveling & XP Engine**: Chat-based XP progression, dynamic rank cards with ASCII progress bars, and server leaderboards.
+- **AI Neural Assistant**: Powered by Llama 3.3 70B via `/ai <query>` or `@Sentry` mentions in any chat.
+- **Realm Telemetry & LiveStats (Exclusive)**: `/livecount` for live online/total ratios and `/realm` for E2EE voice channels and realm health.
+- **Cross-Platform Bridge**: Synchronizes messages bidirectionally in real-time between Discord and Yapin channels.
+- **Native Real-Time Gateway**: Zero-delay WebSocket connection (`wss://rt.yapper.website/bot`) with automated failover.
+- **Unified Dashboard**: Instagram-style profile switcher between Discord and Yapin with OAuth2 & ID sign-in at [sentry.wispbyte.app](https://sentry.wispbyte.app).
 
 For detailed architecture, commands reference, module workflows, and headless API endpoints, see [DOCUMENTATION.md](DOCUMENTATION.md).
 
