@@ -29,7 +29,7 @@ setInterval(() => {
 export function formatDuration(ms) {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   if (totalSeconds < 60) {
-    return `${totalSeconds} secondo${totalSeconds === 1 ? '' : 'i'}`;
+    return `${totalSeconds} second${totalSeconds === 1 ? 'o' : 'i'}`;
   }
   const totalMinutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;

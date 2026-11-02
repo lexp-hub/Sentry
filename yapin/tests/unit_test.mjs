@@ -257,6 +257,44 @@ async function runTests() {
     console.log('   [PASS] YapinAI validation passed!');
   }
 
+  // 9. TEST AFK & DURATION
+  console.log('\n9. Testing AFK System & Duration Formatting...');
+  {
+    const { formatDuration } = await import('../../src/bot/modules/afkManager.js');
+    assert(formatDuration(45000) === '45 secondi', '45s should format as 45 secondi');
+    assert(formatDuration(120000) === '2 minuti', '120s should format as 2 minuti');
+
+    DatabaseHelper.setAfk(guildKey, testUser, 'Pausa Studio', Date.now());
+    const afkData = DatabaseHelper.getAfk(guildKey, testUser);
+    assert(afkData && afkData.reason === 'Pausa Studio', 'AFK data should match saved reason');
+
+    DatabaseHelper.removeAfk(guildKey, testUser);
+    const removedData = DatabaseHelper.getAfk(guildKey, testUser);
+    assert(!removedData, 'AFK should be removed');
+    console.log('   [PASS] AFK system passed!');
+  }
+
+  // 10. TEST MODERATION CASES & WARNINGS
+  console.log('\n10. Testing Moderation Cases & Warnings History...');
+  {
+    DatabaseHelper.addModerationCase(guildKey, testUser, 'mod_admin_1', 'WARN', 'Spam link non consentito');
+    const cases = DatabaseHelper.getModerationCases(guildKey, testUser, 5);
+    assert(cases.length > 0, 'Should have at least 1 moderation case');
+    assert(cases[0].action_type === 'WARN', 'First case should be WARN');
+    console.log('   [PASS] Moderation cases passed!');
+  }
+
+  // 11. TEST AUTOROLE & AUTORESPONDER
+  console.log('\n11. Testing Auto-Role & Auto-Responder DB Retrieval...');
+  {
+    const autorole = DatabaseHelper.getAutoroleConfig(guildKey);
+    assert(autorole !== undefined, 'Autorole config should be returned');
+
+    const autoresponders = DatabaseHelper.getAutoresponders(guildKey);
+    assert(Array.isArray(autoresponders), 'Autoresponders should return an array');
+    console.log('   [PASS] Auto-Role & Auto-Responder DB retrieval passed!');
+  }
+
   console.log('\nALL YAPIN UNIT TESTS PASSED PERFECTLY!\n');
   process.exit(0);
 }

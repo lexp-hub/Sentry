@@ -21,6 +21,7 @@ import { YapinAI } from './src/modules/yapinAI.js';
 import { YapinLiveStats } from './src/modules/yapinLiveStats.js';
 import { YapinMinigames } from './src/modules/yapinMinigames.js';
 import { DatabaseHelper } from '../src/database/db.js';
+import { formatDuration } from '../src/bot/modules/afkManager.js';
 
 dotenv.config();
 
@@ -37,6 +38,10 @@ export const bot = new Bot(token || '', {
 });
 
 const startTime = Date.now();
+
+// Cache in memoria per AFK su Yapin (grace period e cooldown notifiche menzioni)
+const yapinAfkCooldowns = new Map();
+const yapinRecentlySetAfk = new Map();
 
 /**
  * Normalizza il payload del messaggio per supportare sia comandi slash che prefix commands,
@@ -69,12 +74,12 @@ function getContextData(ctx) {
 // 1. GENERAL & SYSTEM DIAGNOSTICS
 // ==========================================
 
-bot.command('ping', 'Check Sentry response time and operational status', async (ctx) => {
+bot.command('ping', 'Verifica i tempi di risposta e lo stato operativo di Sentry', async (ctx) => {
   const { channelId } = getContextData(ctx);
   const start = Date.now();
-  const res = await ctx.reply('[Ping] Pinging Yapin Gateway...');
+  const res = await ctx.reply('[Ping] Calcolo latenza Gateway Yapin...');
   const latency = Date.now() - start;
-  const content = `[Pong] Gateway Latency: \`${latency}ms\` | Status: **Operational**`;
+  const content = `[Pong] Latenza Gateway: \`${latency}ms\` | Stato Operativo: **Online**`;
   if (res?.id && channelId) {
     try {
       await bot.edit(channelId, res.id, content);
@@ -84,18 +89,111 @@ bot.command('ping', 'Check Sentry response time and operational status', async (
   await ctx.reply(content);
 });
 
-bot.command('help', 'Display the complete command list across all modules', (ctx) => {
-  const embed = new Embed()
-    .title('[Sentry] Yapin Command Center')
-    .description('Security, moderation, economics, and community features tailored for Yapin.')
-    .field('General & Insights', '`/ping` - Latency check\n`/help` - This menu\n`/botinfo` - System metrics\n`/serverinfo` - Server statistics\n`/realm` - Full Realm Hub overview\n`/livecount` - Live online/total member ratio\n`/bridge` - Cross-Platform Discord <-> Yapin bridge')
-    .field('Moderation & AutoMod', '`/kick <user> [reason]` - Kick member\n`/ban <user> [reason]` - Ban member\n`/unban <user>` - Unban member\n`/timeout <user> <minutes>` - Timeout user\n`/warn <user> [reason]` - Warn member\n`/clear <1-50>` - Bulk delete messages\n`/say <text>` - Send announcement')
-    .field('Economy & Shards (Exclusive)', '`/balance` - Check wallet & Yapin Shards\n`/daily` - Claim daily coins & exclusive crystals\n`/pay <user> <amount>` - Transfer coins')
-    .field('Minigames & Casino', '`/fish` - Cast your rod for fish & treasures\n`/inventory` - View fishing gear\n`/upgrade-rod` - Forge better rods\n`/blackjack <bet>` - Play 21 with buttons\n`/coinflip <heads|tails> [bet]` - Flip a coin\n`/dice [sides]` - Roll a die\n`/count <number>` - Counting channel')
-    .field('Artificial Intelligence', '`/ai <prompt>` - Ask Llama 3.3 70B neural network\n*Oppure menziona @Sentry in qualsiasi chat!*')
-    .color('#10b981');
+/**
+ * Genera il menu interattivo di /help suddiviso in categorie,
+ * con bottoni di navigazione in-place (1:1 con il centro comandi di Discord).
+ */
+function buildHelpMenu(activeCategory = 'overview') {
+  const dashboardUrl = (process.env.DASHBOARD_URL && !process.env.DASHBOARD_URL.includes('localhost') && !process.env.DASHBOARD_URL.includes('127.0.0.1'))
+    ? process.env.DASHBOARD_URL
+    : 'https://sentry.wispbyte.app';
 
-  ctx.reply('', { embeds: [embed] });
+  const embed = new Embed();
+
+  if (activeCategory === 'mod') {
+    embed
+      .title('[Sentry] Modulo Moderazione & Sicurezza')
+      .description('Strumenti completi per proteggere la community e gestire le infrazioni dei membri su Yapin.')
+      .field('`/kick <user_id> [motivo]`', 'Espelle un membro dal server.')
+      .field('`/ban <user_id> [motivo]`', 'Banna permanentemente un membro dal server.')
+      .field('`/unban <user_id>`', 'Revoca il ban di un utente tramite il suo ID numerico.')
+      .field('`/timeout <user_id> <minuti> [motivo]`', 'Mette in timeout temporaneo un utente (imposta a 0 per revocare).')
+      .field('`/warn <user_id> [motivo]`', 'Assegna un avvertimento ufficiale e registra l\'infrazione nel database.')
+      .field('`/warnings <user_id>`', 'Visualizza la cronologia sanzioni e avvertimenti registrati per un utente.')
+      .field('`/clear <1-50>`', 'Elimina in blocco fino a 50 messaggi recenti nel canale.')
+      .field('`/say <messaggio>`', 'Invia un annuncio formattato attraverso Sentry.')
+      .field('Protezione AutoMod', 'Filtro parole vietate, blocco inviti non autorizzati e anti-spam attivi 24/7.')
+      .color('#ef4444');
+  } else if (activeCategory === 'eco') {
+    embed
+      .title('[Sentry] Modulo Economia, Pesca & Casino')
+      .description('Economia virtuale unificata, pesca RPG progressiva e minigiochi con pulsanti interattivi.')
+      .field('`/balance` (o `/bal`)', 'Controlla il tuo saldo monete e i Cristalli Frammento Yapin.')
+      .field('`/daily`', 'Riscatta la tua ricompensa giornaliera in monete e frammenti preziosi.')
+      .field('`/pay <user_id> <importo>`', 'Trasferisci monete in totale sicurezza a un altro utente.')
+      .field('`/fish`', 'Lancia la canna da pesca per catturare pesci comuni, rari, leggendari e forzieri.')
+      .field('`/inventory` (o `/inv`)', 'Visualizza equipaggiamento da pesca, livello della canna, fortuna e statistiche.')
+      .field('`/upgrade-rod`', 'Forgia e potenzia la tua canna da pesca per aumentare le probabilit\u00E0 di cattura.')
+      .field('`/blackjack <puntata>` (o `/bj`)', 'Sfida il banco a 21 con pulsanti Carta, Stai e Raddoppia in tempo reale.')
+      .field('`/coinflip <testa|croce> [puntata]` (o `/cf`)', 'Lancia una moneta con puntata facoltativa.')
+      .field('`/dice [facce]`', 'Lancia un dado personalizzato (da 2 a 100 facce, default: 6).')
+      .color('#f59e0b');
+  } else if (activeCategory === 'community') {
+    embed
+      .title('[Sentry] Modulo Community, Livelli & AFK')
+      .description('Coinvolgimento della community, progressione XP, gestione assenze e monitoraggio del server.')
+      .field('`/rank [user_id]`', 'Mostra la tua scheda livello, punti esperienza (XP) e barra di progressione percentuale.')
+      .field('`/leaderboard` (o `/top`)', 'Classifica dei 10 utenti con pi\u00F9 esperienza e messaggi nel server.')
+      .field('`/afk [motivo]` (o `/inattivo`)', 'Imposta il tuo stato su assente; avvisa chi ti menziona e ti d\u00E0 il bentornato al ritorno.')
+      .field('Canale Counting (1:1 Discord)', 'Scrivi semplicemente il numero successivo nel canale per contare: Sentry convalida e reagisce con emoji!')
+      .field('`/autorole`', 'Visualizza lo stato di assegnazione automatica dei ruoli ai nuovi arrivati.')
+      .field('`/livecount`', 'Visualizza in tempo reale il rapporto tra membri online e popolazione totale del server.')
+      .field('`/realm`', 'Panoramica dettagliata del Reame: canali testuali, canali vocali cifrati E2EE e statistiche.')
+      .color('#8b5cf6');
+  } else if (activeCategory === 'bridge') {
+    embed
+      .title('[Sentry] Modulo Ponte Cross-Platform (Discord <-> Yapin)')
+      .description('Collegamento bidirezionale continuo e istantaneo tra i server Discord e le chat di Yapin.')
+      .field('`/bridge`', 'Verifica lo stato di sincronizzazione del ponte e il canale gemellato.')
+      .field('Formato a Lettera Sigillata', 'I messaggi inoltrati vengono incapsulati in lettere sigillate che mostrano mittente e canale d\'origine.')
+      .field('Sincronizzazione Reattiva', 'Messaggi, formattazione markdown e allegati viaggiano tra le piattaforme senza ritardo.')
+      .field('Configurazione Semplice', 'Associa o dissocia i canali gemellati direttamente dalla Dashboard Web.')
+      .color('#06b6d4');
+  } else {
+    embed
+      .title('[Sentry] Centro Comandi \u2022 Panoramica')
+      .description(
+        'Benvenuto nel centro di controllo e assistenza di **Sentry** su Yapin!\n' +
+        'Premi i pulsanti sottostanti per esplorare nel dettaglio i comandi di ogni modulo.\n\n' +
+        `\u2022 **Dashboard Web:** ${dashboardUrl}\n` +
+        '\u2022 **Integrazione Ponte:** Sincronizzazione cross-platform Discord <-> Yapin attiva\n' +
+        '\u2022 **Versione:** `v2.0.0` | Architettura Sicura Multi-Piattaforma'
+      )
+      .field('[Moderazione & Sicurezza]', '`/kick`, `/ban`, `/unban`, `/timeout`, `/warn`, `/warnings`, `/clear`, `/say`')
+      .field('[Auto-Responder & Accoglienza]', 'Trigger automatici dalla Dashboard, Welcomer con schede embed personalizzate e `/autorole`')
+      .field('[Economia & Minigiochi]', '`/balance`, `/daily`, `/pay`, `/fish`, `/inventory`, `/upgrade-rod`, `/blackjack`, `/coinflip`, `/dice`')
+      .field('[Community & Livelli]', '`/rank`, `/leaderboard`, `/afk` (o `/inattivo`), gioco del Counting nei canali numerici')
+      .field('[Ponte Cross-Platform]', '`/bridge`, inoltro automatico a pergamena sigillata bidirezionale')
+      .field('[Intelligenza Artificiale]', '`/ai <domanda>` o menzione `@Sentry` per interrogare la rete neurale Llama 3.3 70B')
+      .color('#10b981');
+  }
+
+  embed.timestamp();
+
+  const makeBtn = (cat, label, customId) => {
+    return activeCategory === cat
+      ? Button.primary(label, customId)
+      : Button.secondary(label, customId);
+  };
+
+  const row1 = new Row(
+    makeBtn('overview', '[Panoramica]', 'help_cat_overview'),
+    makeBtn('mod', '[Moderazione]', 'help_cat_mod'),
+    makeBtn('eco', '[Economia]', 'help_cat_eco')
+  );
+
+  const row2 = new Row(
+    makeBtn('community', '[Community]', 'help_cat_community'),
+    makeBtn('bridge', '[Ponte]', 'help_cat_bridge'),
+    Button.link('[Dashboard]', dashboardUrl)
+  );
+
+  return { embed, components: [row1, row2] };
+}
+
+bot.command('help', 'Mostra il centro comandi e la lista completa delle funzionalit\u00E0 di Sentry', (ctx) => {
+  const { embed, components } = buildHelpMenu('overview');
+  ctx.reply('', { embeds: [embed], components });
 });
 
 bot.command('botinfo', 'Display technical statistics, memory and uptime', (ctx) => {
@@ -247,96 +345,139 @@ bot.command('channels', 'List all text and voice channels on this server', async
 // 3. MODERATION & AUTOMOD
 // ==========================================
 
-bot.command('kick', 'Kick a member from the server (requires user ID)', async (ctx) => {
+bot.command('kick', 'Espelle un membro dal server (richiede ID utente)', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
+  if (!serverId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
   const reason = argv.slice(1).join(' ') || 'Nessun motivo specificato';
 
-  if (!targetId) return ctx.reply('[Warning] Usage: `/kick <user_id> [motivo]`');
+  if (!targetId) return ctx.reply('[Uso] `/kick <user_id> [motivo]`');
 
   try {
     await bot.kick(serverId, targetId);
-    ctx.reply(`[Kick] <@${targetId}> was kicked from the server. **Motivo:** ${reason}`);
+    ctx.reply(`[Kick] L'utente <@${targetId}> \u00E8 stato espulso dal server. **Motivo:** ${reason}`);
   } catch (e) {
-    ctx.reply(`[Error] Unable to kick user: ${e.message}`);
+    ctx.reply(`[Errore] Impossibile espellere l'utente: ${e.message}`);
   }
 });
 
-bot.command('ban', 'Ban a member from the server (requires user ID)', async (ctx) => {
+bot.command('ban', 'Banna un membro dal server (richiede ID utente)', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
+  if (!serverId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
   const reason = argv.slice(1).join(' ') || 'Nessun motivo specificato';
 
-  if (!targetId) return ctx.reply('[Warning] Usage: `/ban <user_id> [motivo]`');
+  if (!targetId) return ctx.reply('[Uso] `/ban <user_id> [motivo]`');
 
   try {
     await bot.ban(serverId, targetId);
-    ctx.reply(`[Ban] <@${targetId}> was permanently banned. **Motivo:** ${reason}`);
+    ctx.reply(`[Ban] L'utente <@${targetId}> \u00E8 stato bannato permanentemente. **Motivo:** ${reason}`);
   } catch (e) {
-    ctx.reply(`[Error] Unable to ban user: ${e.message}`);
+    ctx.reply(`[Errore] Impossibile bannare l'utente: ${e.message}`);
   }
 });
 
-bot.command('unban', 'Unban a member from the server (requires user ID)', async (ctx) => {
+bot.command('unban', 'Revoca il ban di un utente (richiede ID utente)', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
+  if (!serverId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
-  if (!targetId) return ctx.reply('[Warning] Usage: `/unban <user_id>`');
+  if (!targetId) return ctx.reply('[Uso] `/unban <user_id>`');
 
   try {
     await bot.unban(serverId, targetId);
-    ctx.reply(`[Unban] <@${targetId}> was unbanned successfully.`);
+    ctx.reply(`[Unban] Il ban di <@${targetId}> \u00E8 stato revocato con successo.`);
   } catch (e) {
-    ctx.reply(`[Error] Error unbanning: ${e.message}`);
+    ctx.reply(`[Errore] Impossibile revocare il ban: ${e.message}`);
   }
 });
 
-bot.command('timeout', 'Time someone out for a duration in minutes', async (ctx) => {
+bot.command('timeout', 'Imposta un timeout temporaneo in minuti per un utente', async (ctx) => {
   const { serverId, argv } = getContextData(ctx);
-  if (!serverId) return ctx.reply('[Error] Command can only be used in a server.');
+  if (!serverId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
 
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
   const minutes = parseInt(argv[1], 10);
   const reason = argv.slice(2).join(' ') || 'Timeout applicato da Sentry';
 
   if (!targetId || isNaN(minutes) || minutes < 0) {
-    return ctx.reply('[Warning] Usage: `/timeout <user_id> <minuti> [motivo]` (0 minuti per rimuovere il timeout)');
+    return ctx.reply('[Uso] `/timeout <user_id> <minuti> [motivo]` (imposta 0 minuti per rimuovere il timeout)');
   }
 
   try {
     await bot.timeout(serverId, targetId, minutes, reason);
     if (minutes === 0) {
-      ctx.reply(`[Timeout] Timeout removed for <@${targetId}>.`);
+      ctx.reply(`[Timeout] Timeout rimosso per <@${targetId}>.`);
     } else {
-      ctx.reply(`[Timeout] <@${targetId}> was timed out for **${minutes} minuti**. **Motivo:** ${reason}`);
+      ctx.reply(`[Timeout] <@${targetId}> \u00E8 stato messo in timeout per **${minutes} minuti**. **Motivo:** ${reason}`);
     }
   } catch (e) {
-    ctx.reply(`[Error] Timeout error: ${e.message}`);
+    ctx.reply(`[Errore] Errore applicazione timeout: ${e.message}`);
   }
 });
 
-bot.command('warn', 'Warn a member for misconduct', (ctx) => {
-  const { argv } = getContextData(ctx);
+bot.command('warn', 'Assegna un avvertimento ufficiale a un membro', async (ctx) => {
+  const { serverId, authorId, argv } = getContextData(ctx);
   const targetId = argv[0]?.replace(/[<@!>]/g, '');
-  const reason = argv.slice(1).join(' ') || 'Condotta inappropriata';
+  const reason = argv.slice(1).join(' ').trim() || 'Condotta inappropriata';
 
-  if (!targetId) return ctx.reply('[Warning] Usage: `/warn <user_id> [motivo]`');
+  if (!targetId) return ctx.reply('[Uso] `/warn <user_id> [motivo]`');
+  if (!serverId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
 
-  ctx.reply(`[Warning] <@${targetId}> received an official warning. **Motivo:** ${reason}`);
+  const guildKey = `yapin_${serverId}`;
+  try {
+    DatabaseHelper.addModerationCase(guildKey, targetId, authorId || 'Staff', 'WARN', reason);
+  } catch (e) {
+    console.error('[Yapin Warn Log Error]:', e.message);
+  }
+
+  const embed = new Embed()
+    .title('[Avvertimento Ufficiale]')
+    .description(`L'utente <@${targetId}> ha ricevuto un avvertimento formale per:\n\n> **${reason}**\n\n*L'infrazione \u00E8 stata registrata nella cronologia del server.*`)
+    .color('#f59e0b')
+    .timestamp();
+
+  ctx.reply('', { embeds: [embed] });
 });
 
-bot.command('clear', 'Bulk delete messages in the channel (1-50)', async (ctx) => {
+bot.command('warnings', 'Mostra la cronologia di avvertimenti e sanzioni di un utente', async (ctx) => {
+  const { serverId, argv } = getContextData(ctx);
+  if (!serverId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
+
+  const targetId = argv[0]?.replace(/[<@!>]/g, '');
+  if (!targetId) return ctx.reply('[Uso] `/warnings <user_id>`');
+
+  const guildKey = `yapin_${serverId}`;
+  const cases = DatabaseHelper.getModerationCases(guildKey, targetId, 10);
+
+  if (!cases || cases.length === 0) {
+    return ctx.reply(`[Pulito] L'utente <@${targetId}> non ha alcuna infrazione registrata in questo server.`);
+  }
+
+  const caseLines = cases.map((c) => {
+    const timeStr = c.timestamp ? new Date(c.timestamp * 1000).toLocaleString('it-IT') : 'N/D';
+    return `\u2022 **[#${c.id}] ${c.action_type}** (${timeStr}): \`${c.reason || 'Nessun motivo'}\` (Mod: <@${c.moderator_id}>)`;
+  }).join('\n');
+
+  const embed = new Embed()
+    .title(`[Sanzioni] Cronologia Infrazioni | <@${targetId}>`)
+    .description(caseLines)
+    .footer(`Totale sanzioni registrate: ${cases.length}`)
+    .color('#ef4444')
+    .timestamp();
+
+  ctx.reply('', { embeds: [embed] });
+});
+
+bot.command('clear', 'Elimina in blocco i messaggi recenti nel canale (1-50)', async (ctx) => {
   const { channelId, argv } = getContextData(ctx);
-  if (!channelId) return ctx.reply('[Error] Channel not identified.');
+  if (!channelId) return ctx.reply('[Errore] Canale non identificato.');
 
   const count = parseInt(argv[0], 10);
   if (isNaN(count) || count < 1 || count > 50) {
-    return ctx.reply('[Warning] Usage: `/clear <1-50>`');
+    return ctx.reply('[Uso] `/clear <1-50>`');
   }
 
   try {
@@ -359,24 +500,46 @@ bot.command('clear', 'Bulk delete messages in the channel (1-50)', async (ctx) =
       }
     }
 
-    const confirmMsg = await ctx.say(`[Clear] Successfully deleted **${deleted}** messaggi.`);
+    const confirmMsg = await ctx.say(`[Clear] Eliminati con successo **${deleted}** messaggi.`);
     setTimeout(async () => {
       try { if (confirmMsg?.id) await bot.delete(channelId, confirmMsg.id); } catch (e) {}
     }, 4000);
   } catch (err) {
-    ctx.reply(`[Error] Error deleting messages: ${err.message}`);
+    ctx.reply(`[Errore] Errore durante l'eliminazione dei messaggi: ${err.message}`);
   }
 });
 
-bot.command('say', 'Send a broadcast message through Sentry', async (ctx) => {
+bot.command('say', 'Invia un messaggio o annuncio formattato attraverso Sentry', async (ctx) => {
   const { channelId, argv } = getContextData(ctx);
   const text = argv.join(' ');
-  if (!text) return ctx.reply('[Warning] Usage: `/say <testo annuncio>`');
+  if (!text) return ctx.reply('[Uso] `/say <testo annuncio>`');
 
   await ctx.say(text);
   if (ctx?.id && channelId) {
     try { await bot.delete(channelId, ctx.id); } catch (e) {}
   }
+});
+
+bot.command('autorole', 'Visualizza lo stato del modulo Auto-Role per i nuovi membri', async (ctx) => {
+  const { serverId } = getContextData(ctx);
+  if (!serverId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
+
+  const guildKey = `yapin_${serverId}`;
+  const config = DatabaseHelper.getAutoroleConfig(guildKey);
+
+  const embed = new Embed()
+    .title('[Auto-Role] Configurazione Ruoli Automatici')
+    .description(
+      `Il modulo Auto-Role assegna automaticamente i ruoli prestabiliti a chi entra nel server.\n\n` +
+      `\u2022 **Stato Modulo:** ${config?.enabled ? 'Attivo' : 'Disattivato'}\n` +
+      `\u2022 **Ruolo Utenti:** ${config?.user_role_id ? `\`${config.user_role_id}\`` : 'Non configurato'}\n` +
+      `\u2022 **Ruolo Bot:** ${config?.bot_role_id ? `\`${config.bot_role_id}\`` : 'Non configurato'}\n\n` +
+      `> Gestisci e modifica i ruoli in tempo reale dalla **Dashboard Web** (sezione *Auto-Role*).`
+    )
+    .color('#6366f1')
+    .timestamp();
+
+  ctx.reply('', { embeds: [embed] });
 });
 
 // ==========================================
@@ -454,6 +617,56 @@ bot.command('top', 'Shortcut for /leaderboard', async (ctx) => {
   await YapinLeveling.handleLeaderboard(ctx, getContextData);
 });
 
+bot.command('afk', 'Imposta il tuo stato su AFK (assente) con un motivo facoltativo', async (ctx) => {
+  const { serverId, authorId, argv } = getContextData(ctx);
+  if (!serverId || !authorId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
+
+  const reason = argv.join(' ').trim() || 'Nessun motivo specificato';
+  const guildKey = `yapin_${serverId}`;
+  const now = Date.now();
+
+  DatabaseHelper.setAfk(guildKey, authorId, reason, now);
+  yapinRecentlySetAfk.set(`${guildKey}:${authorId}`, now);
+
+  const embed = new Embed()
+    .title('[AFK] Stato Inattivo Attivato')
+    .description(
+      `D'ora in poi risulterai assente per gli altri membri del server.\n\n` +
+      `\u2022 **Utente:** <@${authorId}>\n` +
+      `\u2022 **Motivo:** ${reason}\n\n` +
+      `> Avviser\u00F2 chiunque ti menzioni in chat. Per rimuovere l'AFK ti baster\u00E0 inviare un messaggio qualsiasi!`
+    )
+    .color('#6366f1')
+    .timestamp();
+
+  ctx.reply('', { embeds: [embed] });
+});
+
+bot.command('inattivo', 'Alias di /afk per impostare lo stato di assenza', async (ctx) => {
+  const { serverId, authorId, argv } = getContextData(ctx);
+  if (!serverId || !authorId) return ctx.reply('[Errore] Comando utilizzabile solo all\'interno di un server.');
+
+  const reason = argv.join(' ').trim() || 'Nessun motivo specificato';
+  const guildKey = `yapin_${serverId}`;
+  const now = Date.now();
+
+  DatabaseHelper.setAfk(guildKey, authorId, reason, now);
+  yapinRecentlySetAfk.set(`${guildKey}:${authorId}`, now);
+
+  const embed = new Embed()
+    .title('[AFK] Stato Inattivo Attivato')
+    .description(
+      `D'ora in poi risulterai assente per gli altri membri del server.\n\n` +
+      `\u2022 **Utente:** <@${authorId}>\n` +
+      `\u2022 **Motivo:** ${reason}\n\n` +
+      `> Avviser\u00F2 chiunque ti menzioni in chat. Per rimuovere l'AFK ti baster\u00E0 inviare un messaggio qualsiasi!`
+    )
+    .color('#6366f1')
+    .timestamp();
+
+  ctx.reply('', { embeds: [embed] });
+});
+
 // ==========================================
 // 7. ARTIFICIAL INTELLIGENCE (LLAMA 3.3 70B)
 // ==========================================
@@ -467,6 +680,16 @@ bot.command('ai', 'Ask Sentry AI Neural Assistant (Llama 70B)', async (ctx) => {
 // ==========================================
 // 8. INTERACTIVE BUTTON LISTENERS
 // ==========================================
+
+bot.onButton(/^help_cat_/, async (i) => {
+  try {
+    const cat = i.custom_id.replace('help_cat_', '');
+    const { embed, components } = buildHelpMenu(cat);
+    await i.update({ embeds: [embed], components });
+  } catch (err) {
+    console.error('[Yapin Help Button Error]:', err.message);
+  }
+});
 
 bot.onButton(/^bj_hit_/, async (i) => {
   const authorId = i.custom_id.replace('bj_hit_', '');
@@ -488,10 +711,12 @@ bot.onButton(/^bj_stand_/, async (i) => {
 // 9. AUTOMATED EVENT LISTENERS
 // ==========================================
 
-// Ascolto di tutti i messaggi per Counting, AutoMod, XP e Menzioni AI
+// Ascolto di tutti i messaggi per Counting, AutoMod, XP, AFK, Auto-Responder e Menzioni AI
 bot.on('message', async (msg) => {
   if (!msg || !msg.author_id) return;
   if (msg.author_id === bot.me?.id) return;
+
+  const guildKey = `yapin_${msg.server_id}`;
 
   // 1. Counting Minigame Handler (1:1 con Discord: basta scrivere il numero e il bot reagisce con emoji)
   try {
@@ -504,10 +729,139 @@ bot.on('message', async (msg) => {
   const flagged = await YapinAutoMod.handleMessage(bot, msg);
   if (flagged) return;
 
-  // 2. XP & Leveling gain
+  // 3. AFK Check: se l'autore del messaggio era AFK, rimuove lo stato e invia il bentornato
+  try {
+    const afkData = DatabaseHelper.getAfk(guildKey, msg.author_id);
+    if (afkData) {
+      const now = Date.now();
+      const recentTime = yapinRecentlySetAfk.get(`${guildKey}:${msg.author_id}`);
+      if (!recentTime || (now - recentTime >= 1000 && now - afkData.timestamp >= 1000)) {
+        DatabaseHelper.removeAfk(guildKey, msg.author_id);
+        yapinRecentlySetAfk.delete(`${guildKey}:${msg.author_id}`);
+
+        const elapsedMs = Math.max(0, now - afkData.timestamp);
+        const durationFormatted = formatDuration(elapsedMs);
+        const reasonPart = (afkData.reason && afkData.reason !== 'Attualmente assente' && afkData.reason !== 'Nessun motivo specificato')
+          ? `\n\u2022 **Motivo precedente:** ${afkData.reason}`
+          : '';
+
+        const welcomeEmbed = new Embed()
+          .title('[Bentornato] Stato AFK Rimosso')
+          .description(`Bentornato <@${msg.author_id}>, ho rimosso il tuo stato di assenza!\n\n\u2022 **Durata assenza:** ${durationFormatted}${reasonPart}`)
+          .color('#10b981')
+          .timestamp();
+
+        await bot.sendEmbed(msg.channel_id, welcomeEmbed).catch(() => {});
+      }
+    }
+  } catch (err) {
+    console.error('[Yapin AFK Author Error]:', err.message);
+  }
+
+  // 4. AFK Check: notifica a chi menziona un utente attualmente AFK
+  try {
+    const mentionRegex = /<@([a-zA-Z0-9_\-]+)>/g;
+    let match;
+    const mentionedUserIds = new Set();
+    while ((match = mentionRegex.exec(msg.content || '')) !== null) {
+      if (match[1] !== msg.author_id && match[1] !== bot.me?.id) {
+        mentionedUserIds.add(match[1]);
+      }
+    }
+
+    const now = Date.now();
+    for (const targetId of mentionedUserIds) {
+      const afkData = DatabaseHelper.getAfk(guildKey, targetId);
+      if (afkData) {
+        const cdKey = `${msg.channel_id}:${targetId}`;
+        const lastAlert = yapinAfkCooldowns.get(cdKey) || 0;
+        if (now - lastAlert > 4000) {
+          yapinAfkCooldowns.set(cdKey, now);
+          const durationFormatted = formatDuration(now - afkData.timestamp);
+          const alertEmbed = new Embed()
+            .title('[AFK] Utente Attualmente Assente')
+            .description(`<@${targetId}> \u00E8 attualmente AFK (${durationFormatted} fa).\n\n\u2022 **Motivo:** ${afkData.reason || 'Nessun motivo specificato'}`)
+            .color('#f59e0b')
+            .timestamp();
+          await bot.sendEmbed(msg.channel_id, alertEmbed).catch(() => {});
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[Yapin AFK Mention Error]:', err.message);
+  }
+
+  // 5. Auto-Responder Trigger Check (configurato dalla Dashboard Web)
+  try {
+    const autoresponders = DatabaseHelper.getAutoresponders(guildKey);
+    if (autoresponders && autoresponders.length > 0) {
+      const content = (msg.content || '').trim();
+      const lowerContent = content.toLowerCase();
+
+      for (const ar of autoresponders) {
+        if (!ar.enabled) continue;
+
+        if (ar.channels_whitelist && ar.channels_whitelist.length > 0 && !ar.channels_whitelist.includes(msg.channel_id)) {
+          continue;
+        }
+
+        let matches = false;
+        const trigger = (ar.trigger || '').trim();
+        const lowerTrigger = trigger.toLowerCase();
+
+        if (ar.match_type === 'EXACT') {
+          matches = lowerContent === lowerTrigger;
+        } else if (ar.match_type === 'STARTS_WITH') {
+          matches = lowerContent.startsWith(lowerTrigger);
+        } else if (ar.match_type === 'REGEX') {
+          try {
+            const reg = new RegExp(trigger, 'i');
+            matches = reg.test(content);
+          } catch (e) {}
+        } else {
+          matches = lowerContent.includes(lowerTrigger);
+        }
+
+        if (matches) {
+          // Reazioni automatiche se configurate
+          if (ar.auto_reactions && Array.isArray(ar.auto_reactions)) {
+            for (const em of ar.auto_reactions) {
+              if (em) await bot.react(msg.channel_id, msg.id, em).catch(() => {});
+            }
+          }
+
+          // Risposta testuale
+          if (ar.response_text) {
+            const replyText = ar.response_text
+              .replace(/{user}/g, msg.author_username || msg.author_id)
+              .replace(/{user\.mention}/g, `<@${msg.author_id}>`);
+            await bot.send(msg.channel_id, replyText).catch(() => {});
+          }
+
+          // Risposta embed
+          if (ar.response_embed) {
+            try {
+              const embObj = typeof ar.response_embed === 'string' ? JSON.parse(ar.response_embed) : ar.response_embed;
+              const resEmbed = new Embed();
+              if (embObj.title) resEmbed.title(embObj.title);
+              if (embObj.description) resEmbed.description(embObj.description);
+              if (embObj.color) resEmbed.color(embObj.color);
+              resEmbed.timestamp();
+              await bot.sendEmbed(msg.channel_id, resEmbed).catch(() => {});
+            } catch (e) {}
+          }
+          break;
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[Yapin AutoResponder Error]:', err.message);
+  }
+
+  // 6. XP & Leveling gain
   await YapinLeveling.handleIncomingMessage(bot, msg);
 
-  // 3. AI Mention Responder (@Sentry <question>)
+  // 7. AI Mention Responder (@Sentry <question>)
   if (bot.me?.id && msg.content && msg.content.includes(`<@${bot.me.id}>`)) {
     const prompt = msg.content.replace(new RegExp(`<@${bot.me.id}>`, 'g'), '').trim();
     if (prompt) {
@@ -516,11 +870,11 @@ bot.on('message', async (msg) => {
     }
   }
 
-  // 4. Saluto amichevole rapido
+  // 8. Saluto amichevole rapido
   const content = (msg.content || '').toLowerCase().trim();
   if (content === 'hi bot' || content === 'hello sentry' || content === 'ciao sentry') {
     if (typeof msg.reply === 'function') {
-      msg.reply('Hello! I am Sentry for Yapin (Type `/help` or `!help` for command list)');
+      msg.reply('Ciao! Sono Sentry per Yapin. Digita `/help` per visualizzare tutti i comandi e moduli integrati.');
     }
   }
 });
