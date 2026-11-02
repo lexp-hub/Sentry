@@ -87,99 +87,19 @@
     </div>
 
     <nav class="flex-1 min-h-0 overflow-y-auto p-2.5 space-y-3">
-      <!-- CATEGORY 1: MODULI PRINCIPALI & HUB -->
+      <!-- SEZIONE 1: HUB & PANORAMICA -->
+      <div class="space-y-1">
+        <button class="nav-tab active w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-overview">
+          <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+          <span class="truncate flex-1">Panoramica Moduli</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 font-mono border border-emerald-800 shrink-0">15</span>
+        </button>
+      </div>
+
+      <!-- SEZIONE 2: BUILDERS & STRUMENTI PRINCIPALI -->
       <div>
         <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase flex items-center justify-between">
-          <span>Moduli Principali</span>
-          <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800">Attivo</span>
-        </div>
-        <div class="space-y-0.5">
-          <button class="nav-tab active w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-overview">
-            <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 text-emerald-400"></i>
-            <span class="truncate flex-1">Moduli &amp; Hub</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#181a24] text-slate-400 font-mono border border-[#242735]">16</span>
-          </button>
-
-          <button type="button" onclick="window.triggerPremiumModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all text-left">
-            <i data-lucide="crown" class="w-4 h-4 shrink-0 text-amber-400"></i>
-            <span class="truncate flex-1">VIP &amp; Boost</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 font-bold uppercase border border-amber-800">Pro</span>
-          </button>
-
-          <button type="button" onclick="window.scrollToSection('btn-cloud-sync')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="rocket" class="w-4 h-4 shrink-0 text-cyan-400"></i>
-            <span class="truncate flex-1">Hosting Cloud</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 font-mono border border-cyan-800">SSD</span>
-          </button>
-
-          <button type="button" onclick="window.showToast('Bonus giornaliero riscattato: +50 Coins!', 'success')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="gift" class="w-4 h-4 shrink-0 text-emerald-400"></i>
-            <span class="truncate flex-1">Monete Gratis</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-bold uppercase border border-emerald-800">Free</span>
-          </button>
-
-          <button type="button" onclick="window.scrollToSection('gen-prefix')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="settings" class="w-4 h-4 shrink-0 text-slate-400"></i>
-            <span class="truncate flex-1">Impostazioni</span>
-          </button>
-
-          <button type="button" onclick="window.scrollToSection('btn-cloud-sync')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="database" class="w-4 h-4 shrink-0 text-emerald-400"></i>
-            <span class="truncate flex-1">Data Storage</span>
-          </button>
-
-          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-emojis">
-            <i data-lucide="smile" class="w-4 h-4 shrink-0 text-amber-400"></i>
-            <span class="truncate flex-1">Server &amp; Emoji</span>
-          </button>
-
-          <button type="button" onclick="window.triggerCollabModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="users" class="w-4 h-4 shrink-0 text-indigo-400"></i>
-            <span class="truncate flex-1">Collaboratori</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950/60 text-indigo-300 font-bold uppercase border border-indigo-800">Nuovo</span>
-          </button>
-
-          <button type="button" onclick="window.scrollToSection('gen-log-channel')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-400"></i>
-            <span class="truncate flex-1">Log di Sistema</span>
-          </button>
-
-          <button type="button" onclick="window.triggerInviteModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="link" class="w-4 h-4 shrink-0 text-blue-400"></i>
-            <span class="truncate flex-1">Invita Bot</span>
-          </button>
-
-          <a href="https://discord.gg" target="_blank" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
-            <i data-lucide="message-square" class="w-4 h-4 shrink-0 text-indigo-400"></i>
-            <span class="truncate flex-1">Server di Supporto</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- CATEGORY 2: PACKS & MARKETPLACE -->
-      <div class="pt-1">
-        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase flex items-center justify-between">
-          <span>Packs</span>
-          <span class="text-[9px] text-[#81889c] hover:text-white cursor-pointer" onclick="window.scrollToSection('marketplace-section')">Gestisci</span>
-        </div>
-        <div onclick="window.scrollToSection('marketplace-section')" class="cursor-pointer p-2.5 rounded-xl bg-gradient-to-r from-pink-950/30 to-[#181a24] border border-pink-500/30 hover:border-pink-500/60 transition-all flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2 min-w-0">
-            <div class="w-6 h-6 rounded bg-pink-500/20 text-pink-400 flex items-center justify-center shrink-0">
-              <i data-lucide="package" class="w-3.5 h-3.5"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="text-[11px] font-bold text-white truncate">Marketplace</div>
-              <div class="text-[9px] text-[#81889c] truncate">Esplora i pacchetti</div>
-            </div>
-          </div>
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-pink-400 shrink-0"></i>
-        </div>
-      </div>
-
-      <!-- CATEGORY 3: BUILDERS (The 3 BotGhost builders) -->
-      <div class="pt-1">
-        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase">
-          <span>Builders</span>
+          <span>Builders &amp; Strumenti</span>
         </div>
         <div class="space-y-0.5">
           <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-autoresponder">
@@ -196,24 +116,24 @@
             <i data-lucide="scroll" class="w-4 h-4 shrink-0 text-cyan-400"></i>
             <span class="truncate flex-1">Message Builder</span>
           </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-bridge">
+            <i data-lucide="git-merge" class="w-4 h-4 shrink-0 text-cyan-400"></i>
+            <span class="truncate flex-1">Bridge Cross-Platform</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 font-bold uppercase border border-cyan-800 shrink-0">Live</span>
+          </button>
         </div>
       </div>
 
-      <!-- CATEGORY 4: MODULI SPECIALI / FEATURED -->
-      <div class="pt-1">
-        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase">
-          <span>Moduli Speciali</span>
+      <!-- SEZIONE 3: MODULI DEL SERVER -->
+      <div>
+        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase flex items-center justify-between">
+          <span>Moduli del Server</span>
         </div>
         <div class="space-y-0.5">
           <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-automod">
             <i data-lucide="shield-alert" class="w-4 h-4 shrink-0 text-rose-400"></i>
             <span class="truncate flex-1">AutoMod &amp; Sicurezza</span>
-          </button>
-
-          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-bridge">
-            <i data-lucide="git-merge" class="w-4 h-4 shrink-0 text-cyan-400"></i>
-            <span class="truncate flex-1">Bridge Cross-Platform</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 font-bold uppercase border border-cyan-800">Live</span>
           </button>
 
           <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-reactionroles">
@@ -265,38 +185,63 @@
             <i data-lucide="handshake" class="w-4 h-4 shrink-0 text-teal-400"></i>
             <span class="truncate flex-1">Partnership</span>
           </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-emojis">
+            <i data-lucide="smile" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="truncate flex-1">Server &amp; Emoji</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SEZIONE 4: IMPOSTAZIONI & CLOUD -->
+      <div>
+        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase flex items-center justify-between">
+          <span>Sistema &amp; Cloud</span>
+        </div>
+        <div class="space-y-0.5">
+          <button type="button" onclick="window.scrollToSection('gen-prefix')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="settings" class="w-4 h-4 shrink-0 text-slate-400"></i>
+            <span class="truncate flex-1">Impostazioni &amp; Log</span>
+          </button>
+
+          <button type="button" onclick="window.scrollToSection('btn-cloud-sync')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="database" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+            <span class="truncate flex-1">Storage &amp; Backup</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-mono border border-emerald-800 shrink-0">SSD</span>
+          </button>
         </div>
       </div>
     </nav>
 
     <div class="shrink-0 mt-auto">
       <div class="p-3 border-t border-[#242735] bg-[#101218]">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <img id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-7 h-7 rounded border border-[#242735] shrink-0" alt="Avatar">
-            <div class="overflow-hidden min-w-0">
+        <div class="flex flex-col gap-1.5 min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <img id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-6 h-6 rounded border border-[#242735] shrink-0" alt="Avatar">
               <p id="user-name" class="text-xs font-semibold text-white truncate">Moderatore</p>
-              <div class="flex items-center gap-1 text-[11px] font-bold text-amber-400 font-mono">
-                <span>Saldo:</span>
-                <span id="user-sidebar-coins">100</span>
-              </div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <a href="/" class="p-1 rounded bg-[#181a24] hover:bg-[#13151c] text-[#81889c] hover:text-white transition-colors border border-[#242735]" title="Torna alla Home">
+                <i data-lucide="home" class="w-3.5 h-3.5"></i>
+              </a>
+              <a href="/auth/logout" onclick="localStorage.removeItem('cavaliere_auth_token');" class="p-1 rounded bg-[#181a24] hover:bg-[#13151c] text-rose-400 hover:text-rose-300 transition-colors border border-[#242735]" title="Disconnetti">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+              </a>
             </div>
           </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <a href="/" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-[#81889c] hover:text-white transition-colors border border-[#242735]" title="Torna alla Home">
-              <i data-lucide="home" class="w-3.5 h-3.5"></i>
-            </a>
-            <a href="/auth/logout" onclick="localStorage.removeItem('cavaliere_auth_token');" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-rose-400 hover:text-rose-300 transition-colors border border-[#242735]" title="Disconnetti">
-              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-            </a>
+          <div class="flex items-center gap-1.5 text-[10px] font-bold text-amber-300 font-mono bg-[#181a24] px-2 py-1 rounded border border-[#242735]">
+            <i data-lucide="coins" class="w-3 h-3 text-amber-400 shrink-0"></i>
+            <span class="shrink-0">Saldo:</span>
+            <span id="user-sidebar-coins" class="truncate font-bold text-amber-300">100</span>
           </div>
         </div>
       </div>
       <div class="px-3.5 py-1.5 border-t border-[#242735] bg-[#0c0d12] flex items-center justify-between text-[10px] text-[#81889c]">
         <a href="/terms" target="_blank" class="hover:text-slate-300 transition-colors">Termini</a>
-        <span>•</span>
+        <span>&bull;</span>
         <a href="/privacy" target="_blank" class="hover:text-slate-300 transition-colors">Privacy</a>
-        <span>•</span>
+        <span>&bull;</span>
         <span>v2.0</span>
       </div>
     </div>
