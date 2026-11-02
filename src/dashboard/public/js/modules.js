@@ -43,18 +43,21 @@
       if (!grid) return;
 
       const moduleLabels = {
-        partnerships: { name: 'Partnership System', desc: 'Form modale e statistiche manager', icon: 'handshake', color: 'text-red-600' },
-        setups: { name: 'Showcase Setup', desc: 'Foto, specifiche ed embed automatici', icon: 'monitor', color: 'text-red-600' },
-        embeds: { name: 'Live Embeds', desc: 'Anteprima live e riquadri', icon: 'scroll', color: 'text-red-600' },
-        reaction_roles: { name: 'Reaction Roles', desc: 'Pulsanti e ruoli automatici', icon: 'layers', color: 'text-red-600' },
-        autorole: { name: 'Auto-Role', desc: 'Assegnazione ruoli per utenti e bot', icon: 'user-check', color: 'text-amber-500' },
-        welcomer: { name: 'Welcomer & DM', desc: 'Benvenuto, DM e card grafiche', icon: 'user-plus', color: 'text-red-600' },
-        autoresponder: { name: 'Auto-Responder', desc: 'Trigger e auto-reaction', icon: 'zap', color: 'text-red-600' },
-        moderation: { name: 'AutoMod & Sanzioni', desc: 'Protezione anti-spam e log', icon: 'shield-alert', color: 'text-rose-600' },
-        tickets: { name: 'Ticket Support', desc: 'Canali privati di assistenza', icon: 'ticket', color: 'text-red-600' },
-        giveaways: { name: 'Giveaways & XP', desc: 'Concorsi e timer automatici', icon: 'trophy', color: 'text-amber-600' },
-        leveling: { name: 'XP & Leveling', desc: 'Classifiche e ruoli livello', icon: 'star', color: 'text-amber-500' },
-        starboard: { name: 'Starboard', desc: 'Bacheca messaggi stellati', icon: 'sparkle', color: 'text-amber-500' }
+        welcomer: { name: 'Welcomer & Boost', desc: 'Benvenuto, DM e card grafiche', icon: 'user-plus', tab: 'tab-welcomer' },
+        autoresponder: { name: 'Auto-Responder', desc: 'Trigger e comandi slash', icon: 'zap', tab: 'tab-autoresponder' },
+        moderation: { name: 'AutoMod & Sanzioni', desc: 'Protezione anti-spam e log', icon: 'shield-alert', tab: 'tab-automod' },
+        embeds: { name: 'Live Embeds', desc: 'Creatore live e riquadri', icon: 'scroll', tab: 'tab-embeds' },
+        bridge: { name: 'Bridge Cross-Platform', desc: 'Ponte canali Yapin \u21c4 Discord', icon: 'git-merge', tab: 'tab-bridge' },
+        reaction_roles: { name: 'Reaction Roles', desc: 'Pulsanti e ruoli automatici', icon: 'layers', tab: 'tab-reactionroles' },
+        autorole: { name: 'Auto-Role', desc: 'Assegnazione ruoli nuovi utenti', icon: 'user-check', tab: 'tab-autorole' },
+        tickets: { name: 'Ticket Support', desc: 'Canali privati di assistenza', icon: 'ticket', tab: 'tab-tickets' },
+        giveaways: { name: 'Giveaways & XP', desc: 'Concorsi e timer automatici', icon: 'trophy', tab: 'tab-giveaways' },
+        music: { name: 'Sentry Music', desc: 'Streaming vocale e riproduzione', icon: 'music', tab: 'tab-music' },
+        minigames: { name: 'Minigiochi & Counting', desc: 'Blackjack, pesca e counting', icon: 'gamepad-2', tab: 'tab-minigames' },
+        partnerships: { name: 'Partnership System', desc: 'Form e statistiche manager', icon: 'handshake', tab: 'tab-partnerships' },
+        setups: { name: 'Showcase Setup', desc: 'Foto, specifiche ed embed', icon: 'monitor', tab: 'tab-setupshowcase' },
+        tempchannels: { name: 'Canali Temporanei', desc: 'Stanze vocali dinamiche', icon: 'radio', tab: 'tab-tempchannels' },
+        emojis: { name: 'Emoji Tracker', desc: 'Classifica e statistiche server', icon: 'smile', tab: 'tab-emojis' }
       };
 
       grid.innerHTML = '';
@@ -76,10 +79,16 @@
               <p class="text-[11px] text-[#81889c] truncate">${info.desc}</p>
             </div>
           </div>
-          <label class="switch shrink-0">
-            <input type="checkbox" class="master-module-toggle" data-module="${key}" ${isEnabled ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="button" class="text-[10px] py-1 px-2 rounded bg-[#13151c] hover:bg-[#1f2230] text-slate-300 hover:text-white border border-[#242735] flex items-center gap-1 transition-colors" onclick="window.switchTab('${info.tab}')" title="Configura modulo">
+              <span>Configura</span>
+              <i data-lucide="chevron-right" class="w-3 h-3 text-[#81889c]"></i>
+            </button>
+            <label class="switch shrink-0">
+              <input type="checkbox" class="master-module-toggle" data-module="${key}" ${isEnabled ? 'checked' : ''}>
+              <span class="slider"></span>
+            </label>
+          </div>
         `;
         grid.appendChild(card);
       });
