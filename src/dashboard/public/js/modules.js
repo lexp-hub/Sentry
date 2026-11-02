@@ -65,15 +65,15 @@
         const isEnabled = enabledMap[key] !== false;
 
         const card = document.createElement('div');
-        card.className = 'p-3 rounded bg-[#181a24] border border-[#242735] flex items-center justify-between gap-3';
+        card.className = 'p-3.5 rounded bg-[#181a24] border border-[#242735] flex items-center justify-between gap-3 h-full hover:border-[#35394d] transition-colors';
         card.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded bg-[#13151c] border border-[#242735] flex items-center justify-center text-emerald-400 shrink-0">
-              <i data-lucide="${info.icon}" class="w-3.5 h-3.5"></i>
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-8 h-8 rounded bg-[#13151c] border border-[#242735] flex items-center justify-center text-emerald-400 shrink-0">
+              <i data-lucide="${info.icon}" class="w-4 h-4"></i>
             </div>
-            <div>
-              <p class="font-bold text-xs text-white">${info.name}</p>
-              <p class="text-[11px] text-[#81889c]">${info.desc}</p>
+            <div class="min-w-0">
+              <p class="font-bold text-xs text-white truncate">${info.name}</p>
+              <p class="text-[11px] text-[#81889c] truncate">${info.desc}</p>
             </div>
           </div>
           <label class="switch shrink-0">

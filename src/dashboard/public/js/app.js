@@ -194,7 +194,7 @@ function initWebSocket() {
       console.log('[WebSocket] Connected to Sentry synchronization server.');
       const statusEl = document.getElementById('bot-ws-status');
       if (statusEl && !statusEl.textContent.includes('Demo')) {
-        statusEl.textContent = 'Bot Online • Live Sync Attivo';
+        statusEl.textContent = 'Bot Online';
       }
       if (window.AppState.currentGuildId) {
         ws.send(JSON.stringify({ type: 'SUBSCRIBE_GUILD', guildId: window.AppState.currentGuildId }));
@@ -212,7 +212,7 @@ function initWebSocket() {
         if (data.type === 'INIT') {
           const statusEl = document.getElementById('bot-ws-status');
           if (statusEl) {
-            statusEl.textContent = data.botOnline ? 'Bot Online • Live Sync Attivo' : 'Modalità Demo Attiva';
+            statusEl.textContent = data.botOnline ? 'Bot Online' : 'Modalità Demo';
           }
         } else if (data.type === 'GUILD_UPDATED') {
           if (data.senderClientId && data.senderClientId === window.AppState.clientId) {
@@ -548,12 +548,12 @@ window.switchGuild = async function(guildId) {
     if (nameEl) {
       const isYapin = guildData.platform === 'yapin' || guildId.startsWith('yapin_');
       const icon = isYapin
-        ? '<i data-lucide="sparkles" class="w-6 h-6 text-amber-400 inline-block mr-2 align-middle"></i>'
-        : '<i data-lucide="shield" class="w-6 h-6 text-red-600 inline-block mr-2 align-middle"></i>';
+        ? '<i data-lucide="sparkles" class="w-5 h-5 text-amber-400 inline-block mr-1.5 align-middle shrink-0"></i>'
+        : '<i data-lucide="shield" class="w-5 h-5 text-emerald-400 inline-block mr-1.5 align-middle shrink-0"></i>';
       const badge = isYapin
-        ? '<span class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-950/80 text-amber-300 border border-amber-800 uppercase tracking-wider">Reame Yapin</span>'
-        : '<span class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-800 uppercase tracking-wider">Gilda Discord</span>';
-      nameEl.innerHTML = `${icon}<span>${guildData.rawName || guildData.name}</span>${badge}`;
+        ? '<span class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-950/80 text-amber-300 border border-amber-800 uppercase tracking-wider whitespace-nowrap inline-flex items-center shrink-0">Reame Yapin</span>'
+        : '<span class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-800 uppercase tracking-wider whitespace-nowrap inline-flex items-center shrink-0">Gilda Discord</span>';
+      nameEl.innerHTML = `${icon}<span class="truncate">${guildData.rawName || guildData.name}</span>${badge}`;
       if (window.lucide) lucide.createIcons();
     }
 

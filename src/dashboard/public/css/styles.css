@@ -420,6 +420,10 @@ select option {
   font-size: 11px;
   font-weight: 500;
   font-family: var(--mono);
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-height: 28px;
+  box-sizing: border-box;
 }
 .badge-crest {
   display: inline-flex;
@@ -433,6 +437,42 @@ select option {
   font-size: 11px;
   font-weight: 600;
   font-family: var(--mono);
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-height: 28px;
+  box-sizing: border-box;
+}
+
+#user-coins-badge {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-height: 28px;
+  box-sizing: border-box;
+}
+
+#btn-sync-live, #btn-reload-modules, #btn-save-all {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-height: 28px;
+  box-sizing: border-box;
+}
+
+/* Prevenzione deformazione elementi griglie e header */
+#current-guild-name {
+  word-break: break-word;
+  align-items: center;
+}
+
+#current-guild-name > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+#server-selector {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .pulse-dot {
@@ -779,4 +819,21 @@ input:checked + .slider:before {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-hover);
+}
+
+/* Responsive Grid & Flexbox Alignment Polish */
+@media (max-width: 1024px) {
+  .discord-chat-container {
+    padding: 0.75rem;
+  }
+}
+
+.glass-card {
+  min-width: 0;
+}
+
+.truncate-safe {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

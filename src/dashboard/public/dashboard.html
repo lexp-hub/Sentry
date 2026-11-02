@@ -41,8 +41,8 @@
   </header>
 
   <!-- Sidebar / Mobile Drawer Navigation (Peel / Skew Minimalist Theme) -->
-  <aside id="sidebar-drawer" class="fixed md:sticky top-0 left-0 z-50 h-screen w-72 md:w-64 bg-[#13151c] border-r border-[#242735] flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
-    <div>
+  <aside id="sidebar-drawer" class="fixed md:sticky top-0 left-0 z-50 h-screen w-72 md:w-64 bg-[#13151c] border-r border-[#242735] flex flex-col shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div class="shrink-0">
       <div class="p-3.5 border-b border-[#242735] flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <img src="/logo.svg?v=110" alt="Sentry" class="w-8 h-8 rounded border border-[#242735]">
@@ -80,12 +80,13 @@
 
       <div class="p-3 border-b border-[#242735]">
         <label class="text-[10px] uppercase tracking-wider text-[#81889c] font-bold block mb-1">Server Selezionato</label>
-        <select id="server-selector" class="form-select text-xs py-1.5 px-2 bg-[#181a24] border-[#242735] text-slate-100">
+        <select id="server-selector" class="form-select text-xs py-1.5 px-2 bg-[#181a24] border-[#242735] text-slate-100 truncate w-full">
           <option value="loading">Caricamento server...</option>
         </select>
       </div>
+    </div>
 
-      <nav class="p-2.5 space-y-1 overflow-y-auto max-h-[calc(100vh-260px)]">
+    <nav class="flex-1 min-h-0 overflow-y-auto p-2.5 space-y-1">
         <button class="nav-tab active w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-overview">
           <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i>
           <span class="truncate">Panoramica</span>
@@ -179,67 +180,68 @@
           <span class="truncate">Emoji Tracker</span>
         </button>
       </nav>
-    </div>
 
-    <div class="p-3 border-t border-[#242735] bg-[#101218]">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <img id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-7 h-7 rounded border border-[#242735]" alt="Avatar">
-          <div class="overflow-hidden">
-            <p id="user-name" class="text-xs font-semibold text-white truncate">Moderatore</p>
-            <div class="flex items-center gap-1 text-[11px] font-bold text-amber-400 font-mono">
-              <span>Saldo:</span>
-              <span id="user-sidebar-coins">100</span>
+    <div class="shrink-0 mt-auto">
+      <div class="p-3 border-t border-[#242735] bg-[#101218]">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <img id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="w-7 h-7 rounded border border-[#242735] shrink-0" alt="Avatar">
+            <div class="overflow-hidden min-w-0">
+              <p id="user-name" class="text-xs font-semibold text-white truncate">Moderatore</p>
+              <div class="flex items-center gap-1 text-[11px] font-bold text-amber-400 font-mono">
+                <span>Saldo:</span>
+                <span id="user-sidebar-coins">100</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <a href="/" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-[#81889c] hover:text-white transition-colors border border-[#242735]" title="Torna alla Home">
-            <i data-lucide="home" class="w-3.5 h-3.5"></i>
-          </a>
-          <a href="/auth/logout" onclick="localStorage.removeItem('cavaliere_auth_token');" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-rose-400 hover:text-rose-300 transition-colors border border-[#242735]" title="Disconnetti">
-            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-          </a>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <a href="/" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-[#81889c] hover:text-white transition-colors border border-[#242735]" title="Torna alla Home">
+              <i data-lucide="home" class="w-3.5 h-3.5"></i>
+            </a>
+            <a href="/auth/logout" onclick="localStorage.removeItem('cavaliere_auth_token');" class="p-1.5 rounded bg-[#181a24] hover:bg-[#13151c] text-rose-400 hover:text-rose-300 transition-colors border border-[#242735]" title="Disconnetti">
+              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="px-3.5 py-1.5 border-t border-[#242735] bg-[#0c0d12] flex items-center justify-between text-[10px] text-[#81889c]">
-      <a href="/terms" target="_blank" class="hover:text-slate-300 transition-colors">Termini</a>
-      <span>•</span>
-      <a href="/privacy" target="_blank" class="hover:text-slate-300 transition-colors">Privacy</a>
-      <span>•</span>
-      <span>v2.0</span>
+      <div class="px-3.5 py-1.5 border-t border-[#242735] bg-[#0c0d12] flex items-center justify-between text-[10px] text-[#81889c]">
+        <a href="/terms" target="_blank" class="hover:text-slate-300 transition-colors">Termini</a>
+        <span>•</span>
+        <a href="/privacy" target="_blank" class="hover:text-slate-300 transition-colors">Privacy</a>
+        <span>•</span>
+        <span>v2.0</span>
+      </div>
     </div>
   </aside>
 
-  <main class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full relative z-10">
-    <div class="hidden md:flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-3 border-b border-[#242735]">
-      <div>
-        <h2 id="current-guild-name" class="text-lg font-bold text-white flex items-center gap-2">
-          <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i> Server Discord
+  <main class="flex-grow min-w-0 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full relative z-10">
+    <div class="hidden md:flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-[#242735]">
+      <div class="min-w-0 py-0.5">
+        <h2 id="current-guild-name" class="text-base lg:text-lg font-bold text-white flex flex-wrap items-center gap-2">
+          <i data-lucide="shield" class="w-4 h-4 text-emerald-400 shrink-0"></i> <span>Server Discord</span>
         </h2>
-        <p class="text-xs text-[#81889c] mt-0.5">Configurazione modulare in tempo reale</p>
+        <p class="text-xs text-[#81889c] mt-0.5 truncate">Configurazione modulare in tempo reale</p>
       </div>
 
-      <div class="flex items-center gap-2.5">
-        <div id="user-coins-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#181a24] border border-[#242735] text-amber-300 font-semibold text-xs">
-          <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <div id="user-coins-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#181a24] border border-[#242735] text-amber-300 font-semibold text-xs whitespace-nowrap shrink-0">
+          <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
           <span>Saldo:</span>
           <span id="user-header-coins" class="text-amber-300 font-bold">100</span>
         </div>
-        <div class="badge-online">
+        <div class="badge-online whitespace-nowrap shrink-0" title="Sincronizzazione WebSocket in tempo reale attiva">
           <div class="pulse-dot"></div>
           <span id="bot-ws-status">Bot Online</span>
         </div>
-        <button id="btn-sync-live" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5" title="Sincronizza in tempo reale senza ricaricare la pagina">
+        <button id="btn-sync-live" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5 whitespace-nowrap shrink-0" title="Sincronizza in tempo reale senza ricaricare la pagina">
           <i data-lucide="refresh-cw" id="icon-sync-live" class="w-3.5 h-3.5 text-emerald-400"></i>
           <span>Sincronizza</span>
         </button>
-        <button id="btn-reload-modules" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5" title="Ricarica forzatamente tutti i moduli e azzera la cache del browser">
+        <button id="btn-reload-modules" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5 whitespace-nowrap shrink-0" title="Ricarica forzatamente tutti i moduli e azzera la cache del browser">
           <i data-lucide="rotate-ccw" id="icon-reload-modules" class="w-3.5 h-3.5 text-[#81889c]"></i>
           <span>Ricarica Cache</span>
         </button>
-        <button id="btn-save-all" class="btn-knight text-xs py-1.5 px-3">
+        <button id="btn-save-all" class="btn-knight text-xs py-1.5 px-3 flex items-center gap-1.5 whitespace-nowrap shrink-0">
           <i data-lucide="check" class="w-3.5 h-3.5"></i> Salva Modifiche
         </button>
       </div>
@@ -250,57 +252,57 @@
     
     <section id="tab-overview" class="tab-content block space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card p-5">
+        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
           <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Membri Server</span>
-            <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Membri Server</span>
+            <i data-lucide="users" class="w-4 h-4 text-purple-400 shrink-0"></i>
           </div>
-          <div class="text-2xl font-bold text-white" id="ov-members">1,420</div>
-          <span class="text-xs text-emerald-400 mt-1 block">Tutti i permessi sincronizzati</span>
+          <div class="text-2xl font-bold text-white tracking-tight" id="ov-members">1,420</div>
+          <span class="text-xs text-emerald-400 mt-1 block font-medium">Tutti i permessi sincronizzati</span>
         </div>
 
-        <div class="glass-card p-5">
+        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
           <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Partnership Effettuate</span>
-            <i data-lucide="handshake" class="w-4 h-4 text-cyan-400"></i>
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Partnership Effettuate</span>
+            <i data-lucide="handshake" class="w-4 h-4 text-cyan-400 shrink-0"></i>
           </div>
-          <div class="text-2xl font-bold text-white" id="ov-partnerships">28</div>
-          <span class="text-xs text-cyan-400 mt-1 block">Modulo attivo</span>
+          <div class="text-2xl font-bold text-white tracking-tight" id="ov-partnerships">28</div>
+          <span class="text-xs text-cyan-400 mt-1 block font-medium">Modulo attivo</span>
         </div>
 
-        <div class="glass-card p-5">
+        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
           <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Reaction Roles</span>
-            <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i>
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Reaction Roles</span>
+            <i data-lucide="layers" class="w-4 h-4 text-amber-400 shrink-0"></i>
           </div>
-          <div class="text-2xl font-bold text-white" id="ov-rr">6</div>
-          <span class="text-xs text-slate-400 mt-1 block">Pannelli configurati</span>
+          <div class="text-2xl font-bold text-white tracking-tight" id="ov-rr">6</div>
+          <span class="text-xs text-[#81889c] mt-1 block font-medium">Pannelli configurati</span>
         </div>
 
-        <div class="glass-card p-5">
+        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
           <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Stato Sistema</span>
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Stato Sistema</span>
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
           </div>
-          <div class="text-lg font-bold text-emerald-300 truncate">Sentry v2.0</div>
-          <span class="text-xs text-emerald-400 mt-1 block">Tutti i sistemi protetti</span>
+          <div class="text-2xl font-bold text-emerald-400 tracking-tight truncate">Sentry v2.0</div>
+          <span class="text-xs text-emerald-400 mt-1 block font-medium">Tutti i sistemi protetti</span>
         </div>
       </div>
 
       
-      <div class="glass-card p-6">
+      <div class="glass-card p-5 sm:p-6">
         <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-          <i data-lucide="sliders" class="w-5 h-5 text-purple-400"></i> Gestione Attivazione Moduli
+          <i data-lucide="sliders" class="w-5 h-5 text-purple-400 shrink-0"></i> Gestione Attivazione Moduli
         </h3>
         <p class="text-xs text-slate-400 mb-6">Attiva o disattiva istantaneamente le funzionalità del bot su questo server</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="modules-toggle-grid"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 items-stretch" id="modules-toggle-grid"></div>
       </div>
 
       
-      <div class="glass-card p-6">
+      <div class="glass-card p-5 sm:p-6">
         <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <i data-lucide="settings" class="w-5 h-5 text-cyan-400"></i> Impostazioni Generali & Canali di Log
+          <i data-lucide="settings" class="w-5 h-5 text-cyan-400 shrink-0"></i> Impostazioni Generali & Canali di Log
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -317,48 +319,48 @@
       </div>
 
       <!-- Wispbyte Persistence & Backup Cloud Card -->
-      <div class="glass-card p-6 border-l-4 border-l-emerald-500">
+      <div class="glass-card p-5 sm:p-6 border-l-4 border-l-emerald-500">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
             <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <i data-lucide="database" class="w-5 h-5 text-emerald-400"></i> Cloud MySQL & Persistenza Wispbyte
+              <i data-lucide="database" class="w-5 h-5 text-emerald-400 shrink-0"></i> Cloud MySQL & Persistenza Wispbyte
             </h3>
             <p class="text-xs text-slate-400 mt-0.5">
               Protezione anti-perdita multi-livello: salvataggio istantaneo su SSD, backup cloud su server MySQL Wispbyte esterno e ripristino automatico.
             </p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <span id="badge-mysql-status" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <span id="badge-mysql-status" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 whitespace-nowrap">
               <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
               Cloud MySQL Connesso
             </span>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               Fsync FULL
             </span>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
-          <button id="btn-cloud-sync" class="btn-knight text-xs py-2.5 px-3 flex items-center justify-center gap-2">
-            <i data-lucide="cloud-upload" class="w-4 h-4 text-cyan-400"></i>
-            <span>Sincronizza su Cloud MySQL</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2.5 pt-2">
+          <button id="btn-cloud-sync" class="btn-knight text-xs py-2.5 px-3 flex items-center justify-center gap-2 h-full min-h-[38px]">
+            <i data-lucide="cloud-upload" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+            <span class="truncate">Sincronizza Cloud</span>
           </button>
-          <button id="btn-backup-flush" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2">
-            <i data-lucide="save" class="w-4 h-4 text-emerald-400"></i>
-            <span>Salva su Disco Locale</span>
+          <button id="btn-backup-flush" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2 h-full min-h-[38px]">
+            <i data-lucide="save" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+            <span class="truncate">Salva su Disco</span>
           </button>
-          <button id="btn-backup-export" class="btn-cyber text-xs py-2.5 px-3 flex items-center justify-center gap-2">
-            <i data-lucide="download" class="w-4 h-4 text-yellow-400"></i>
-            <span>Scarica Backup (.json)</span>
+          <button id="btn-backup-export" class="btn-cyber text-xs py-2.5 px-3 flex items-center justify-center gap-2 h-full min-h-[38px]">
+            <i data-lucide="download" class="w-4 h-4 text-yellow-400 shrink-0"></i>
+            <span class="truncate">Scarica Backup (.json)</span>
           </button>
-          <button id="btn-export-channels-csv" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2 hover:border-emerald-500/50 hover:text-emerald-300 transition-all" title="Scarica l'elenco completo di canali e categorie in formato CSV per Excel">
-            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i>
-            <span>Esporta Canali (.csv)</span>
+          <button id="btn-export-channels-csv" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2 hover:border-emerald-500/50 hover:text-emerald-300 transition-all h-full min-h-[38px]" title="Scarica l'elenco completo di canali e categorie in formato CSV per Excel">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+            <span class="truncate">Esporta Canali (.csv)</span>
           </button>
-          <button id="btn-backup-import-trigger" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2">
-            <i data-lucide="upload" class="w-4 h-4 text-purple-400"></i>
-            <span>Ripristina da Backup</span>
+          <button id="btn-backup-import-trigger" class="btn-secondary text-xs py-2.5 px-3 flex items-center justify-center gap-2 h-full min-h-[38px]">
+            <i data-lucide="upload" class="w-4 h-4 text-purple-400 shrink-0"></i>
+            <span class="truncate">Ripristina Backup</span>
           </button>
           <input type="file" id="input-backup-import-file" accept=".json" class="hidden">
         </div>
