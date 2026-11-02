@@ -837,3 +837,190 @@ input:checked + .slider:before {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   BOTGHOST-INSPIRED DASHBOARD ARCHITECTURE & COMPONENTS
+   ========================================================================== */
+
+/* Top Navigation Bar */
+.botghost-topbar {
+  background: #11131a;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.botghost-search-box {
+  background: #161822;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.botghost-search-box:hover {
+  border-color: var(--border-hover);
+  background: #191c28;
+}
+
+/* Header Buttons */
+.btn-botghost-start {
+  background: #22c55e !important;
+  color: #052e16 !important;
+  font-weight: 700 !important;
+  border: 1px solid #16a34a !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease;
+}
+.btn-botghost-start:hover {
+  background: #16a34a !important;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.btn-botghost-invite {
+  background: #5865f2 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border: 1px solid #4752c4 !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease;
+}
+.btn-botghost-invite:hover {
+  background: #4752c4 !important;
+  box-shadow: 0 0 15px rgba(88, 101, 242, 0.3);
+}
+
+.btn-botghost-tour {
+  background: #181a24 !important;
+  color: #cbd5e1 !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease;
+}
+.btn-botghost-tour:hover {
+  background: #202330 !important;
+  color: #ffffff !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Announcement Banners */
+.botghost-banner-purple {
+  background: linear-gradient(90deg, rgba(88, 28, 135, 0.3) 0%, rgba(19, 21, 28, 0.95) 55%, #181a24 100%);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.botghost-banner-coral {
+  background: linear-gradient(90deg, rgba(159, 18, 57, 0.3) 0%, rgba(19, 21, 28, 0.95) 55%, #181a24 100%);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Usage Progress Sliders */
+.botghost-usage-card {
+  background: #13151c;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.botghost-progress-bar {
+  background: #181a24;
+  border: 1px solid #242735;
+  border-radius: 9999px;
+  height: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.botghost-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* The 3 Hero Builder Cards */
+.botghost-builder-card {
+  background: #13151c;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.botghost-builder-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.botghost-preview-canvas {
+  background-color: #0d0f15;
+  background-image: radial-gradient(#242735 1px, transparent 1px);
+  background-size: 14px 14px;
+  border-bottom: 1px solid var(--border);
+  height: 160px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.botghost-btn-coral {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #be123c !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease;
+}
+.botghost-btn-coral:hover {
+  background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%) !important;
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.35);
+}
+
+.botghost-btn-neutral {
+  background: #181a24 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease;
+}
+.botghost-btn-neutral:hover {
+  background: #222634 !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Marketplace Banner */
+.botghost-marketplace-banner {
+  background: linear-gradient(90deg, rgba(219, 39, 119, 0.18) 0%, rgba(19, 21, 28, 0.95) 50%, #181a24 100%);
+  border: 1px solid rgba(236, 72, 153, 0.35);
+  border-radius: 10px;
+}
+
+.btn-marketplace {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #be185d !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease;
+}
+.btn-marketplace:hover {
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+}
+
+/* Command Palette Modal */
+.command-palette-backdrop {
+  background: rgba(8, 10, 15, 0.8);
+  backdrop-filter: blur(6px);
+}
+

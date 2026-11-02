@@ -86,100 +86,188 @@
       </div>
     </div>
 
-    <nav class="flex-1 min-h-0 overflow-y-auto p-2.5 space-y-1">
-        <button class="nav-tab active w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-overview">
-          <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">Panoramica</span>
-        </button>
+    <nav class="flex-1 min-h-0 overflow-y-auto p-2.5 space-y-3">
+      <!-- CATEGORY 1: MODULI PRINCIPALI & HUB -->
+      <div>
+        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase flex items-center justify-between">
+          <span>Moduli Principali</span>
+          <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800">Attivo</span>
+        </div>
+        <div class="space-y-0.5">
+          <button class="nav-tab active w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-overview">
+            <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+            <span class="truncate flex-1">Moduli &amp; Hub</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#181a24] text-slate-400 font-mono border border-[#242735]">16</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-music">
-          <i data-lucide="music" class="w-4 h-4 shrink-0 text-pink-400"></i>
-          <span class="flex-grow truncate">Sentry Music</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-pink-950/40 text-pink-300 font-semibold uppercase border border-pink-800/60 shrink-0">Voice</span>
-        </button>
+          <button type="button" onclick="window.triggerPremiumModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-all text-left">
+            <i data-lucide="crown" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="truncate flex-1">VIP &amp; Boost</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 font-bold uppercase border border-amber-800">Pro</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-partnerships">
-          <i data-lucide="handshake" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">Partnership</span>
-        </button>
+          <button type="button" onclick="window.scrollToSection('btn-cloud-sync')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="rocket" class="w-4 h-4 shrink-0 text-cyan-400"></i>
+            <span class="truncate flex-1">Hosting Cloud</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 font-mono border border-cyan-800">SSD</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-presentations">
-          <i data-lucide="book-open" class="w-4 h-4 shrink-0"></i>
-          <span class="flex-grow truncate">Presentazioni</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 font-semibold uppercase border border-indigo-200 shrink-0">Form</span>
-        </button>
+          <button type="button" onclick="window.showToast('Bonus giornaliero riscattato: +50 Coins!', 'success')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="gift" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+            <span class="truncate flex-1">Monete Gratis</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-bold uppercase border border-emerald-800">Free</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-setupshowcase">
-          <i data-lucide="monitor" class="w-4 h-4 shrink-0 text-red-600"></i>
-          <span class="flex-grow truncate">Showcase Setup</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-semibold uppercase border border-red-200 shrink-0">Evento</span>
-        </button>
+          <button type="button" onclick="window.scrollToSection('gen-prefix')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="settings" class="w-4 h-4 shrink-0 text-slate-400"></i>
+            <span class="truncate flex-1">Impostazioni</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-embeds">
-          <i data-lucide="scroll" class="w-4 h-4 shrink-0"></i>
-          <span class="flex-grow truncate">Embed Builder</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-semibold uppercase border border-red-200 shrink-0">Live</span>
-        </button>
+          <button type="button" onclick="window.scrollToSection('btn-cloud-sync')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="database" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+            <span class="truncate flex-1">Data Storage</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-reactionroles">
-          <i data-lucide="layers" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">Reaction Roles</span>
-        </button>
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-emojis">
+            <i data-lucide="smile" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="truncate flex-1">Server &amp; Emoji</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-welcomer">
-          <i data-lucide="sparkles" class="w-4 h-4 shrink-0 text-fuchsia-400"></i>
-          <span class="truncate">Welcomer &amp; Boost</span>
-        </button>
+          <button type="button" onclick="window.triggerCollabModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="users" class="w-4 h-4 shrink-0 text-indigo-400"></i>
+            <span class="truncate flex-1">Collaboratori</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950/60 text-indigo-300 font-bold uppercase border border-indigo-800">Nuovo</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-autorole">
-          <i data-lucide="user-check" class="w-4 h-4 shrink-0 text-amber-400"></i>
-          <span class="flex-grow truncate">Auto-Role</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/40 text-amber-300 font-semibold uppercase border border-amber-800/60 shrink-0">Modulo</span>
-        </button>
+          <button type="button" onclick="window.scrollToSection('gen-log-channel')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-400"></i>
+            <span class="truncate flex-1">Log di Sistema</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-bridge">
-          <i data-lucide="git-merge" class="w-4 h-4 shrink-0 text-cyan-400"></i>
-          <span class="flex-grow truncate">Ponte Cross-Platform</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/40 text-cyan-300 font-semibold uppercase border border-cyan-800/60 shrink-0">Bridge</span>
-        </button>
+          <button type="button" onclick="window.triggerInviteModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="link" class="w-4 h-4 shrink-0 text-blue-400"></i>
+            <span class="truncate flex-1">Invita Bot</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-autoresponder">
-          <i data-lucide="zap" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">Auto-Responder</span>
-        </button>
+          <a href="https://discord.gg" target="_blank" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left">
+            <i data-lucide="message-square" class="w-4 h-4 shrink-0 text-indigo-400"></i>
+            <span class="truncate flex-1">Server di Supporto</span>
+          </a>
+        </div>
+      </div>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-automod">
-          <i data-lucide="shield-alert" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">AutoMod &amp; Sicurezza</span>
-        </button>
+      <!-- CATEGORY 2: PACKS & MARKETPLACE -->
+      <div class="pt-1">
+        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase flex items-center justify-between">
+          <span>Packs</span>
+          <span class="text-[9px] text-[#81889c] hover:text-white cursor-pointer" onclick="window.scrollToSection('marketplace-section')">Gestisci</span>
+        </div>
+        <div onclick="window.scrollToSection('marketplace-section')" class="cursor-pointer p-2.5 rounded-xl bg-gradient-to-r from-pink-950/30 to-[#181a24] border border-pink-500/30 hover:border-pink-500/60 transition-all flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <div class="w-6 h-6 rounded bg-pink-500/20 text-pink-400 flex items-center justify-center shrink-0">
+              <i data-lucide="package" class="w-3.5 h-3.5"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[11px] font-bold text-white truncate">Marketplace</div>
+              <div class="text-[9px] text-[#81889c] truncate">Esplora i pacchetti</div>
+            </div>
+          </div>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-pink-400 shrink-0"></i>
+        </div>
+      </div>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-tickets">
-          <i data-lucide="ticket" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">Ticket System</span>
-        </button>
+      <!-- CATEGORY 3: BUILDERS (The 3 BotGhost builders) -->
+      <div class="pt-1">
+        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase">
+          <span>Builders</span>
+        </div>
+        <div class="space-y-0.5">
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-autoresponder">
+            <i data-lucide="terminal" class="w-4 h-4 shrink-0 text-rose-400"></i>
+            <span class="truncate flex-1">Custom Commands</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-giveaways">
-          <i data-lucide="trophy" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">Giveaways &amp; XP</span>
-        </button>
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-welcomer">
+            <i data-lucide="zap" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="truncate flex-1">Custom Events</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-minigames">
-          <i data-lucide="gamepad-2" class="w-4 h-4 shrink-0"></i>
-          <span class="flex-grow truncate">Minigiochi</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold uppercase border border-emerald-200 shrink-0">Nuovo</span>
-        </button>
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-embeds">
+            <i data-lucide="scroll" class="w-4 h-4 shrink-0 text-cyan-400"></i>
+            <span class="truncate flex-1">Message Builder</span>
+          </button>
+        </div>
+      </div>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-tempchannels">
-          <i data-lucide="radio" class="w-4 h-4 shrink-0 text-indigo-600"></i>
-          <span class="flex-grow truncate">Canali Privati</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 font-semibold uppercase border border-indigo-200 shrink-0">Vocali</span>
-        </button>
+      <!-- CATEGORY 4: MODULI SPECIALI / FEATURED -->
+      <div class="pt-1">
+        <div class="px-2 pb-1 text-[10px] font-bold tracking-wider text-[#81889c] uppercase">
+          <span>Moduli Speciali</span>
+        </div>
+        <div class="space-y-0.5">
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-automod">
+            <i data-lucide="shield-alert" class="w-4 h-4 shrink-0 text-rose-400"></i>
+            <span class="truncate flex-1">AutoMod &amp; Sicurezza</span>
+          </button>
 
-        <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-white hover:bg-white/80 transition-all text-left" data-tab="tab-emojis">
-          <i data-lucide="smile" class="w-4 h-4 shrink-0"></i>
-          <span class="truncate">Emoji Tracker</span>
-        </button>
-      </nav>
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-bridge">
+            <i data-lucide="git-merge" class="w-4 h-4 shrink-0 text-cyan-400"></i>
+            <span class="truncate flex-1">Bridge Cross-Platform</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 font-bold uppercase border border-cyan-800">Live</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-reactionroles">
+            <i data-lucide="layers" class="w-4 h-4 shrink-0 text-indigo-400"></i>
+            <span class="truncate flex-1">Reaction Roles</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-tickets">
+            <i data-lucide="ticket" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+            <span class="truncate flex-1">Ticket System</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-giveaways">
+            <i data-lucide="trophy" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="truncate flex-1">Giveaways &amp; XP</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-minigames">
+            <i data-lucide="gamepad-2" class="w-4 h-4 shrink-0 text-pink-400"></i>
+            <span class="truncate flex-1">Minigiochi</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-music">
+            <i data-lucide="music" class="w-4 h-4 shrink-0 text-purple-400"></i>
+            <span class="truncate flex-1">Sentry Music</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-autorole">
+            <i data-lucide="user-check" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="truncate flex-1">Auto-Role</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-tempchannels">
+            <i data-lucide="radio" class="w-4 h-4 shrink-0 text-indigo-400"></i>
+            <span class="truncate flex-1">Canali Privati</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-setupshowcase">
+            <i data-lucide="monitor" class="w-4 h-4 shrink-0 text-cyan-400"></i>
+            <span class="truncate flex-1">Showcase Setup</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-presentations">
+            <i data-lucide="book-open" class="w-4 h-4 shrink-0 text-blue-400"></i>
+            <span class="truncate flex-1">Presentazioni</span>
+          </button>
+
+          <button class="nav-tab w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left" data-tab="tab-partnerships">
+            <i data-lucide="handshake" class="w-4 h-4 shrink-0 text-teal-400"></i>
+            <span class="truncate flex-1">Partnership</span>
+          </button>
+        </div>
+      </div>
+    </nav>
 
     <div class="shrink-0 mt-auto">
       <div class="p-3 border-t border-[#242735] bg-[#101218]">
@@ -215,95 +303,420 @@
   </aside>
 
   <main class="flex-grow min-w-0 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full relative z-10">
-    <div class="hidden md:flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-[#242735]">
-      <div class="min-w-0 py-0.5">
-        <h2 id="current-guild-name" class="text-base lg:text-lg font-bold text-white flex flex-wrap items-center gap-2">
-          <i data-lucide="shield" class="w-4 h-4 text-emerald-400 shrink-0"></i> <span>Server Discord</span>
-        </h2>
-        <p class="text-xs text-[#81889c] mt-0.5 truncate">Configurazione modulare in tempo reale</p>
+    <!-- BOTGHOST-STYLE TOPBAR -->
+    <div class="botghost-topbar flex flex-wrap items-center justify-between gap-3 p-3.5 mb-6 rounded-xl border border-[#242735] bg-[#11131a]">
+      <!-- Left: Bot & Server Crest Info & Resources Dropdown -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="min-w-0">
+          <h2 id="current-guild-name" class="text-sm md:text-base font-bold text-white flex flex-wrap items-center gap-2">
+            <i data-lucide="shield" class="w-4 h-4 text-emerald-400 shrink-0"></i> <span>Server Discord</span>
+          </h2>
+          <div class="flex items-center gap-2 text-[11px] text-[#81889c] mt-0.5">
+            <span>Sentry Studio</span>
+            <span>•</span>
+            <div class="relative inline-block">
+              <button type="button" id="btn-resources-dropdown" class="hover:text-white transition-colors flex items-center gap-1 font-semibold">
+                <span>Risorse</span>
+                <i data-lucide="chevron-down" class="w-3 h-3"></i>
+              </button>
+              <div id="resources-menu" class="hidden absolute left-0 mt-1 w-44 bg-[#181a24] border border-[#242735] rounded-lg shadow-xl z-50 p-1 space-y-0.5 text-xs">
+                <a href="/terms" target="_blank" class="block px-2.5 py-1.5 rounded hover:bg-[#222634] text-slate-300 hover:text-white">Documentazione</a>
+                <a href="https://discord.gg" target="_blank" class="block px-2.5 py-1.5 rounded hover:bg-[#222634] text-slate-300 hover:text-white">Server Supporto</a>
+                <a href="/privacy" target="_blank" class="block px-2.5 py-1.5 rounded hover:bg-[#222634] text-slate-300 hover:text-white">Privacy &amp; Sicurezza</a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2 shrink-0">
-        <div id="user-coins-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#181a24] border border-[#242735] text-amber-300 font-semibold text-xs whitespace-nowrap shrink-0">
-          <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
-          <span>Saldo:</span>
-          <span id="user-header-coins" class="text-amber-300 font-bold">100</span>
+      <!-- Center: BotGhost Search Bar (Ctrl+K) -->
+      <div class="botghost-search-box botghost-search-trigger flex-1 max-w-md mx-2 px-3 py-2 flex items-center justify-between text-xs text-[#81889c]">
+        <div class="flex items-center gap-2 min-w-0 truncate">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-[#81889c] shrink-0"></i>
+          <span class="truncate">Cerca moduli, impostazioni e comandi...</span>
         </div>
-        <div class="badge-online whitespace-nowrap shrink-0" title="Sincronizzazione WebSocket in tempo reale attiva">
+        <span class="px-1.5 py-0.5 rounded text-[10px] bg-[#101218] border border-[#242735] font-mono text-[#81889c] shrink-0">Ctrl K</span>
+      </div>
+
+      <!-- Right: Status, Start, Invite, Tour, Coins, Save -->
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <div class="badge-online whitespace-nowrap shrink-0" title="Sincronizzazione WebSocket attiva">
           <div class="pulse-dot"></div>
           <span id="bot-ws-status">Bot Online</span>
         </div>
-        <button id="btn-sync-live" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5 whitespace-nowrap shrink-0" title="Sincronizza in tempo reale senza ricaricare la pagina">
-          <i data-lucide="refresh-cw" id="icon-sync-live" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span>Sincronizza</span>
+
+        <!-- Green Start / Live Sync Button -->
+        <button id="btn-sync-live" class="btn-botghost-start text-xs py-1.5 px-3 flex items-center gap-1.5 whitespace-nowrap shrink-0" title="Sincronizza in tempo reale senza ricaricare la pagina">
+          <i data-lucide="play" id="icon-sync-live" class="w-3.5 h-3.5 fill-current"></i>
+          <span>Start / Sync</span>
         </button>
-        <button id="btn-reload-modules" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5 whitespace-nowrap shrink-0" title="Ricarica forzatamente tutti i moduli e azzera la cache del browser">
+
+        <!-- Blurple Invite Button -->
+        <button id="btn-invite-top" onclick="window.triggerInviteModal()" class="btn-botghost-invite text-xs py-1.5 px-3 flex items-center gap-1.5 whitespace-nowrap shrink-0">
+          <i data-lucide="link" class="w-3.5 h-3.5"></i>
+          <span>Invita</span>
+        </button>
+
+        <!-- Tour Button -->
+        <button id="btn-tour-top" onclick="window.triggerTourModal()" class="btn-botghost-tour text-xs py-1.5 px-2.5 flex items-center gap-1 whitespace-nowrap shrink-0">
+          <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+          <span>Tour</span>
+        </button>
+
+        <!-- User Coins Badge -->
+        <div id="user-coins-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#181a24] border border-[#242735] text-amber-300 font-semibold text-xs whitespace-nowrap shrink-0">
+          <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+          <span id="user-header-coins" class="text-amber-300 font-bold">100</span>
+        </div>
+
+        <!-- Reload Cache & Save Changes -->
+        <button id="btn-reload-modules" class="btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1.5 whitespace-nowrap shrink-0" title="Ricarica cache">
           <i data-lucide="rotate-ccw" id="icon-reload-modules" class="w-3.5 h-3.5 text-[#81889c]"></i>
-          <span>Ricarica Cache</span>
         </button>
+
         <button id="btn-save-all" class="btn-knight text-xs py-1.5 px-3 flex items-center gap-1.5 whitespace-nowrap shrink-0">
-          <i data-lucide="check" class="w-3.5 h-3.5"></i> Salva Modifiche
+          <i data-lucide="check" class="w-3.5 h-3.5"></i> Salva
         </button>
       </div>
     </div>
 
-    
-    
-    
-    <section id="tab-overview" class="tab-content block space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Membri Server</span>
-            <i data-lucide="users" class="w-4 h-4 text-purple-400 shrink-0"></i>
+    <!-- TAB 1: OVERVIEW & BOTGHOST HUB -->
+    <section id="tab-overview" class="tab-content block space-y-5">
+      <!-- ROW 1: THE TWO ANNOUNCEMENT BANNERS (BOTGHOST STYLE) -->
+      <div class="space-y-3">
+        <!-- Banner 1: Purple VIP 24h Access -->
+        <div class="botghost-banner-purple p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center justify-center shrink-0">
+              <i data-lucide="gift" class="w-4 h-4"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-500/50 font-bold uppercase tracking-wider">Gratis</span>
+                <h4 class="text-xs sm:text-sm font-bold text-white truncate">Prova Sentry VIP &amp; Boost: 24 ore di accesso completo</h4>
+              </div>
+              <p class="text-[11px] text-[#cbd5e1] mt-0.5 truncate">Entra nel nostro server ufficiale per sbloccare 24 ore di ogni funzionalit&agrave; VIP, senza restrizioni.</p>
+            </div>
           </div>
-          <div class="text-2xl font-bold text-white tracking-tight" id="ov-members">1,420</div>
-          <span class="text-xs text-emerald-400 mt-1 block font-medium">Tutti i permessi sincronizzati</span>
+          <div class="flex items-center gap-2 shrink-0 self-end md:self-auto">
+            <button type="button" onclick="window.triggerPremiumModal()" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-colors shadow-md">
+              Riscatta VIP
+            </button>
+            <button type="button" onclick="window.showToast('Funzionalit\u00e0 VIP: IA Illimitata, Backup MySQL automatico, Bridge ad alta frequenza', 'success')" class="px-2.5 py-1.5 rounded-lg bg-[#181a24] hover:bg-[#222634] border border-[#242735] text-slate-300 text-xs flex items-center gap-1">
+              <span>Dettagli</span>
+              <i data-lucide="chevron-down" class="w-3 h-3"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Partnership Effettuate</span>
-            <i data-lucide="handshake" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+        <!-- Banner 2: Coral Starboard & Bridge Announcement -->
+        <div id="banner-feature-announcement" class="botghost-banner-coral p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center justify-center shrink-0">
+              <i data-lucide="star" class="w-4 h-4"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-500/50 font-bold uppercase tracking-wider">Nuovo</span>
+                <h4 class="text-xs sm:text-sm font-bold text-white truncate">Scopri il nuovo Bridge Yapin ⇄ Discord &amp; Starboard</h4>
+              </div>
+              <p class="text-[11px] text-[#cbd5e1] mt-0.5 truncate">Invia messaggi formattati a lettera tra le due piattaforme con nick dinamico, conteggio live e reazioni.</p>
+            </div>
           </div>
-          <div class="text-2xl font-bold text-white tracking-tight" id="ov-partnerships">28</div>
-          <span class="text-xs text-cyan-400 mt-1 block font-medium">Modulo attivo</span>
-        </div>
-
-        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Reaction Roles</span>
-            <i data-lucide="layers" class="w-4 h-4 text-amber-400 shrink-0"></i>
+          <div class="flex items-center gap-2 shrink-0 self-end md:self-auto">
+            <div class="flex items-center text-[10px] text-[#81889c] font-mono mr-1">
+              <span>&lt; 1/3 &gt;</span>
+            </div>
+            <button type="button" onclick="window.switchTab('tab-bridge')" class="botghost-btn-coral px-3 py-1.5 rounded-lg text-white font-bold text-xs flex items-center gap-1.5 shadow-md">
+              <span>Apri Bridge</span>
+              <i data-lucide="arrow-right" class="w-3 h-3"></i>
+            </button>
+            <button type="button" onclick="document.getElementById('banner-feature-announcement').style.display='none'" class="p-1.5 rounded-lg bg-[#181a24] hover:bg-[#222634] text-[#81889c] hover:text-white" title="Chiudi">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
-          <div class="text-2xl font-bold text-white tracking-tight" id="ov-rr">6</div>
-          <span class="text-xs text-[#81889c] mt-1 block font-medium">Pannelli configurati</span>
-        </div>
-
-        <div class="glass-card p-4 sm:p-5 flex flex-col justify-between h-full">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-[#81889c]">Stato Sistema</span>
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-          </div>
-          <div class="text-2xl font-bold text-emerald-400 tracking-tight truncate">Sentry v2.0</div>
-          <span class="text-xs text-emerald-400 mt-1 block font-medium">Tutti i sistemi protetti</span>
         </div>
       </div>
 
-      
+      <!-- ROW 2: PLAN & USAGE METRICS PROGRESS BAR (BOTGHOST EXACT BAR) -->
+      <div class="botghost-usage-card p-4 sm:p-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        <div class="min-w-0 xl:w-56 shrink-0">
+          <div class="flex items-center gap-2">
+            <h4 class="text-xs sm:text-sm font-bold text-white">Piano Sentry v2.0</h4>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-bold uppercase border border-emerald-800">Live</span>
+          </div>
+          <p class="text-[11px] text-[#81889c] mt-0.5">I limiti si azzerano ogni 1 del mese</p>
+        </div>
+
+        <!-- 5 Progress Sliders -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5 flex-1 min-w-0">
+          <div>
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="text-[#81889c] truncate">Moduli Attivi</span>
+              <span class="font-bold text-white font-mono text-[10px]">12/16</span>
+            </div>
+            <div class="botghost-progress-bar">
+              <div class="botghost-progress-fill bg-emerald-400" style="width: 75%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="text-[#81889c] truncate">Eventi Live</span>
+              <span class="font-bold text-cyan-400 font-mono text-[10px]">100%</span>
+            </div>
+            <div class="botghost-progress-bar">
+              <div class="botghost-progress-fill bg-cyan-400" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="text-[#81889c] truncate">Server</span>
+              <span class="font-bold text-amber-300 font-mono text-[10px]">2 / 5</span>
+            </div>
+            <div class="botghost-progress-bar">
+              <div class="botghost-progress-fill bg-amber-400" style="width: 40%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="text-[#81889c] truncate">Pulsanti / Mese</span>
+              <span class="font-bold text-purple-300 font-mono text-[10px]">148 / 500</span>
+            </div>
+            <div class="botghost-progress-bar">
+              <div class="botghost-progress-fill bg-purple-400" style="width: 30%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="text-[#81889c] truncate">Salvataggi SSD</span>
+              <span class="font-bold text-emerald-400 font-mono text-[10px]">420 / 500</span>
+            </div>
+            <div class="botghost-progress-bar">
+              <div class="botghost-progress-fill bg-emerald-500" style="width: 84%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upgrade / Limits Actions -->
+        <div class="flex items-center gap-3 shrink-0 self-end xl:self-auto pt-2 xl:pt-0">
+          <button type="button" onclick="window.showToast('Tutti i moduli sono attualmente sbloccati per il tuo server!', 'success')" class="text-xs text-[#81889c] hover:text-white transition-colors underline whitespace-nowrap">
+            Vedi tutti i limiti
+          </button>
+          <button type="button" onclick="window.triggerPremiumModal()" class="botghost-btn-coral text-xs py-1.5 px-3.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap shadow-md">
+            <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+            <span>Potenzia</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ROW 3: THE 3 HERO BUILDER CARDS ("START HERE" BOTGHOST CARDS) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4.5">
+        <!-- HERO 1: COMMAND BUILDER -->
+        <div class="botghost-builder-card">
+          <div class="botghost-preview-canvas p-4">
+            <div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[9px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="sparkles" class="w-2.5 h-2.5 text-rose-400"></i> Inizia da qui
+            </div>
+            
+            <!-- Flow preview nodes -->
+            <div class="flex flex-col items-center gap-1.5 z-10 w-full max-w-[220px]">
+              <div class="w-full bg-[#1b1e2a] border border-[#2d3247] rounded-md px-2.5 py-1.5 flex items-center justify-center gap-1.5 shadow-md">
+                <span class="text-[10px] font-mono text-rose-400 font-bold">/ban</span>
+                <span class="text-[10px] font-mono text-slate-300">@spammer</span>
+              </div>
+              <div class="w-0.5 h-3 bg-rose-500/40 relative">
+                <i data-lucide="arrow-down" class="w-3 h-3 text-rose-400 absolute -bottom-2 -left-[5px]"></i>
+              </div>
+              <div class="w-full bg-[#132338] border border-cyan-800/80 rounded-md px-2.5 py-1.5 flex items-center justify-center gap-1.5 shadow-md mt-1">
+                <i data-lucide="shield-alert" class="w-3 h-3 text-cyan-400"></i>
+                <span class="text-[10px] font-mono text-cyan-200 font-bold">Banna il membro</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center gap-2.5 mb-1.5">
+                <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0">
+                  <i data-lucide="terminal" class="w-4 h-4"></i>
+                </div>
+                <h3 class="text-sm font-bold text-white">Command Builder</h3>
+              </div>
+              <p class="text-xs text-[#81889c]">Comandi slash e personalizzati che gli utenti possono eseguire nel tuo server.</p>
+            </div>
+
+            <div>
+              <button type="button" onclick="window.switchTab('tab-autoresponder')" class="botghost-btn-coral w-full py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-md">
+                <span>Nuovo comando</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <div class="flex items-center justify-between text-[11px] text-[#81889c] mt-2.5 pt-2 border-t border-[#242735]">
+                <span>• Comandi configurati</span>
+                <button type="button" onclick="window.switchTab('tab-autoresponder')" class="text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1">
+                  <span>Vedi tutti</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HERO 2: EVENT BUILDER -->
+        <div class="botghost-builder-card">
+          <div class="botghost-preview-canvas p-4">
+            <div class="absolute inset-0 bg-gradient-to-t from-amber-500/5 via-transparent to-transparent pointer-events-none"></div>
+
+            <!-- Flow preview nodes -->
+            <div class="flex flex-col items-center gap-1.5 z-10 w-full max-w-[220px]">
+              <div class="w-full bg-[#272015] border border-amber-700/60 rounded-md px-2.5 py-1.5 flex items-center justify-center gap-1.5 shadow-md">
+                <i data-lucide="user-plus" class="w-3 h-3 text-amber-400"></i>
+                <span class="text-[10px] font-mono text-amber-200 font-bold">Quando entra un membro</span>
+              </div>
+              <div class="w-0.5 h-3 bg-amber-500/40 relative">
+                <i data-lucide="arrow-down" class="w-3 h-3 text-amber-400 absolute -bottom-2 -left-[5px]"></i>
+              </div>
+              <div class="w-full bg-[#1b1c2e] border border-indigo-700/60 rounded-md px-2.5 py-1.5 flex items-center justify-center gap-1.5 shadow-md mt-1">
+                <i data-lucide="award" class="w-3 h-3 text-indigo-300"></i>
+                <span class="text-[10px] font-mono text-indigo-200 font-bold">Assegna ruolo Membro</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center gap-2.5 mb-1.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
+                  <i data-lucide="zap" class="w-4 h-4"></i>
+                </div>
+                <h3 class="text-sm font-bold text-white">Event Builder</h3>
+              </div>
+              <p class="text-xs text-[#81889c]">Si attiva automaticamente quando accade qualcosa (benvenuto, boost, automod).</p>
+            </div>
+
+            <div>
+              <button type="button" onclick="window.switchTab('tab-welcomer')" class="botghost-btn-neutral w-full py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2">
+                <span>Nuovo evento</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <div class="flex items-center justify-between text-[11px] text-[#81889c] mt-2.5 pt-2 border-t border-[#242735]">
+                <span>• Eventi attivi in tempo reale</span>
+                <button type="button" onclick="window.switchTab('tab-welcomer')" class="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1">
+                  <span>Vedi tutti</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HERO 3: MESSAGE BUILDER -->
+        <div class="botghost-builder-card">
+          <div class="botghost-preview-canvas p-4">
+            <!-- Mockup Discord Message Preview -->
+            <div class="w-full max-w-[230px] bg-[#181a24] border border-[#242735] rounded-md p-2.5 shadow-md">
+              <div class="flex items-center gap-1.5 mb-1.5">
+                <img src="/logo.svg?v=110" class="w-4 h-4 rounded-full" alt="Bot">
+                <span class="text-[10px] font-bold text-white">Sentry</span>
+                <span class="text-[8px] px-1 rounded bg-[#5865f2] text-white font-bold uppercase">BOT</span>
+              </div>
+              <div class="border-l-2 border-l-emerald-400 bg-[#12141c] p-1.5 rounded text-[9px] mb-1.5">
+                <div class="font-bold text-white">Benvenuto nel Server!</div>
+                <div class="text-[#81889c] truncate">Leggi le regole e scegli i tuoi ruoli.</div>
+              </div>
+              <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#5865f2] text-white text-[9px] font-bold">
+                <i data-lucide="book-open" class="w-2.5 h-2.5"></i>
+                <span>Leggi le regole</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center gap-2.5 mb-1.5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                  <i data-lucide="scroll" class="w-4 h-4"></i>
+                </div>
+                <h3 class="text-sm font-bold text-white">Message Builder</h3>
+              </div>
+              <p class="text-xs text-[#81889c]">Embed riutilizzabili con pulsanti, webhook, card grafiche e formattazione.</p>
+            </div>
+
+            <div>
+              <button type="button" onclick="window.switchTab('tab-embeds')" class="botghost-btn-neutral w-full py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2">
+                <span>Apri builder</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <div class="flex items-center justify-between text-[11px] text-[#81889c] mt-2.5 pt-2 border-t border-[#242735]">
+                <span>• Usali in comandi ed eventi</span>
+                <button type="button" onclick="window.switchTab('tab-embeds')" class="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1">
+                  <span>Crea</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 4: MARKETPLACE BANNER (BOTGHOST PACKS BANNER) -->
+      <div id="marketplace-section" class="botghost-marketplace-banner p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-300 border border-pink-500/40 flex items-center justify-center shrink-0">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h4 class="text-sm font-bold text-white">Marketplace &amp; Packs</h4>
+              <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-pink-500/30 text-pink-200 border border-pink-500/50 font-bold uppercase tracking-wider">Nuovo</span>
+            </div>
+            <p class="text-xs text-[#cbd5e1] mt-0.5">Pacchetti e configurazioni modulari creati dalla community. Installa e attiva in due clic.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5 shrink-0 self-end md:self-auto">
+          <button type="button" onclick="document.getElementById('marketplace-section').style.display='none'" class="px-3 py-1.5 rounded-lg bg-[#181a24] hover:bg-[#222634] text-[#81889c] hover:text-white text-xs border border-[#242735]">
+            Non mostrare pi&ugrave;
+          </button>
+          <button type="button" onclick="window.showToast('Marketplace Pack Sentry: 14 preset disponibili!', 'success')" class="btn-marketplace px-4 py-2 rounded-lg text-white font-bold text-xs flex items-center gap-1.5 shadow-md">
+            <span>Sfoglia il Marketplace</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- HIDDEN PRESERVED OVERVIEW METRICS (Maintains full JavaScript compatibility) -->
+      <div class="hidden" aria-hidden="true">
+        <span id="ov-members">1,420</span>
+        <span id="ov-partnerships">28</span>
+        <span id="ov-rr">6</span>
+      </div>
+
+      <!-- ROW 5: ALL MODULES ACTIVATION GRID (Preserved and styled like BotGhost modules view) -->
       <div class="glass-card p-5 sm:p-6">
-        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-          <i data-lucide="sliders" class="w-5 h-5 text-purple-400 shrink-0"></i> Gestione Attivazione Moduli
-        </h3>
-        <p class="text-xs text-slate-400 mb-6">Attiva o disattiva istantaneamente le funzionalità del bot su questo server</p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[#242735]">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-400 shrink-0"></i> Gestione Attivazione Moduli
+            </h3>
+            <p class="text-xs text-[#81889c] mt-0.5">Attiva o disattiva istantaneamente le funzionalit&agrave; del bot su questo server</p>
+          </div>
+          <div class="text-[11px] text-[#81889c] font-mono">
+            Tutti i moduli sincronizzati in cloud
+          </div>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 items-stretch" id="modules-toggle-grid"></div>
       </div>
 
-      
+      <!-- ROW 6: GENERAL SETTINGS & LOG CHANNELS -->
       <div class="glass-card p-5 sm:p-6">
-        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <i data-lucide="settings" class="w-5 h-5 text-cyan-400 shrink-0"></i> Impostazioni Generali & Canali di Log
+        <h3 class="text-base font-bold text-white mb-2 flex items-center gap-2">
+          <i data-lucide="settings" class="w-4 h-4 text-cyan-400 shrink-0"></i> Impostazioni Generali &amp; Canali di Log
         </h3>
+        <p class="text-xs text-[#81889c] mb-4">Configura il prefisso e il canale per l'audit dei log del server</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="text-xs font-semibold text-slate-300 block mb-1.5">Canale Audit Log (Mod/Eventi)</label>
@@ -318,14 +731,14 @@
         </div>
       </div>
 
-      <!-- Wispbyte Persistence & Backup Cloud Card -->
+      <!-- ROW 7: WISPBYTE PERSISTENCE & DATA STORAGE -->
       <div class="glass-card p-5 sm:p-6 border-l-4 border-l-emerald-500">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <i data-lucide="database" class="w-5 h-5 text-emerald-400 shrink-0"></i> Cloud MySQL & Persistenza Wispbyte
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="database" class="w-4 h-4 text-emerald-400 shrink-0"></i> Cloud MySQL &amp; Data Storage Wispbyte
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">
+            <p class="text-xs text-[#81889c] mt-0.5">
               Protezione anti-perdita multi-livello: salvataggio istantaneo su SSD, backup cloud su server MySQL Wispbyte esterno e ripristino automatico.
             </p>
           </div>
@@ -2684,6 +3097,163 @@
         </div>
       </div>
     </section>
+  </main>
+
+  <!-- MODAL: BOTGHOST-STYLE COMMAND PALETTE (CTRL+K) -->
+  <div id="command-palette-modal" class="fixed inset-0 z-50 command-palette-backdrop flex items-start justify-center pt-20 px-4 hidden">
+    <div class="bg-[#13151c] border border-[#242735] rounded-xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[75vh]">
+      <div class="p-3.5 border-b border-[#242735] flex items-center gap-3">
+        <i data-lucide="search" class="w-4 h-4 text-[#81889c]"></i>
+        <input type="text" id="palette-search-input" placeholder="Cerca moduli, comandi slash o impostazioni..." class="w-full bg-transparent text-sm text-white placeholder-[#81889c] outline-none border-none">
+        <button type="button" id="btn-close-palette" class="p-1 rounded bg-[#181a24] text-[#81889c] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="palette-results" class="p-2 overflow-y-auto space-y-1 divide-y divide-[#242735]/40">
+        <!-- Filled by JS -->
+      </div>
+      <div class="p-2.5 bg-[#0e1017] border-t border-[#242735] flex items-center justify-between text-[11px] text-[#81889c]">
+        <div class="flex items-center gap-2">
+          <span>Naviga con il click</span>
+          <span>•</span>
+          <span>Premi <kbd class="px-1.5 py-0.5 rounded bg-[#181a24] border border-[#242735] font-mono text-[10px]">Esc</kbd> per chiudere</span>
+        </div>
+        <span class="text-emerald-400 font-bold">Sentry v2.0 Studio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TOUR / GUIDA DASHBOARD -->
+  <div id="tour-guide-modal" class="fixed inset-0 z-50 command-palette-backdrop flex items-center justify-center p-4 hidden">
+    <div class="bg-[#13151c] border border-[#242735] rounded-xl shadow-2xl w-full max-w-lg p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[#242735]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Guida Rapida Sentry Studio</h3>
+            <span class="text-[10px] text-[#81889c]">Layout BotGhost &amp; Workflow Sentry</span>
+          </div>
+        </div>
+        <button type="button" onclick="document.getElementById('tour-guide-modal').classList.add('hidden')" class="p-1.5 rounded bg-[#181a24] text-[#81889c] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300">
+        <p><strong class="text-white">1. I 3 Builder Principali:</strong> In cima alla Panoramica trovi <em class="text-rose-400">Command Builder</em> (comandi slash e trigger), <em class="text-amber-400">Event Builder</em> (benvenuto, boost, automod) e <em class="text-cyan-400">Message Builder</em> (embed avanzati).</p>
+        <p><strong class="text-white">2. Ricerca Immediata:</strong> Premi <kbd class="px-1.5 py-0.5 rounded bg-[#181a24] border border-[#242735] font-mono text-[10px]">Ctrl + K</kbd> in qualunque momento per aprire la barra e saltare a qualsiasi modulo.</p>
+        <p><strong class="text-white">3. Bridge Cross-Platform:</strong> Sincronizza i canali tra le piattaforme con formato a lettera e avatar autentici.</p>
+        <p><strong class="text-white">4. Salvataggio &amp; Cloud:</strong> Clicca <em class="text-emerald-400">Start / Sync</em> o <em class="text-emerald-400">Salva</em> in alto a destra per applicare istantaneamente le modifiche.</p>
+      </div>
+      <div class="pt-3 border-t border-[#242735] flex justify-end">
+        <button type="button" onclick="document.getElementById('tour-guide-modal').classList.add('hidden')" class="btn-knight text-xs py-2 px-4 rounded-lg">
+          Ho Capito
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INVITA BOT -->
+  <div id="invite-bot-modal" class="fixed inset-0 z-50 command-palette-backdrop flex items-center justify-center p-4 hidden">
+    <div class="bg-[#13151c] border border-[#242735] rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[#242735]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+            <i data-lucide="link" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white">Invita Sentry nel tuo Server</h3>
+        </div>
+        <button type="button" onclick="document.getElementById('invite-bot-modal').classList.add('hidden')" class="p-1.5 rounded bg-[#181a24] text-[#81889c] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="space-y-3">
+        <a href="https://discord.com/oauth2/authorize?client_id=1418290327429189673&permissions=8&scope=bot%20applications.commands" target="_blank" class="w-full p-3 rounded-lg bg-indigo-600/30 border border-indigo-500/60 hover:bg-indigo-600/50 flex items-center justify-between text-xs font-bold text-white transition-all">
+          <span class="flex items-center gap-2">
+            <i data-lucide="message-square" class="w-4 h-4 text-indigo-400"></i>
+            Invita su Discord (Permessi Amministratore)
+          </span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5 text-indigo-300"></i>
+        </a>
+        <div class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
+          <div class="font-bold flex items-center gap-1.5 mb-1">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Piattaforma Yapin
+          </div>
+          <div>Per aggiungere Sentry al tuo Reame Yapin, invia il comando <code class="font-mono bg-[#181a24] px-1 py-0.5 rounded text-white">/invite</code> direttamente su Yapin.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VIP & PREMIUM -->
+  <div id="premium-vip-modal" class="fixed inset-0 z-50 command-palette-backdrop flex items-center justify-center p-4 hidden">
+    <div class="bg-[#13151c] border border-purple-500/40 rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[#242735]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center justify-center">
+            <i data-lucide="crown" class="w-4 h-4 text-purple-400"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Sentry VIP &amp; Boost</h3>
+            <span class="text-[10px] text-purple-400">Accesso illimitato</span>
+          </div>
+        </div>
+        <button type="button" onclick="document.getElementById('premium-vip-modal').classList.add('hidden')" class="p-1.5 rounded bg-[#181a24] text-[#81889c] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="space-y-2.5 text-xs text-slate-300">
+        <div class="flex items-center gap-2">
+          <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+          <span>Risposte IA illimitate su Yapin &amp; Discord</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+          <span>Backup automatico orario su Cloud MySQL Wispbyte SSD</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+          <span>Bridge in tempo reale con latenza sub-100ms</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+          <span>Canali temporanei illimitati con bitrate a 384kbps</span>
+        </div>
+      </div>
+      <div class="pt-3 border-t border-[#242735] flex items-center justify-between">
+        <span class="text-xs font-mono text-purple-300">Stato: Attivo per questo server</span>
+        <button type="button" onclick="document.getElementById('premium-vip-modal').classList.add('hidden'); window.showToast('Accesso VIP verificato e attivo!', 'success')" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs">
+          Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COLLABORATORI -->
+  <div id="collab-modal" class="fixed inset-0 z-50 command-palette-backdrop flex items-center justify-center p-4 hidden">
+    <div class="bg-[#13151c] border border-[#242735] rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[#242735]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
+            <i data-lucide="users" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm font-bold text-white">Collaboratori Dashboard</h3>
+        </div>
+        <button type="button" onclick="document.getElementById('collab-modal').classList.add('hidden')" class="p-1.5 rounded bg-[#181a24] text-[#81889c] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-300">
+        Tutti gli utenti con ruolo Amministratore o Moderatore nel tuo server Discord / Yapin hanno accesso automatico a questa console con i rispettivi permessi.
+      </p>
+      <div class="pt-3 border-t border-[#242735] flex justify-end">
+        <button type="button" onclick="document.getElementById('collab-modal').classList.add('hidden')" class="btn-knight text-xs py-2 px-4 rounded-lg">
+          Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
   </main>
 
   <script src="/js/app.js?v=120"></script>

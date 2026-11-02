@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initTabNavigation();
   initMobileDrawer();
   initWebSocket();
+  initBotGhostTopBar();
+  initCommandPalette();
   await loadUserData();
   await loadGuilds();
 
@@ -783,4 +785,181 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
 
 function populateDropdowns(channels, roles, members) {
   return window.populateDropdowns(channels, roles, members);
+}
+
+// ==========================================================================
+// BOTGHOST-INSPIRED DASHBOARD CONTROLLER & COMMAND PALETTE
+// ==========================================================================
+
+window.switchTab = function(tabId) {
+  const tabButton = document.querySelector(`.nav-tab[data-tab="${tabId}"]`);
+  if (tabButton) {
+    tabButton.click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    document.querySelectorAll('.tab-content').forEach(c => {
+      c.classList.add('hidden');
+      c.classList.remove('block');
+    });
+    const target = document.getElementById(tabId);
+    if (target) {
+      target.classList.remove('hidden');
+      target.classList.add('block');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+};
+
+window.scrollToSection = function(elementId) {
+  window.switchTab('tab-overview');
+  setTimeout(() => {
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('ring-2', 'ring-emerald-500', 'transition-all');
+      setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 1500);
+    }
+  }, 100);
+};
+
+window.triggerInviteModal = function() {
+  const modal = document.getElementById('invite-bot-modal');
+  if (modal) modal.classList.remove('hidden');
+};
+
+window.triggerTourModal = function() {
+  const modal = document.getElementById('tour-guide-modal');
+  if (modal) modal.classList.remove('hidden');
+};
+
+window.triggerPremiumModal = function() {
+  const modal = document.getElementById('premium-vip-modal');
+  if (modal) modal.classList.remove('hidden');
+};
+
+window.triggerCollabModal = function() {
+  const modal = document.getElementById('collab-modal');
+  if (modal) modal.classList.remove('hidden');
+};
+
+function initBotGhostTopBar() {
+  const resBtn = document.getElementById('btn-resources-dropdown');
+  const resMenu = document.getElementById('resources-menu');
+  if (resBtn && resMenu) {
+    resBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => {
+      if (!resMenu.classList.contains('hidden')) {
+        resMenu.classList.add('hidden');
+      }
+    });
+  }
+}
+
+function initCommandPalette() {
+  const triggers = document.querySelectorAll('.botghost-search-trigger');
+  const palette = document.getElementById('command-palette-modal');
+  const input = document.getElementById('palette-search-input');
+  const resultsContainer = document.getElementById('palette-results');
+  const closeBtn = document.getElementById('btn-close-palette');
+
+  if (!palette) return;
+
+  function openPalette() {
+    palette.classList.remove('hidden');
+    if (input) {
+      input.value = '';
+      input.focus();
+      filterResults('');
+    }
+  }
+
+  function closePalette() {
+    palette.classList.add('hidden');
+  }
+
+  triggers.forEach(t => t.addEventListener('click', openPalette));
+  if (closeBtn) closeBtn.addEventListener('click', closePalette);
+
+  palette.addEventListener('click', (e) => {
+    if (e.target === palette) closePalette();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (palette.classList.contains('hidden')) {
+        openPalette();
+      } else {
+        closePalette();
+      }
+    } else if (e.key === 'Escape' && !palette.classList.contains('hidden')) {
+      closePalette();
+    }
+  });
+
+  const commands = [
+    { title: 'Panoramica & Dashboard', desc: 'Hub principale, statistiche e limiti bot', tab: 'tab-overview', icon: 'layout-grid' },
+    { title: 'Command Builder', desc: 'Comandi slash e trigger personalizzati per il server', tab: 'tab-autoresponder', icon: 'terminal' },
+    { title: 'Event Builder', desc: 'Gestore eventi automatici, benvenuto e boost', tab: 'tab-welcomer', icon: 'zap' },
+    { title: 'Message Builder', desc: 'Costruttore di embed avanzati, card e pulsanti', tab: 'tab-embeds', icon: 'scroll' },
+    { title: 'Bridge Cross-Platform', desc: 'Ponte canali Yapin \u21c4 Discord a lettera con mittente', tab: 'tab-bridge', icon: 'git-merge' },
+    { title: 'AutoMod & Sicurezza', desc: 'Filtro anti-spam, blacklist parole, link e log sanzioni', tab: 'tab-automod', icon: 'shield-alert' },
+    { title: 'Reaction Roles', desc: 'Pannelli di auto-assegnazione ruoli con reazioni', tab: 'tab-reactionroles', icon: 'layers' },
+    { title: 'Ticket Support', desc: 'Sistema di ticket privati e supporto utenti', tab: 'tab-tickets', icon: 'ticket' },
+    { title: 'Giveaways & Premi', desc: 'Concorsi a premi, estrazioni e timer automatici', tab: 'tab-giveaways', icon: 'trophy' },
+    { title: 'Minigames & Counting', desc: 'Blackjack, pesca, counting e intrattenimento', tab: 'tab-minigames', icon: 'gamepad-2' },
+    { title: 'Sentry Music', desc: 'Player vocale, riproduzione e streaming musicale', tab: 'tab-music', icon: 'music' },
+    { title: 'Auto-Role', desc: 'Assegnazione immediata ruoli per nuovi utenti e bot', tab: 'tab-autorole', icon: 'user-check' },
+    { title: 'Canali Vocali Privati', desc: 'Generatore di stanze temporanee personalizzabili', tab: 'tab-tempchannels', icon: 'radio' },
+    { title: 'Server & Emoji Tracker', desc: 'Statistiche utilizzo emoji e server', tab: 'tab-emojis', icon: 'smile' },
+    { title: 'Cloud MySQL & Data Storage', desc: 'Salvataggio su SSD Wispbyte e sincronizzazione cloud', action: 'btn-cloud-sync', icon: 'database' },
+    { title: 'Impostazioni Prefisso & Log', desc: 'Configurazione canale audit e prefisso comandi', action: 'gen-prefix', icon: 'settings' }
+  ];
+
+  function filterResults(query) {
+    if (!resultsContainer) return;
+    const q = query.toLowerCase().trim();
+    const filtered = commands.filter(c => c.title.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q));
+
+    resultsContainer.innerHTML = '';
+    if (filtered.length === 0) {
+      resultsContainer.innerHTML = `<div class="p-4 text-center text-xs text-[#81889c]">Nessun modulo o comando trovato per "${query}"</div>`;
+      return;
+    }
+
+    filtered.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'p-3 hover:bg-[#1f2230] rounded-lg cursor-pointer flex items-center justify-between transition-colors border border-transparent hover:border-[#2f3448]';
+      el.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded bg-[#181a24] border border-[#242735] flex items-center justify-center text-emerald-400 shrink-0">
+            <i data-lucide="${item.icon}" class="w-3.5 h-3.5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-white truncate">${item.title}</div>
+            <div class="text-[11px] text-[#81889c] truncate">${item.desc}</div>
+          </div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-[#81889c] shrink-0"></i>
+      `;
+      el.addEventListener('click', () => {
+        closePalette();
+        if (item.tab) {
+          window.switchTab(item.tab);
+        } else if (item.action) {
+          window.scrollToSection(item.action);
+        }
+      });
+      resultsContainer.appendChild(el);
+    });
+
+    if (window.lucide) lucide.createIcons();
+  }
+
+  if (input) {
+    input.addEventListener('input', (e) => filterResults(e.target.value));
+  }
 }
