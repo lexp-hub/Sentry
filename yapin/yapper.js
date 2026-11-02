@@ -27,42 +27,61 @@ const list = (v) => (v === undefined ? undefined : v === null ? null : [].concat
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Validates that an image URL is a valid https URL from a Yapin-approved image host.
- * Prevents API rejection errors on embed thumbnails/images.
+ * Validates and normalizes image URLs against Yapin's strict whitelist.
+ * Normalizes root domains (imgur.com -> i.imgur.com, wikimedia -> upload.wikimedia.org, etc.)
+ * Prevents API rejection errors on embed thumbnails/images/icons.
  */
 export function cleanYapinImageUrl(url) {
   if (!url || typeof url !== 'string') return null;
-  const trimmed = url.trim();
-  if (!trimmed.startsWith('https://')) return null;
+  let trimmed = url.trim();
   if (trimmed.includes('{') || trimmed.includes('}')) return null;
+
+  if (trimmed.startsWith('http://')) trimmed = 'https://' + trimmed.slice(7);
+  if (!trimmed.startsWith('https://')) return null;
 
   try {
     const parsed = new URL(trimmed);
-    const host = parsed.hostname.toLowerCase();
-    const allowedDomains = [
-      'yapper.website',
-      'yapin.gg',
-      'yapin.me',
-      'yapper.fun',
-      'imgur.com',
-      'tenor.com',
-      'giphy.com',
-      'githubusercontent.com',
-      'github.com',
-      'wikimedia.org',
-      'myanimelist.net',
-      'anilist.co',
-      'tmdb.org',
-      'pinimg.com',
-      'roblox.com',
-      'rbxcdn.com',
-      'ytimg.com',
-      'googleusercontent.com',
-      'gravatar.com'
-    ];
+    let host = parsed.hostname.toLowerCase();
 
-    const isAllowed = allowedDomains.some(d => host === d || host.endsWith('.' + d));
-    return isAllowed ? trimmed : null;
+    if (host === 'imgur.com') {
+      parsed.hostname = 'i.imgur.com';
+      host = 'i.imgur.com';
+      trimmed = parsed.toString();
+    } else if (host === 'giphy.com') {
+      parsed.hostname = 'media.giphy.com';
+      host = 'media.giphy.com';
+      trimmed = parsed.toString();
+    } else if (host === 'tenor.com' && parsed.pathname.startsWith('/view/')) {
+      return null;
+    } else if (host === 'wikimedia.org' || host === 'commons.wikimedia.org') {
+      parsed.hostname = 'upload.wikimedia.org';
+      host = 'upload.wikimedia.org';
+      trimmed = parsed.toString();
+    } else if (host === 'ytimg.com') {
+      parsed.hostname = 'i.ytimg.com';
+      host = 'i.ytimg.com';
+      trimmed = parsed.toString();
+    }
+
+    const exactHosts = new Set([
+      'files.yapper.website',
+      'yapin.gg',
+      'i.imgur.com',
+      'media.tenor.com',
+      'media.giphy.com',
+      'i.giphy.com',
+      'raw.githubusercontent.com',
+      'user-images.githubusercontent.com',
+      'avatars.githubusercontent.com',
+      'upload.wikimedia.org',
+      'i.ytimg.com',
+      'cdn.discordapp.com',
+      'media.discordapp.net',
+      'rbxcdn.com'
+    ]);
+
+    if (exactHosts.has(host) || host.endsWith('.rbxcdn.com')) return trimmed;
+    return null;
   } catch (e) {
     return null;
   }

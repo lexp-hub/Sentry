@@ -68,17 +68,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   initWebSocket();
   initBotGhostTopBar();
   initCommandPalette();
+  initProfileSwitcher();
   await loadUserData();
   await loadGuilds();
-
-  const btnProfDiscord = document.getElementById('btn-profile-discord');
-  const btnProfYapin = document.getElementById('btn-profile-yapin');
-  if (btnProfDiscord) {
-    btnProfDiscord.addEventListener('click', () => window.switchProfile('discord'));
-  }
-  if (btnProfYapin) {
-    btnProfYapin.addEventListener('click', () => window.switchProfile('yapin'));
-  }
 
   const activeUrlPlatform = urlParams.get('platform') || localStorage.getItem('sentry_active_platform');
   if (activeUrlPlatform === 'yapin') {
@@ -254,8 +246,12 @@ async function loadUserData() {
 
       const avatarEl = document.getElementById('user-avatar');
       const nameEl = document.getElementById('user-name');
+      const popupDiscordUser = document.getElementById('popup-discord-username');
+      const popupYapinUser = document.getElementById('popup-yapin-username');
       if (avatarEl && user.avatar) avatarEl.src = user.avatar;
       if (nameEl && user.username) nameEl.textContent = user.username;
+      if (popupDiscordUser && user.username) popupDiscordUser.textContent = user.username;
+      if (popupYapinUser && user.username) popupYapinUser.textContent = user.username;
     } else if (res.status === 401) {
       localStorage.removeItem('cavaliere_auth_token');
       window.location.href = '/auth/login';
@@ -265,37 +261,68 @@ async function loadUserData() {
   }
 }
 
+function initProfileSwitcher() {
+  const trigger = document.getElementById('btn-toggle-profile-popup');
+  const panel = document.getElementById('profile-switch-panel');
+  if (!trigger || !panel) return;
+
+  trigger.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return;
+    e.stopPropagation();
+    panel.classList.toggle('hidden');
+    if (window.lucide) lucide.createIcons();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!panel.classList.contains('hidden') && !panel.contains(e.target) && !trigger.contains(e.target)) {
+      panel.classList.add('hidden');
+    }
+  });
+}
+
 let currentPlatform = localStorage.getItem('sentry_active_platform') || 'discord';
 
 window.switchProfile = async function(platform) {
   currentPlatform = platform;
   localStorage.setItem('sentry_active_platform', platform);
 
-  const btnDiscord = document.getElementById('btn-profile-discord');
-  const btnYapin = document.getElementById('btn-profile-yapin');
+  const panel = document.getElementById('profile-switch-panel');
+  if (panel) panel.classList.add('hidden');
+
   const badge = document.getElementById('active-profile-badge');
+  const checkDiscord = document.getElementById('check-profile-discord');
+  const checkYapin = document.getElementById('check-profile-yapin');
+  const indicator = document.getElementById('user-platform-indicator');
 
   if (platform === 'yapin') {
-    if (btnYapin) {
-      btnYapin.className = 'profile-switch-btn active flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-white bg-amber-600/40 border border-amber-500/60 shadow-sm';
-    }
-    if (btnDiscord) {
-      btnDiscord.className = 'profile-switch-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-[#81889c] hover:text-white hover:bg-[#1f2230]';
-    }
     if (badge) {
       badge.textContent = 'Yapin Mode';
-      badge.className = 'text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-amber-950/90 text-amber-300 border border-amber-800';
+      badge.className = 'text-[9px] text-amber-400 font-semibold block truncate';
+    }
+    if (checkDiscord) {
+      checkDiscord.className = 'shrink-0 w-4 h-4 rounded-full bg-transparent text-transparent border border-transparent flex items-center justify-center';
+    }
+    if (checkYapin) {
+      checkYapin.className = 'shrink-0 w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center';
+    }
+    if (indicator) {
+      indicator.className = 'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-amber-500 border border-[#13151c] flex items-center justify-center text-[7px] text-black font-bold';
+      indicator.innerHTML = '<i data-lucide="zap" class="w-2 h-2 text-black fill-current"></i>';
     }
   } else {
-    if (btnDiscord) {
-      btnDiscord.className = 'profile-switch-btn active flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-white bg-indigo-600/40 border border-indigo-500/60 shadow-sm';
-    }
-    if (btnYapin) {
-      btnYapin.className = 'profile-switch-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-[#81889c] hover:text-white hover:bg-[#1f2230]';
-    }
     if (badge) {
       badge.textContent = 'Discord Mode';
-      badge.className = 'text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-indigo-950/90 text-indigo-300 border border-indigo-800';
+      badge.className = 'text-[9px] text-indigo-400 font-semibold block truncate';
+    }
+    if (checkDiscord) {
+      checkDiscord.className = 'shrink-0 w-4 h-4 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 flex items-center justify-center';
+    }
+    if (checkYapin) {
+      checkYapin.className = 'shrink-0 w-4 h-4 rounded-full bg-transparent text-transparent border border-transparent flex items-center justify-center';
+    }
+    if (indicator) {
+      indicator.className = 'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-indigo-600 border border-[#13151c] flex items-center justify-center text-[7px] text-white';
+      indicator.innerHTML = '<i data-lucide="message-square" class="w-2 h-2 text-white"></i>';
     }
   }
 
@@ -306,6 +333,7 @@ window.switchProfile = async function(platform) {
   }).catch(() => {});
 
   await loadGuilds(platform);
+  if (window.lucide) lucide.createIcons();
   window.showToast(`Passato al profilo ${platform === 'yapin' ? 'Yapin' : 'Discord'}!`);
 };
 

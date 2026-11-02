@@ -17,51 +17,10 @@ import { MusicManager } from '../../bot/modules/musicManager.js';
 import { exportChannelsToCSV } from '../../bot/modules/channelExporter.js';
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } from 'discord.js';
 import { CONFIG } from '../../config.js';
+import { cleanYapinImageUrl } from '../../../yapin/src/yapper.js';
 
 export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot = null) {
   const router = express.Router();
-
-  /**
-   * Valida che un URL sia un link HTTPS approvato da Yapin (upload o CDN whitelisted).
-   * Evita il rigetto API di Yapin (errore 400 su thumbnail/image non autorizzati).
-   */
-  const cleanYapinImageUrl = (url) => {
-    if (!url || typeof url !== 'string') return null;
-    const trimmed = url.trim();
-    if (!trimmed.startsWith('https://')) return null;
-    if (trimmed.includes('{') || trimmed.includes('}')) return null;
-
-    try {
-      const parsed = new URL(trimmed);
-      const host = parsed.hostname.toLowerCase();
-      const allowedDomains = [
-        'yapper.website',
-        'yapin.gg',
-        'yapin.me',
-        'yapper.fun',
-        'imgur.com',
-        'tenor.com',
-        'giphy.com',
-        'githubusercontent.com',
-        'github.com',
-        'wikimedia.org',
-        'myanimelist.net',
-        'anilist.co',
-        'tmdb.org',
-        'pinimg.com',
-        'roblox.com',
-        'rbxcdn.com',
-        'ytimg.com',
-        'googleusercontent.com',
-        'gravatar.com'
-      ];
-
-      const isAllowed = allowedDomains.some(d => host === d || host.endsWith('.' + d));
-      return isAllowed ? trimmed : null;
-    } catch (e) {
-      return null;
-    }
-  };
 
   const notifySync = (guildId, module, req, extraData = {}) => {
     try {
@@ -866,6 +825,7 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
         const embData = config.welcome_embed || {};
         const rawColor = embData.color !== undefined ? (typeof embData.color === 'string' ? parseInt(embData.color.replace('#', ''), 16) : embData.color) : 0xdc2626;
 
+        const cleanAuthorIcon = cleanYapinImageUrl(formatText(embData.author?.icon_url));
         const cleanFooterIcon = cleanYapinImageUrl(formatText(embData.footer?.icon_url));
         const rawThumb = embData.thumbnail?.url || (typeof embData.thumbnail === 'string' ? embData.thumbnail : null);
         const cleanThumb = cleanYapinImageUrl(formatText(rawThumb));
@@ -876,6 +836,11 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
           title: formatText(embData.title || 'Benvenuto nel Reame, {user}!'),
           description: formatText(embData.description || config.welcome_message || 'Benvenuto {user.mention} in **{server.name}**! Siamo felici di averti tra noi. Sei il membro **#{memberCount}**!'),
           color: rawColor,
+          author: embData.author?.name ? {
+            name: formatText(embData.author.name),
+            icon_url: cleanAuthorIcon || undefined,
+            url: embData.author.url || undefined
+          } : undefined,
           fields: Array.isArray(embData.fields) && embData.fields.length > 0 ? embData.fields.filter(f => f.name && f.value).map(f => ({
             name: formatText(f.name),
             value: formatText(f.value),
@@ -947,7 +912,40 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
       if (!targetChanId) return res.status(400).json({ error: 'Seleziona prima un canale per il test del Boost.' });
       if (!yapinBot) return res.status(400).json({ error: 'Yapin bot non collegato o offline.' });
       try {
-        await yapinBot.send(targetChanId, '**[Sentry Boost Test]** Un membro ha potenziato il server!');
+        const serverId = guildId.replace('yapin_', '');
+        const servers = await yapinBot.servers().catch(() => []);
+        const srv = servers.find(s => String(s.id) === String(serverId));
+        const serverName = srv?.name || 'Reame Yapin';
+        const botUser = yapinBot.me || yapinBot.user || { id: 'sentry', username: 'Sentry' };
+        const botAvatar = cleanYapinImageUrl(botUser?.avatar_url || null);
+
+        const formatText = (str) => {
+          if (!str) return '';
+          return str
+            .replace(/{user}/g, botUser.username || 'NuovoMembro')
+            .replace(/{user\.mention}/g, `<@${botUser.id || '123456'}>`)
+            .replace(/{server\.name}/g, serverName)
+            .replace(/{server\.boost_count}/g, '1')
+            .replace(/{server\.boost_tier}/g, '1');
+        };
+
+        const embData = config.embed || {};
+        const rawColor = embData.color !== undefined ? (typeof embData.color === 'string' ? parseInt(embData.color.replace('#', ''), 16) : embData.color) : 0xf47fff;
+        const rawThumb = embData.thumbnail?.url || (typeof embData.thumbnail === 'string' ? embData.thumbnail : null) || '{user.avatar}';
+        const cleanThumb = cleanYapinImageUrl(formatText(rawThumb).replace(/{user\.avatar}/g, botAvatar || ''));
+        const rawImg = embData.image?.url || (typeof embData.image === 'string' ? embData.image : null);
+        const cleanImg = cleanYapinImageUrl(formatText(rawImg));
+
+        const yapinEmbed = {
+          title: formatText(embData.title || '{server.name} è stato Potenziato!'),
+          description: formatText(embData.description || config.message || 'Grazie per aver potenziato il server!'),
+          color: rawColor,
+          thumbnail: cleanThumb ? { url: cleanThumb } : undefined,
+          image: cleanImg ? { url: cleanImg } : undefined,
+          timestamp: new Date().toISOString()
+        };
+
+        await yapinBot.send(targetChanId, formatText(config.message || ''), { embeds: [yapinEmbed] });
         return res.json({ success: true, platform: 'yapin' });
       } catch (e) {
         return res.status(500).json({ error: `Errore invio Yapin: ${e.message}` });
