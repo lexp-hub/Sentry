@@ -59,18 +59,20 @@ function getCallbackUrl(req) {
 }
 
 authRouter.get('/login', (req, res) => {
-  // If user is already logged in, redirect directly to dashboard without going to Discord!
-  if (req.session?.user) {
-    return res.redirect('/dashboard.html');
+  const force = req.query.force === 'true' || req.query.force === '1';
+
+  // Se l'utente è già autenticato specificamente con Discord e non forza il re-login, redirect alla dashboard
+  if (!force && req.session?.user?.platform === 'discord') {
+    return res.redirect('/dashboard.html?platform=discord');
   }
 
-  if (req.headers.cookie) {
+  if (!force && req.headers.cookie) {
     const match = req.headers.cookie.match(/cav_auth_token=([^;]+)/);
     if (match) {
       const user = validateAuthToken(match[1]);
-      if (user) {
+      if (user && user.platform === 'discord') {
         req.session.user = user;
-        return res.redirect('/dashboard.html');
+        return res.redirect('/dashboard.html?platform=discord');
       }
     }
   }
@@ -161,11 +163,15 @@ const handleCallback = async (req, res) => {
       ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=128`
       : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
+    const isCreator = userData.id === CONFIG.CREATOR_ID;
     const userObj = {
       id: userData.id,
       username: userData.username,
       discriminator: userData.discriminator,
       avatar: avatarUrl,
+      platform: 'discord',
+      activePlatform: 'discord',
+      isAdmin: isCreator,
       guilds: guildsData || []
     };
 
@@ -182,7 +188,7 @@ const handleCallback = async (req, res) => {
     });
 
     req.session.save(() => {
-      res.redirect(`/dashboard.html?auth_token=${authToken}`);
+      res.redirect(`/dashboard.html?auth_token=${authToken}&platform=discord`);
     });
   } catch (error) {
     console.error('[OAuth2] Auth exception:', error);

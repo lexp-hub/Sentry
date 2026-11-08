@@ -18,6 +18,7 @@ import { exportChannelsToCSV } from '../../bot/modules/channelExporter.js';
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } from 'discord.js';
 import { CONFIG } from '../../config.js';
 import { cleanYapinImageUrl } from '../../../yapin/src/yapper.js';
+import { verifyGuildAccess } from './guilds.js';
 
 export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot = null) {
   const router = express.Router();
@@ -60,20 +61,9 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
         return res.status(404).json({ error: 'Server non trovato nel bot.' });
       }
 
-      try {
-        const member = await guild.members.fetch(user.id);
-        const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
-                      member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
-                      member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
-                      member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
-                      member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
-                      guild.ownerId === user.id;
-
-        if (!isMod) {
-          return res.status(403).json({ error: 'Accesso vietato: Solo i moderatori e amministratori autorizzati possono gestire questo server.' });
-        }
-      } catch (e) {
-        return res.status(403).json({ error: 'Non fai parte di questo server o non possiedi i permessi di moderatore.' });
+      const hasAccess = await verifyGuildAccess(guild, user);
+      if (!hasAccess) {
+        return res.status(403).json({ error: 'Accesso vietato: Solo i moderatori, amministratori o membri autorizzati possono gestire questo server.' });
       }
     }
 

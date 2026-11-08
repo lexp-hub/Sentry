@@ -3,6 +3,72 @@ import { ChannelType, PermissionsBitField } from 'discord.js';
 import { DatabaseHelper } from '../../database/db.js';
 import { CONFIG } from '../../config.js';
 
+export async function verifyGuildAccess(guild, user) {
+  if (!guild || !user?.id) return false;
+
+  // 1. Creatore del bot o Super Admin (accesso garantito)
+  const isCreator = user.id === CONFIG.CREATOR_ID || user.isAdmin;
+  if (isCreator) return true;
+
+  // 2. Proprietario del server Discord
+  if (guild.ownerId === user.id) return true;
+
+  // 3. Verifica membro in cache o via fetch
+  let member = guild.members.cache.get(user.id);
+  if (!member) {
+    try {
+      member = await guild.members.fetch(user.id);
+    } catch (e) {
+      member = null;
+    }
+  }
+
+  if (member) {
+    // Ha almeno un ruolo assegnato diverso da @everyone
+    const hasRole = member.roles?.cache?.some(r => r.id !== guild.id);
+    if (hasRole) return true;
+
+    // Permessi Discord (moderazione / amministrazione estesi)
+    if (member.permissions) {
+      const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
+                    member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
+                    member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
+                    member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
+                    member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
+                    member.permissions.has(PermissionsBitField.Flags.ModerateMembers) ||
+                    member.permissions.has(PermissionsBitField.Flags.ManageRoles) ||
+                    member.permissions.has(PermissionsBitField.Flags.ManageChannels) ||
+                    member.permissions.has(PermissionsBitField.Flags.ViewAuditLog);
+      if (isMod) return true;
+    }
+  }
+
+  // 4. Fallback tramite user.guilds dalla sessione OAuth Discord
+  if (Array.isArray(user.guilds)) {
+    const oAuthGuild = user.guilds.find(g => g.id === guild.id);
+    if (oAuthGuild) {
+      if (oAuthGuild.owner) return true;
+      if (oAuthGuild.permissions) {
+        try {
+          const perms = new PermissionsBitField(BigInt(oAuthGuild.permissions));
+          if (perms.has(PermissionsBitField.Flags.Administrator) ||
+              perms.has(PermissionsBitField.Flags.ManageGuild) ||
+              perms.has(PermissionsBitField.Flags.BanMembers) ||
+              perms.has(PermissionsBitField.Flags.KickMembers) ||
+              perms.has(PermissionsBitField.Flags.ManageMessages) ||
+              perms.has(PermissionsBitField.Flags.ModerateMembers) ||
+              perms.has(PermissionsBitField.Flags.ManageRoles) ||
+              perms.has(PermissionsBitField.Flags.ManageChannels)) {
+            return true;
+          }
+        } catch (e) {}
+      }
+    }
+  }
+
+  return false;
+}
+
 export function createGuildsRouter(botClient, yapinBot) {
   const router = express.Router();
 
@@ -27,19 +93,10 @@ export function createGuildsRouter(botClient, yapinBot) {
         const accessibleDiscord = [];
 
         for (const [id, guild] of botGuilds.entries()) {
-          try {
-            const member = await guild.members.fetch(user.id);
-            const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
-                          member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
-                          member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
-                          member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
-                          member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
-                          guild.ownerId === user.id;
-
-            if (isMod) {
-              accessibleDiscord.push(guild);
-            }
-          } catch (e) {}
+          const hasAccess = await verifyGuildAccess(guild, user);
+          if (hasAccess) {
+            accessibleDiscord.push(guild);
+          }
         }
 
         accessibleDiscord.forEach(g => {
@@ -54,7 +111,7 @@ export function createGuildsRouter(botClient, yapinBot) {
             icon: iconUrl,
             memberCount: g.memberCount,
             botJoined: true,
-            permissions: 'Moderatore',
+            permissions: isCreator ? 'Creatore / Admin' : 'Moderatore',
             activeModulesCount: activeCount
           });
         });
@@ -190,20 +247,9 @@ export function createGuildsRouter(botClient, yapinBot) {
       return res.status(404).json({ error: 'Server non trovato nel bot' });
     }
 
-    try {
-      const member = await guild.members.fetch(user.id);
-      const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
-                    member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
-                    member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
-                    member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
-                    member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
-                    guild.ownerId === user.id;
-
-      if (!isMod) {
-        return res.status(403).json({ error: 'Accesso riservato esclusivamente ai Moderatori e Amministratori di questo server.' });
-      }
-    } catch (e) {
-      return res.status(403).json({ error: 'Non fai parte di questo server o non possiedi i permessi di moderatore.' });
+    const hasAccess = await verifyGuildAccess(guild, user);
+    if (!hasAccess) {
+      return res.status(403).json({ error: 'Accesso riservato esclusivamente ai Moderatori, Amministratori o membri con ruolo di questo server.' });
     }
 
     try {
