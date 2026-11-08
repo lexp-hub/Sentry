@@ -252,6 +252,11 @@ async function loadUserData() {
       if (nameEl && user.username) nameEl.textContent = user.username;
       if (popupDiscordUser && user.username) popupDiscordUser.textContent = user.username;
       if (popupYapinUser && user.username) popupYapinUser.textContent = user.username;
+
+      if (user.isCreator) {
+        const bcBtn = document.getElementById('btn-creator-broadcast');
+        if (bcBtn) bcBtn.classList.remove('hidden');
+      }
     } else if (res.status === 401) {
       localStorage.removeItem('cavaliere_auth_token');
       window.location.href = '/auth/login';
@@ -420,6 +425,14 @@ window.reloadCurrentGuildData = async function(silent = false) {
       prefixEl.value = guildData.settings.prefix;
     }
 
+    const updatesToggle = document.getElementById('gen-updates-toggle');
+    if (updatesToggle) updatesToggle.checked = Boolean(guildData.settings?.updates_enabled);
+    const updatesChannelEl = document.getElementById('gen-updates-channel');
+    if (updatesChannelEl && guildData.settings?.updates_channel_id) {
+      updatesChannelEl.dataset.savedValue = guildData.settings.updates_channel_id;
+      updatesChannelEl.value = guildData.settings.updates_channel_id;
+    }
+
     const membersEl = document.getElementById('ov-members');
     if (membersEl) membersEl.textContent = (guildData.memberCount || 0).toLocaleString();
 
@@ -574,6 +587,14 @@ window.switchGuild = async function(guildId) {
       prefixEl.value = guildData.settings.prefix;
     }
 
+    const updatesToggle = document.getElementById('gen-updates-toggle');
+    if (updatesToggle) updatesToggle.checked = Boolean(guildData.settings?.updates_enabled);
+    const updatesChannelEl = document.getElementById('gen-updates-channel');
+    if (updatesChannelEl && guildData.settings?.updates_channel_id) {
+      updatesChannelEl.dataset.savedValue = guildData.settings.updates_channel_id;
+      updatesChannelEl.value = guildData.settings.updates_channel_id;
+    }
+
     const nameEl = document.getElementById('current-guild-name');
     if (nameEl) {
       const isYapin = guildData.platform === 'yapin' || guildId.startsWith('yapin_');
@@ -654,7 +675,7 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
 
   // 1. Text Channels Selectors
   const channelSelectIds = [
-    'gen-log-channel', 'part-channel', 'embed-channel', 'rr-channel',
+    'gen-log-channel', 'gen-updates-channel', 'part-channel', 'embed-channel', 'rr-channel',
     'wel-channel', 'wel-leave-channel', 'ar-chan-select', 'tk-channel', 'tk-log-channel',
     'ga-channel', 'lvl-channel', 'cnt-channel', 'pres-channel', 'setup-channel',
     'fish-channel', 'mg-general-channel', 'mg-bj-channel', 'mg-slot-channel',
@@ -665,7 +686,11 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
     const select = document.getElementById(id);
     if (!select) return;
 
-    const currentVal = select.value || select.dataset.savedValue || (id === 'gen-log-channel' ? window.AppState?.settings?.log_channel_id : null);
+    const currentVal = select.value || select.dataset.savedValue || (
+      id === 'gen-log-channel' ? window.AppState?.settings?.log_channel_id : (
+        id === 'gen-updates-channel' ? window.AppState?.settings?.updates_channel_id : null
+      )
+    );
     select.innerHTML = '<option value="">-- Seleziona un Canale --</option>';
 
     textChannels.forEach(c => {
@@ -686,6 +711,9 @@ window.populateDropdowns = function populateDropdowns(channels, roles, members) 
         select.dataset.savedValue = select.value;
         if (id === 'gen-log-channel' && window.AppState?.settings) {
           window.AppState.settings.log_channel_id = select.value;
+        }
+        if (id === 'gen-updates-channel' && window.AppState?.settings) {
+          window.AppState.settings.updates_channel_id = select.value;
         }
       });
     }
@@ -991,3 +1019,97 @@ function initCommandPalette() {
     input.addEventListener('input', (e) => filterResults(e.target.value));
   }
 }
+
+// ==========================================
+// CREATOR BROADCAST UPDATES / CORREZIONI
+// ==========================================
+window.openBroadcastModal = async function openBroadcastModal() {
+  const modal = document.getElementById('creator-broadcast-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+
+  const badge = document.getElementById('broadcast-opted-in-badge');
+  if (badge) badge.textContent = 'Caricamento...';
+  const statusEl = document.getElementById('bc-status-message');
+  if (statusEl) statusEl.classList.add('hidden');
+
+  try {
+    const res = await fetch('/api/broadcast/status');
+    if (res.ok) {
+      const data = await res.json();
+      if (badge) {
+        badge.innerHTML = `<span class="text-emerald-400 font-bold">${data.optedInCount}</span> / ${data.totalGuilds} server attivi`;
+      }
+    } else {
+      if (badge) badge.textContent = 'Non autorizzato';
+    }
+  } catch (e) {
+    if (badge) badge.textContent = 'Errore verifica';
+  }
+
+  if (window.lucide) lucide.createIcons();
+};
+
+window.sendBroadcastAnnouncement = async function sendBroadcastAnnouncement() {
+  const title = document.getElementById('bc-title')?.value.trim();
+  const version = document.getElementById('bc-version')?.value.trim();
+  const color = document.getElementById('bc-color')?.value || '#10b981';
+  const description = document.getElementById('bc-description')?.value.trim();
+  const pingHere = document.getElementById('bc-ping-here')?.checked || false;
+  const statusEl = document.getElementById('bc-status-message');
+  const btn = document.getElementById('btn-submit-broadcast');
+
+  if (!description && !title) {
+    alert('Inserisci un titolo o una descrizione prima di inviare.');
+    return;
+  }
+
+  if (!confirm('Sei sicuro di voler inviare questo annuncio a TUTTI i server che hanno abilitato la ricezione?')) {
+    return;
+  }
+
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Invio in corso...';
+      if (window.lucide) lucide.createIcons();
+    }
+
+    const res = await fetch('/api/broadcast/announcement', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description, color, version, pingHere })
+    });
+
+    const data = await res.json();
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> Invia Broadcast';
+      if (window.lucide) lucide.createIcons();
+    }
+
+    if (res.ok && data.success) {
+      if (statusEl) {
+        statusEl.className = 'text-xs p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300';
+        statusEl.textContent = `Annuncio inviato con successo a ${data.sentCount} su ${data.totalEligible} server abilitati!`;
+        statusEl.classList.remove('hidden');
+      }
+      if (window.showToast) {
+        window.showToast(`Broadcast inviato a ${data.sentCount} server!`, 'success');
+      }
+    } else {
+      if (statusEl) {
+        statusEl.className = 'text-xs p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300';
+        statusEl.textContent = data.error || 'Errore durante l\'invio del broadcast.';
+        statusEl.classList.remove('hidden');
+      }
+    }
+  } catch (err) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> Invia Broadcast';
+      if (window.lucide) lucide.createIcons();
+    }
+    alert('Errore di connessione: ' + err.message);
+  }
+};

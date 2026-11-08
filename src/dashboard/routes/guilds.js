@@ -27,11 +27,6 @@ export function createGuildsRouter(botClient, yapinBot) {
         const accessibleDiscord = [];
 
         for (const [id, guild] of botGuilds.entries()) {
-          if (isCreator) {
-            accessibleDiscord.push(guild);
-            continue;
-          }
-
           try {
             const member = await guild.members.fetch(user.id);
             const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
@@ -184,28 +179,31 @@ export function createGuildsRouter(botClient, yapinBot) {
     }
 
     // Gestione Server Discord
-    if (!botClient?.isReady() || !botClient.guilds.cache.has(guildId)) {
+    if (!botClient?.isReady()) {
+      return res.status(503).json({ error: 'Bot non connesso a Discord' });
+    }
+    let guild = botClient.guilds.cache.get(guildId);
+    if (!guild) {
+      guild = await botClient.guilds.fetch(guildId).catch(() => null);
+    }
+    if (!guild) {
       return res.status(404).json({ error: 'Server non trovato nel bot' });
     }
 
-    const guild = botClient.guilds.cache.get(guildId);
+    try {
+      const member = await guild.members.fetch(user.id);
+      const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
+                    member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
+                    member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
+                    member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
+                    member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
+                    guild.ownerId === user.id;
 
-    if (!isCreator && user?.id) {
-      try {
-        const member = await guild.members.fetch(user.id);
-        const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
-                      member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
-                      member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
-                      member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
-                      member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
-                      guild.ownerId === user.id;
-
-        if (!isMod) {
-          return res.status(403).json({ error: 'Accesso riservato esclusivamente ai Moderatori e Amministratori di questo server.' });
-        }
-      } catch (e) {
-        return res.status(403).json({ error: 'Non fai parte di questo server o non possiedi i permessi di moderatore.' });
+      if (!isMod) {
+        return res.status(403).json({ error: 'Accesso riservato esclusivamente ai Moderatori e Amministratori di questo server.' });
       }
+    } catch (e) {
+      return res.status(403).json({ error: 'Non fai parte di questo server o non possiedi i permessi di moderatore.' });
     }
 
     try {

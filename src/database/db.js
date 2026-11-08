@@ -179,6 +179,8 @@ try { db.exec("ALTER TABLE ai_configs ADD COLUMN warning_channel_id TEXT;"); } c
 try { db.exec("ALTER TABLE automod_configs ADD COLUMN anti_stickers INTEGER DEFAULT 0;"); } catch (e) {}
 try { db.exec("ALTER TABLE automod_configs ADD COLUMN youtube_whitelist_channels TEXT DEFAULT '[]';"); } catch (e) {}
 try { db.exec("ALTER TABLE automod_configs ADD COLUMN stickers_whitelist_channels TEXT DEFAULT '[]';"); } catch (e) {}
+try { db.exec("ALTER TABLE guild_settings ADD COLUMN updates_channel_id TEXT;"); } catch (e) {}
+try { db.exec("ALTER TABLE guild_settings ADD COLUMN updates_enabled INTEGER DEFAULT 0;"); } catch (e) {}
 try {
   db.exec(`
     CREATE TABLE IF NOT EXISTS boost_configs (
@@ -269,14 +271,31 @@ export const DatabaseHelper = {
     const parsed = JSON.parse(row.modules_enabled || '{}');
     return {
       ...row,
+      updates_enabled: Boolean(row.updates_enabled),
+      updates_channel_id: row.updates_channel_id || null,
       modules_enabled: { ...defaultModules, ...parsed }
     };
   },
 
+  getBroadcastEnabledGuilds() {
+    try {
+      return db.prepare(`
+        SELECT guild_id, updates_channel_id
+        FROM guild_settings
+        WHERE updates_enabled = 1
+          AND updates_channel_id IS NOT NULL
+          AND updates_channel_id != ''
+      `).all();
+    } catch (e) {
+      console.error('[DB getBroadcastEnabledGuilds Error]:', e.message);
+      return [];
+    }
+  },
+
   initGuildSettings(guildId) {
     const stmt = db.prepare(`
-      INSERT OR IGNORE INTO guild_settings (guild_id, prefix, language, modules_enabled)
-      VALUES (?, '!', 'it', '{"partnerships":true,"embeds":true,"reaction_roles":true,"welcomer":true,"autoresponder":true,"moderation":true,"tickets":true,"giveaways":true,"leveling":true,"starboard":true,"ai":true,"setups":true,"autorole":true}')
+      INSERT OR IGNORE INTO guild_settings (guild_id, prefix, language, modules_enabled, updates_enabled)
+      VALUES (?, '!', 'it', '{"partnerships":true,"embeds":true,"reaction_roles":true,"welcomer":true,"autoresponder":true,"moderation":true,"tickets":true,"giveaways":true,"leveling":true,"starboard":true,"ai":true,"setups":true,"autorole":true}', 0)
     `);
     stmt.run(guildId);
   },
@@ -289,7 +308,7 @@ export const DatabaseHelper = {
 
     const stmt = db.prepare(`
       UPDATE guild_settings
-      SET prefix = ?, language = ?, log_channel_id = ?, mute_role_id = ?, auto_role_user = ?, auto_role_bot = ?, modules_enabled = ?
+      SET prefix = ?, language = ?, log_channel_id = ?, mute_role_id = ?, auto_role_user = ?, auto_role_bot = ?, modules_enabled = ?, updates_channel_id = ?, updates_enabled = ?
       WHERE guild_id = ?
     `);
     stmt.run(
@@ -300,6 +319,8 @@ export const DatabaseHelper = {
       updated.auto_role_user,
       updated.auto_role_bot,
       modulesJson,
+      updated.updates_channel_id || null,
+      updated.updates_enabled ? 1 : 0,
       guildId
     );
     return this.getGuildSettings(guildId);

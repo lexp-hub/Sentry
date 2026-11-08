@@ -41,16 +41,25 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
   };
 
   const requireModAuth = async (req, res, next) => {
-    const user = req.user || req.session.user;
+    const user = req.user || req.session?.user;
     if (!user) {
       return res.status(401).json({ error: 'Accesso negato. Effettua il login con Discord.' });
     }
 
-    const isCreator = user?.id === CONFIG.CREATOR_ID || user?.isAdmin;
     const guildId = req.params.guildId;
 
-    if (!isCreator && guildId && botClient?.isReady() && botClient.guilds.cache.has(guildId)) {
-      const guild = botClient.guilds.cache.get(guildId);
+    if (guildId && !guildId.startsWith('yapin_')) {
+      if (!botClient?.isReady()) {
+        return res.status(503).json({ error: 'Bot non connesso o non pronto.' });
+      }
+      let guild = botClient.guilds.cache.get(guildId);
+      if (!guild) {
+        guild = await botClient.guilds.fetch(guildId).catch(() => null);
+      }
+      if (!guild) {
+        return res.status(404).json({ error: 'Server non trovato nel bot.' });
+      }
+
       try {
         const member = await guild.members.fetch(user.id);
         const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
@@ -61,10 +70,10 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
                       guild.ownerId === user.id;
 
         if (!isMod) {
-          return res.status(403).json({ error: 'Accesso vietato: Solo i moderatori e cavalieri autorizzati possono modificare questo Reame.' });
+          return res.status(403).json({ error: 'Accesso vietato: Solo i moderatori e amministratori autorizzati possono gestire questo server.' });
         }
       } catch (e) {
-        return res.status(403).json({ error: 'Non fai parte di questo server.' });
+        return res.status(403).json({ error: 'Non fai parte di questo server o non possiedi i permessi di moderatore.' });
       }
     }
 
@@ -84,6 +93,109 @@ export function createApiRouter(botClient, broadcastToGuild = () => {}, yapinBot
       demoMode: !isReady && !yapinBot,
       aiModel: CONFIG.CLOUDFLARE_MODEL,
       yapinConnected: Boolean(yapinBot)
+    });
+  });
+
+  // ==========================================
+  // CREATOR BROADCAST UPDATES / CORREZIONI
+  // ==========================================
+  router.get('/broadcast/status', (req, res) => {
+    const user = req.user || req.session?.user;
+    if (!user || user.id !== CONFIG.CREATOR_ID) {
+      return res.status(403).json({ error: 'Accesso consentito solo al creatore del bot.' });
+    }
+    const optedInGuilds = DatabaseHelper.getBroadcastEnabledGuilds();
+    res.json({
+      totalGuilds: botClient?.isReady() ? botClient.guilds.cache.size : 0,
+      optedInCount: optedInGuilds.length,
+      optedInGuilds: optedInGuilds.map(g => {
+        const guild = botClient?.guilds.cache.get(g.guild_id);
+        return {
+          guildId: g.guild_id,
+          guildName: guild?.name || 'Server non in cache',
+          channelId: g.updates_channel_id
+        };
+      })
+    });
+  });
+
+  router.post('/broadcast/announcement', async (req, res) => {
+    const user = req.user || req.session?.user;
+    if (!user || user.id !== CONFIG.CREATOR_ID) {
+      return res.status(403).json({ error: 'Accesso consentito solo al creatore del bot.' });
+    }
+
+    const { title, description, color, version, fields, pingHere } = req.body;
+    if (!description && !title) {
+      return res.status(400).json({ error: 'Specificare almeno un titolo o una descrizione per l\'annuncio.' });
+    }
+
+    if (!botClient?.isReady()) {
+      return res.status(503).json({ error: 'Bot non connesso a Discord al momento.' });
+    }
+
+    const optedInRows = DatabaseHelper.getBroadcastEnabledGuilds();
+    if (optedInRows.length === 0) {
+      return res.json({
+        success: true,
+        sentCount: 0,
+        totalEligible: 0,
+        message: 'Nessun server ha attualmente attivato la ricezione degli annunci/correzioni.'
+      });
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle(title ? `📢 ${title}` : '📢 Aggiornamento & Correzioni Sentry')
+      .setDescription(description || 'Nuove correzioni e aggiornamenti applicati a Sentry.')
+      .setColor(color || CONFIG.EMBED_SUCCESS_COLOR || '#10B981')
+      .setTimestamp()
+      .setFooter({
+        text: `Sentry Updates • ${version ? `v${version}` : 'Changelog'} • Inviato dal Creatore`,
+        iconURL: botClient.user?.displayAvatarURL() || undefined
+      });
+
+    if (Array.isArray(fields) && fields.length > 0) {
+      fields.forEach(f => {
+        if (f.name && f.value) {
+          embed.addFields({ name: String(f.name), value: String(f.value), inline: Boolean(f.inline) });
+        }
+      });
+    }
+
+    let sentCount = 0;
+    const errors = [];
+
+    for (const item of optedInRows) {
+      try {
+        const guild = botClient.guilds.cache.get(item.guild_id);
+        if (!guild) continue;
+
+        let channel = guild.channels.cache.get(item.updates_channel_id);
+        if (!channel) {
+          channel = await guild.channels.fetch(item.updates_channel_id).catch(() => null);
+        }
+
+        if (channel && channel.isTextBased()) {
+          const payload = { embeds: [embed] };
+          if (pingHere) {
+            payload.content = '@here';
+          }
+          await channel.send(payload);
+          sentCount++;
+        } else {
+          errors.push({ guildId: item.guild_id, guildName: guild.name, error: 'Canale non trovato o non testuale' });
+        }
+      } catch (err) {
+        errors.push({ guildId: item.guild_id, error: err.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      sentCount,
+      totalEligible: optedInRows.length,
+      totalGuilds: botClient.guilds.cache.size,
+      errors: errors.length > 0 ? errors : undefined
     });
   });
 

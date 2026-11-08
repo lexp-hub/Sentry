@@ -393,7 +393,10 @@ authRouter.get('/me', (req, res) => {
   if (!user) {
     return res.status(401).json({ error: 'Non autenticato' });
   }
-  res.json(user);
+  res.json({
+    ...user,
+    isCreator: user?.id === CONFIG.CREATOR_ID
+  });
 });
 
 authRouter.get('/logout', (req, res) => {

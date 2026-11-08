@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS guild_settings (
   mute_role_id TEXT,
   auto_role_user TEXT,
   auto_role_bot TEXT,
+  updates_channel_id TEXT,
+  updates_enabled INTEGER DEFAULT 0,
   modules_enabled TEXT DEFAULT '{"partnerships":true,"embeds":true,"reaction_roles":true,"welcomer":true,"autoresponder":true,"moderation":true,"tickets":true,"giveaways":true,"leveling":true,"starboard":true,"ai":true}'
 );
 

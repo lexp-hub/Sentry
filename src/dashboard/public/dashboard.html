@@ -187,6 +187,13 @@
             <span class="truncate flex-1">Storage &amp; Backup</span>
             <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-mono border border-emerald-800 shrink-0">SSD</span>
           </button>
+
+          <!-- BOT CREATOR BROADCAST BUTTON -->
+          <button id="btn-creator-broadcast" type="button" onclick="window.openBroadcastModal()" class="hidden w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/30 transition-all text-left">
+            <i data-lucide="megaphone" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+            <span class="truncate flex-1">Broadcast Annunci</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-mono border border-emerald-800 shrink-0">Owner</span>
+          </button>
         </div>
       </div>
     </nav>
@@ -493,6 +500,28 @@
           <div>
             <label class="text-xs font-semibold text-slate-300 block mb-1.5">Prefisso Comandi Testuali</label>
             <input type="text" id="gen-prefix" class="form-input" value="!" placeholder="!">
+          </div>
+        </div>
+
+        <!-- BROADCAST UPDATES & CORREZIONI OPT-IN -->
+        <div class="mt-5 pt-4 border-t border-slate-700/50">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <label class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="megaphone" class="w-3.5 h-3.5 text-emerald-400"></i> Ricevi Annunci &amp; Correzioni Bot (Changelog)
+              </label>
+              <p class="text-[11px] text-[#81889c]">Disattivato di default. Se abilitato, riceverai annunci importanti e changelog delle correzioni inviati dal creatore del bot direttamente in questo server.</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer ml-3">
+              <input type="checkbox" id="gen-updates-toggle" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+          <div class="mt-2" id="gen-updates-channel-container">
+            <label class="text-xs font-semibold text-slate-300 block mb-1.5">Canale Destinazione Annunci</label>
+            <select id="gen-updates-channel" class="form-select">
+              <option value="">Nessun canale selezionato (disattivato)</option>
+            </select>
           </div>
         </div>
       </div>
@@ -3016,6 +3045,75 @@
       <div class="pt-3 border-t border-[#242735] flex justify-end">
         <button type="button" onclick="document.getElementById('collab-modal').classList.add('hidden')" class="btn-knight text-xs py-2 px-4 rounded-lg">
           Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BROADCAST ANNUNCI & CORREZIONI (CREATOR ONLY) -->
+  <div id="creator-broadcast-modal" class="fixed inset-0 z-50 command-palette-backdrop flex items-center justify-center p-4 hidden">
+    <div class="bg-[#13151c] border border-emerald-500/40 rounded-xl shadow-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-[#242735]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center justify-center">
+            <i data-lucide="megaphone" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Broadcast Annunci &amp; Correzioni</h3>
+            <p class="text-[11px] text-[#81889c]">Invia un annuncio/changelog ai server che hanno attivato la ricezione</p>
+          </div>
+        </div>
+        <button type="button" onclick="document.getElementById('creator-broadcast-modal').classList.add('hidden')" class="p-1.5 rounded bg-[#181a24] text-[#81889c] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Live Opted-in Counter Badge -->
+      <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+        <div class="text-xs text-emerald-200">
+          <span class="font-bold flex items-center gap-1.5 mb-0.5">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i> Server Abilitati
+          </span>
+          <span class="text-[11px] text-[#81889c]">Verrà inviato esclusivamente ai server con canale configurato.</span>
+        </div>
+        <div id="broadcast-opted-in-badge" class="font-mono text-sm font-bold px-2.5 py-1 rounded bg-[#181a24] text-emerald-400 border border-emerald-500/30">
+          Caricamento...
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Titolo Annuncio</label>
+          <input type="text" id="bc-title" class="form-input" placeholder="es. Aggiornamento Sentry &amp; Risoluzione Bug" value="Aggiornamento Sentry &amp; Correzioni">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Versione (opzionale)</label>
+            <input type="text" id="bc-version" class="form-input" placeholder="es. 2.4.0">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Colore Embed (HEX)</label>
+            <input type="color" id="bc-color" class="form-input h-[38px] p-1 cursor-pointer" value="#10b981">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Messaggio / Note di Rilascio (Markdown supportato)</label>
+          <textarea id="bc-description" rows="5" class="form-textarea w-full text-xs font-mono" placeholder="Descrivi qui le correzioni, modifiche o comunicazioni..."></textarea>
+        </div>
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="bc-ping-here" class="rounded border-slate-700 text-emerald-500 focus:ring-0">
+          <label for="bc-ping-here" class="text-xs text-slate-300 cursor-pointer">Includi menzione <code class="font-mono bg-[#181a24] px-1 py-0.5 rounded text-amber-300">@here</code></label>
+        </div>
+      </div>
+
+      <div id="bc-status-message" class="hidden text-xs p-2.5 rounded-lg"></div>
+
+      <div class="pt-3 border-t border-[#242735] flex items-center justify-between">
+        <button type="button" onclick="document.getElementById('creator-broadcast-modal').classList.add('hidden')" class="text-xs py-2 px-3 text-[#81889c] hover:text-white">
+          Annulla
+        </button>
+        <button type="button" id="btn-submit-broadcast" onclick="window.sendBroadcastAnnouncement()" class="btn-knight text-xs py-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-2">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i> Invia Broadcast
         </button>
       </div>
     </div>

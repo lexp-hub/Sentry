@@ -1695,9 +1695,11 @@
         ...(clientId ? { 'x-client-id': clientId } : {})
       };
 
-      // 1. Master Modules & General Settings (Log Channel, Prefix)
+      // 1. Master Modules & General Settings (Log Channel, Prefix, Broadcast Updates)
       const logChannelVal = document.getElementById('gen-log-channel')?.value;
       const prefixVal = document.getElementById('gen-prefix')?.value || '!';
+      const updatesEnabled = document.getElementById('gen-updates-toggle')?.checked || false;
+      const updatesChannelVal = document.getElementById('gen-updates-channel')?.value || null;
       const enabledMap = {};
       document.querySelectorAll('.master-module-toggle').forEach(t => {
         const mod = t.getAttribute('data-module');
@@ -1710,6 +1712,8 @@
         body: JSON.stringify({
           prefix: prefixVal,
           log_channel_id: logChannelVal || null,
+          updates_enabled: updatesEnabled,
+          updates_channel_id: updatesEnabled ? updatesChannelVal : null,
           modules_enabled: Object.keys(enabledMap).length > 0 ? enabledMap : undefined
         })
       });
