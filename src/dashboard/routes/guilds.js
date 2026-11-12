@@ -6,14 +6,10 @@ import { CONFIG } from '../../config.js';
 export async function verifyGuildAccess(guild, user) {
   if (!guild || !user?.id) return false;
 
-  // 1. Creatore del bot o Super Admin (accesso garantito)
-  const isCreator = user.id === CONFIG.CREATOR_ID || user.isAdmin;
-  if (isCreator) return true;
-
-  // 2. Proprietario del server Discord
+  // 1. Proprietario del server Discord
   if (guild.ownerId === user.id) return true;
 
-  // 3. Verifica membro in cache o via fetch
+  // 2. Verifica membro in cache o via fetch e permessi effettivi di moderazione/amministrazione
   let member = guild.members.cache.get(user.id);
   if (!member) {
     try {
@@ -23,27 +19,20 @@ export async function verifyGuildAccess(guild, user) {
     }
   }
 
-  if (member) {
-    // Ha almeno un ruolo assegnato diverso da @everyone
-    const hasRole = member.roles?.cache?.some(r => r.id !== guild.id);
-    if (hasRole) return true;
-
-    // Permessi Discord (moderazione / amministrazione estesi)
-    if (member.permissions) {
-      const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
-                    member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
-                    member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
-                    member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
-                    member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
-                    member.permissions.has(PermissionsBitField.Flags.ModerateMembers) ||
-                    member.permissions.has(PermissionsBitField.Flags.ManageRoles) ||
-                    member.permissions.has(PermissionsBitField.Flags.ManageChannels) ||
-                    member.permissions.has(PermissionsBitField.Flags.ViewAuditLog);
-      if (isMod) return true;
-    }
+  if (member && member.permissions) {
+    const isMod = member.permissions.has(PermissionsBitField.Flags.Administrator) ||
+                  member.permissions.has(PermissionsBitField.Flags.ManageGuild) ||
+                  member.permissions.has(PermissionsBitField.Flags.BanMembers) ||
+                  member.permissions.has(PermissionsBitField.Flags.KickMembers) ||
+                  member.permissions.has(PermissionsBitField.Flags.ManageMessages) ||
+                  member.permissions.has(PermissionsBitField.Flags.ModerateMembers) ||
+                  member.permissions.has(PermissionsBitField.Flags.ManageRoles) ||
+                  member.permissions.has(PermissionsBitField.Flags.ManageChannels) ||
+                  member.permissions.has(PermissionsBitField.Flags.ViewAuditLog);
+    if (isMod) return true;
   }
 
-  // 4. Fallback tramite user.guilds dalla sessione OAuth Discord
+  // 3. Fallback tramite user.guilds dalla sessione OAuth Discord
   if (Array.isArray(user.guilds)) {
     const oAuthGuild = user.guilds.find(g => g.id === guild.id);
     if (oAuthGuild) {
@@ -58,7 +47,8 @@ export async function verifyGuildAccess(guild, user) {
               perms.has(PermissionsBitField.Flags.ManageMessages) ||
               perms.has(PermissionsBitField.Flags.ModerateMembers) ||
               perms.has(PermissionsBitField.Flags.ManageRoles) ||
-              perms.has(PermissionsBitField.Flags.ManageChannels)) {
+              perms.has(PermissionsBitField.Flags.ManageChannels) ||
+              perms.has(PermissionsBitField.Flags.ViewAuditLog)) {
             return true;
           }
         } catch (e) {}
@@ -111,7 +101,7 @@ export function createGuildsRouter(botClient, yapinBot) {
             icon: iconUrl,
             memberCount: g.memberCount,
             botJoined: true,
-            permissions: isCreator ? 'Creatore / Admin' : 'Moderatore',
+            permissions: g.ownerId === user?.id ? 'Proprietario' : 'Moderatore',
             activeModulesCount: activeCount
           });
         });
